@@ -1,5 +1,31 @@
 GTE.drawGame = function(){
 	GTE.drawBackground();
+	GTE.drawMidline();
+	GTE.drawLevel();
+};
+
+GTE.drawLevel = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+		var canvasCoord = GTE.internalToRenderSpace(p.x/2,p.y);
+
+		var radius = p.r * GTE.getRenderBoxHeight();
+		
+		var color = [0,0,255];
+		var colorStr = GTE.arrayColorToString(color);
+
+		ctx.beginPath();
+		ctx.arc(canvasCoord[0], canvasCoord[1], radius, 0, 2 * Math.PI, false);
+		ctx.closePath();
+
+		ctx.fillStyle = colorStr;
+		ctx.fill();
+	}
+
+	ctx.restore();
 };
 
 GTE.drawBackground = function(){
@@ -24,6 +50,24 @@ GTE.drawBackground = function(){
     ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[3]+0.5);
     ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
     ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
+    ctx.closePath();
+    ctx.strokeStyle = '000';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.restore();
+};
+
+GTE.drawMidline = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var midX = (GTE.renderBox[0] + GTE.renderBox[2])/2+0.5|0;
+
+	ctx.beginPath();
+    ctx.moveTo(midX+0.5,GTE.renderBox[1]-0.5);
+    ctx.lineTo(midX+0.5,GTE.renderBox[3]+0.5);
+
     ctx.closePath();
     ctx.strokeStyle = '000';
     ctx.lineWidth = 3;

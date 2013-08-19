@@ -12,8 +12,9 @@ GTE.newLevelAnimationTime = 500;
 GTE.UIUpdateTime = 10;
 GTE.lastUIUpdateTime = 0;
 
-
-GTE.font = 'Verdana'; 
+//Visual settings
+GTE.font = 'Verdana';
+GTE.renderBox = [0,0,0,0];
 
 //Game state bools
 GTE.dirtyCanvas = true;
@@ -25,11 +26,12 @@ GTE.animatingNewLevel = false;
 
 GTE.maxLevel = 1;
 GTE.level = GTE.maxLevel;
-GTE.renderBox = [0,0,0,0];
+GTE.levelState = {};
 
 //Mouse state
 GTE.mouse = "up";
-GTE.lastMouseDownIndex = -1;
+GTE.mouseDownIndex = -1;
+GTE.mouseDownPos = {x:0,y:0};
 
 var kongregate = parent.kongregate;
 
@@ -42,7 +44,9 @@ window.onload = GTE.main;
 
 GTE.gameLoop = function(time){
 	var ctx = GTE.ctx;
-	
+
+	GTE.updateModel(time - GTE.lastFrameTime);	
+
 	if(GTE.startNewLevelAnimation){
 		GTE.startNewLevelAnimation = false;
 		GTE.animatingNewLevel = true;
@@ -72,9 +76,6 @@ GTE.gameLoop = function(time){
 				GTE.winGame();
 			}
 		}
-
-
-		console.log("animate! fps: " + (GTE.frameRenderTime+0.5|0));
 		
 		//Save game
 		if(GTE.toSaveGame){
@@ -131,6 +132,8 @@ GTE.startSession = function(){
 	var h = GTE.canvas.height;
 
 	GTE.renderBox = [20,20,w-20,h-20];
+	
+	GTE.initModel();
 
 	GTE.loadGameState();
 
@@ -146,20 +149,34 @@ GTE.startSession = function(){
 
 GTE.mousemove = function(x,y){
 	if(GTE.mouse === "down"){
-
+		if(GTE.mouseDownIndex >= 0){
+			GTE.updateMouseForce(0,x,y);
+		}
 	}
 };
 
 GTE.mousedown = function(x,y){
 	GTE.mouse = "down";
+	GTE.mouseDownPos = {x:x,y:y};
+	GTE.mouseDownIndex = -1;
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+		if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) < p.r*p.r){
+			GTE.mouseDownIndex = p.id;
 
-	// GTE.dirtyCanvas = true;
-	// GTE.checkWon = true;
-	// GTE.toSaveGame = true;
+			//idForces for possible multitouch ability in future
+			GTE.createMouseForce(0,p.id,x,y);
+			break;
+		}
+	}
 };
 
 GTE.mouseup = function(x,y){
 	GTE.mouse = "up";
+
+	if(GTE.mouseDownIndex >= 0){
+		GTE.destroyMouseForce(0,x,y);
+	}
 };
 
 GTE.winGame = function(){
@@ -189,7 +206,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mouseup(x,y);
+		GTE.mouseup(2*x,y);
 	});
 
 	$(document).mousedown(function (e) {
@@ -202,7 +219,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 		
-		GTE.mousedown(x,y);
+		GTE.mousedown(2*x,y);
 	});
 
 	$(document).mousemove(function (e) {
@@ -215,7 +232,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mousemove(x,y);
+		GTE.mousemove(2*x,y);
 	});
 
 	$(document).keydown(function (e) {
