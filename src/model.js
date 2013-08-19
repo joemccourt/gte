@@ -37,8 +37,8 @@ GTE.createMouseForce = function(forceID,pID,x,y){
 	//console.log(Math.sqrt((p.x-x)*(p.x-x)+(p.y-y)*(p.y-y)));
 	var force = {
 		pID: pID,
-		k: 5,
-		b: 0.1,
+		k: 15,
+		b: 0.5,
 		pX0: p.x,
 		pY0: p.y,
 		fX0: x,
@@ -95,50 +95,46 @@ GTE.isCollision = function(p){
 
 GTE.updateModel = function(deltaTime){
 
-	var dT = deltaTime / 1000;
+	while(deltaTime > 0){
 
-	//Update forces
-	for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
-		var f = GTE.levelState.mouseForces[i];
-		if(typeof f === "undefined"){continue;}
-		var p = GTE.levelState.particles[f.pID];
+		var dT = Math.min(5,deltaTime) / 100;
+		deltaTime -= 5;
 
-		var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX) + (p.y-f.fY)*(p.y-f.fY)); 
-		var force = f.k*dr;
+		//Update forces
+		for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
+			var f = GTE.levelState.mouseForces[i];
+			if(typeof f === "undefined"){continue;}
+			var p = GTE.levelState.particles[f.pID];
 
-		var cX = (f.fX-p.x) / dr;
-		var cY = (f.fY-p.y) / dr;
+			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX) + (p.y-f.fY)*(p.y-f.fY)); 
+			var cX = (f.fX-p.x) / dr;
+			var cY = (f.fY-p.y) / dr;
 
-		//var vR = p.vX*cX+p.vY*cY;
-		//force -= f.b*vR;
+			var force = f.k*dr;
 
-		//console.log("updateforce",f.pID,dT,force,(f.fX0 - f.pX0)/f.fDr)
+			var vF = p.vX*cX+p.vY*cY;
+			var forceDamp = -Math.sqrt(4 * f.k * p.m) * vF;
 
-		if(dr > 0){
-			p.vX += force * cX / p.m;
-			p.vY += force * cY / p.m;
+			if(dr > 0){
+				p.vX += dT * (force+forceDamp) * cX / p.m;
+				p.vY += dT * (force+forceDamp) * cY / p.m;
+			}
 		}
 
-		// var vR = Math.sqrt(p.vX*p.vX+p.vY*p.vY);
-		// if(vR > 0){
-		// 	p.vX -= f.b * p.vX / vR / p.m;
-		// 	p.vY -= f.b * p.vY / vR / p.m;
-		// }
-	}
+		//Viscocity force
+		for(var i = 0; i < GTE.levelState.particles.length; i++){
+			var p = GTE.levelState.particles[i];
 
-	//Viscocity force
-	for(var i = 0; i < GTE.levelState.particles.length; i++){
-		var p = GTE.levelState.particles[i];
+			p.vX -= dT * (0.3 + Math.abs(p.vX))*p.vX;
+			p.vY -= dT * (0.3 + Math.abs(p.vY))*p.vY;
+		}
 
-		p.vX -= (0.01 + Math.abs(0.01*p.vX))*p.vX;
-		p.vY -= (0.01 + Math.abs(0.01*p.vY))*p.vY;
-	}
+		//Update positions
+		for(var i = 0; i < GTE.levelState.particles.length; i++){
+			var p = GTE.levelState.particles[i];
 
-	//Update positions
-	for(var i = 0; i < GTE.levelState.particles.length; i++){
-		var p = GTE.levelState.particles[i];
-
-		//TODO: collision check
-		GTE.updateParticlePos(p, p.x + dT*p.vX, p.y + dT*p.vY);
+			//TODO: collision check
+			GTE.updateParticlePos(p, p.x + dT*p.vX, p.y + dT*p.vY);
+		}
 	}
 };

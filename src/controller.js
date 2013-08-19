@@ -45,6 +45,7 @@ window.onload = GTE.main;
 GTE.gameLoop = function(time){
 	var ctx = GTE.ctx;
 
+	if(GTE.lastFrameTime - GTE.lastFrameTime > 5000){GTE.lastFrameTime = time-100;}
 	GTE.updateModel(time - GTE.lastFrameTime);	
 
 	if(GTE.startNewLevelAnimation){
