@@ -2,6 +2,31 @@ GTE.drawGame = function(){
 	GTE.drawBackground();
 	GTE.drawMidline();
 	GTE.drawLevel();
+	GTE.drawMouseForces();
+};
+
+GTE.drawMouseForces = function(){
+
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	for(var forceID = 0; forceID < 10; forceID++){
+		var f = GTE.levelState.mouseForces[forceID];
+		if(typeof f !== 'object'){continue;}
+		var p = GTE.levelState.particles[f.pID];
+		if(typeof p !== 'object'){continue;}
+
+		var canvasCoordP = GTE.internalToRenderSpace(p.x/2,p.y);
+		var canvasCoordF = GTE.internalToRenderSpace(f.fX/2,f.fY);
+
+		ctx.beginPath();
+	    ctx.moveTo(canvasCoordF[0], canvasCoordF[1]);
+	    ctx.lineTo(canvasCoordP[0], canvasCoordP[1]);
+	    ctx.strokeStyle = '800';
+	    ctx.lineWidth = 3;
+	    ctx.stroke();
+	}
+	ctx.restore();
 };
 
 GTE.drawLevel = function(){

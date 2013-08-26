@@ -21,7 +21,8 @@ GTE.initModel = function(){
 				vX: 0,
 				vY: 0,
 				m: 1,
-				r: 0.03
+				r: 0.05,
+				resolved: false
 			};
 
 		}while(GTE.isCollision(particle));
@@ -37,7 +38,7 @@ GTE.createMouseForce = function(forceID,pID,x,y){
 	//console.log(Math.sqrt((p.x-x)*(p.x-x)+(p.y-y)*(p.y-y)));
 	var force = {
 		pID: pID,
-		k: 15,
+		k: 35,
 		b: 0.5,
 		pX0: p.x,
 		pY0: p.y,
@@ -93,12 +94,22 @@ GTE.isCollision = function(p){
 	return false;
 }
 
+GTE.setParticlesUnresolved = function(){
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+		p.resolved = false;
+	}
+};
+
 GTE.updateModel = function(deltaTime){
 
 	while(deltaTime > 0){
 
-		var dT = Math.min(5,deltaTime) / 100;
+		var dT = Math.min(5,deltaTime) / 500;
 		deltaTime -= 5;
+
+		//Set all particles unresolved
+		GTE.setParticlesUnresolved();
 
 		//Update forces
 		for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
@@ -110,10 +121,14 @@ GTE.updateModel = function(deltaTime){
 			var cX = (f.fX-p.x) / dr;
 			var cY = (f.fY-p.y) / dr;
 
+			// if(dr < p.r && p.r > 0){
+			// 	dr *= dr/p.r;
+			// }
+
 			var force = f.k*dr;
 
 			var vF = p.vX*cX+p.vY*cY;
-			var forceDamp = -Math.sqrt(4 * f.k * p.m) * vF;
+			var forceDamp = -0;//Math.sqrt(4 * f.k * p.m) * vF;
 
 			if(dr > 0){
 				p.vX += dT * (force+forceDamp) * cX / p.m;
@@ -130,11 +145,56 @@ GTE.updateModel = function(deltaTime){
 		}
 
 		//Update positions
-		for(var i = 0; i < GTE.levelState.particles.length; i++){
-			var p = GTE.levelState.particles[i];
+		var unresolved = true;
+		while(unresolved){
+			unresolved = false;
+			for(var i = 0; i < GTE.levelState.particles.length; i++){
+				var p = GTE.levelState.particles[i];
+				if(p.resolved){continue;}
 
-			//TODO: collision check
-			GTE.updateParticlePos(p, p.x + dT*p.vX, p.y + dT*p.vY);
+				//Collision check
+				var pXNew = p.x + dT*p.vX;
+				var pYNew = p.y + dT*p.vY;
+
+				//Left box collision
+				if(pXNew - p.r < 0){
+					pXNew = p.r - pXNew + p.r;
+					p.vX = -p.vX;
+				}
+
+				//Right box collision
+				if(pXNew + p.r > 2){
+					pXNew = 2-(p.r + pXNew - 2) - p.r;
+					p.vX = -p.vX;
+				}
+
+				//Top box collision
+				if(pYNew - p.r < 0){
+					pYNew = p.r - pYNew + p.r;
+					p.vY = -p.vY;
+				}
+
+				//Bottom box collision
+				if(pYNew + p.r > 1){
+					pYNew = 1-(p.r + pYNew-1) - p.r;
+					p.vY = -p.vY;
+				}
+
+				//Left to Right collision
+				if(p.x < 1 && pXNew + p.r > 1){
+					pXNew = 1-(p.r + pXNew - 1) - p.r;
+					p.vX = -p.vX;
+				}
+				
+				//Right to Left collision
+				if(p.x > 1 && pXNew - p.r < 1){
+					pXNew = 1+(p.r - pXNew + 1) + p.r;
+					p.vX = -p.vX;
+				}
+
+				GTE.updateParticlePos(p, pXNew, pYNew);
+				p.resolved = true;
+			}
 		}
 	}
 };
