@@ -3,6 +3,7 @@ GTE.drawGame = function(){
 	GTE.drawMidline();
 	GTE.drawLevel();
 	GTE.drawMouseForces();
+	GTE.drawButtons();
 };
 
 GTE.drawMouseForces = function(){
@@ -79,6 +80,32 @@ GTE.drawBackground = function(){
     ctx.strokeStyle = '000';
     ctx.lineWidth = 3;
     ctx.stroke();
+
+    ctx.restore();
+};
+
+
+GTE.drawButtons = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	for(var i = 0; i < GTE.buttons.length; i++){
+		var button = GTE.buttons[i];
+		
+		var canvasCoordTL = GTE.internalToRenderSpace(button.box[0],button.box[1]);
+		var canvasCoordBR = GTE.internalToRenderSpace(button.box[2],button.box[3]);
+
+		ctx.beginPath();
+	    ctx.moveTo(canvasCoordTL[0]+0.5,canvasCoordTL[1]+0.5);
+	    ctx.lineTo(canvasCoordBR[0]+0.5,canvasCoordTL[1]+0.5);
+	    ctx.lineTo(canvasCoordBR[0]+0.5,canvasCoordBR[1]+0.5);
+	    ctx.lineTo(canvasCoordTL[0]+0.5,canvasCoordBR[1]+0.5);
+	    ctx.lineTo(canvasCoordTL[0]+0.5,canvasCoordTL[1]+0.5);
+	    ctx.closePath();
+	    ctx.strokeStyle = '000';
+	    ctx.lineWidth = 3;
+	    ctx.stroke();
+	}
 
     ctx.restore();
 };

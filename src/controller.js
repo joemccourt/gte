@@ -35,6 +35,11 @@ GTE.mouseDownPos = {x:0,y:0};
 
 var kongregate = parent.kongregate;
 
+GTE.buttons = [
+	{'name':'group1','box': [0.1,0.1,0.2,0.15]},
+	{'name':'group2','box': [0.8,0.1,0.9,0.15]}
+	]
+
 GTE.main = function(){
 	GTE.startSession();
 	requestNextAnimationFrame(GTE.gameLoop);
