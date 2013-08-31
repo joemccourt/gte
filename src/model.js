@@ -31,6 +31,24 @@ GTE.initModel = function(){
 	}
 };
 
+GTE.getGTEGroup = function(){
+
+	//sum = group 1 - group 2
+	var sum = 0;
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+		if(p.x < 1){
+			sum+=p.m;
+		}else{
+			sum-=p.m;
+		}
+	}
+
+	if(sum == 0){return 0;}
+	if(sum > 0){return 1;}
+	return 2;
+};
+
 GTE.createMouseForce = function(forceID,pID,x,y){
 	var p = GTE.levelState.particles[pID];
 	if(typeof p !== 'object'){return;}

@@ -17,8 +17,8 @@ GTE.drawMouseForces = function(){
 		var p = GTE.levelState.particles[f.pID];
 		if(typeof p !== 'object'){continue;}
 
-		var canvasCoordP = GTE.internalToRenderSpace(p.x/2,p.y);
-		var canvasCoordF = GTE.internalToRenderSpace(f.fX/2,f.fY);
+		var canvasCoordP = GTE.internalToRenderSpace(p.x,p.y);
+		var canvasCoordF = GTE.internalToRenderSpace(f.fX,f.fY);
 
 		ctx.beginPath();
 	    ctx.moveTo(canvasCoordF[0], canvasCoordF[1]);
@@ -36,7 +36,7 @@ GTE.drawLevel = function(){
 
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
-		var canvasCoord = GTE.internalToRenderSpace(p.x/2,p.y);
+		var canvasCoord = GTE.internalToRenderSpace(p.x,p.y);
 
 		var radius = p.r * GTE.getRenderBoxHeight();
 		
@@ -103,8 +103,10 @@ GTE.drawButtons = function(){
 	    ctx.lineTo(canvasCoordTL[0]+0.5,canvasCoordTL[1]+0.5);
 	    ctx.closePath();
 	    ctx.strokeStyle = '000';
+	    ctx.fillStyle  = 'rgba(0,0,0,0.3)';
 	    ctx.lineWidth = 3;
 	    ctx.stroke();
+	    ctx.fill();
 	}
 
     ctx.restore();
@@ -132,7 +134,11 @@ GTE.newLevelAnimation = function(time){
 	var ctx = GTE.ctx;
 	ctx.save();
 
-	ctx.fillStyle = 'rgba(0,150,0,'+(1-time/GTE.newLevelAnimationTime)+')';
+	if(GTE.lastWon){
+		ctx.fillStyle = 'rgba(0,150,0,'+(1-time/GTE.newLevelAnimationTime)+')';
+	}else{
+		ctx.fillStyle = 'rgba(150,0,0,'+(1-time/GTE.newLevelAnimationTime)+')';
+	}
 
 	//Box border
 	ctx.beginPath();

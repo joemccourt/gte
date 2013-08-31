@@ -27,6 +27,7 @@ GTE.animatingNewLevel = false;
 GTE.maxLevel = 1;
 GTE.level = GTE.maxLevel;
 GTE.levelState = {};
+GTE.lastWon = true;
 
 //Mouse state
 GTE.mouse = "up";
@@ -36,8 +37,8 @@ GTE.mouseDownPos = {x:0,y:0};
 var kongregate = parent.kongregate;
 
 GTE.buttons = [
-	{'name':'group1','box': [0.1,0.1,0.2,0.15]},
-	{'name':'group2','box': [0.8,0.1,0.9,0.15]}
+	{'name':'group1','box': [0.25,0.1,0.50,0.2]},
+	{'name':'group2','box': [1.50,0.1,1.75,0.2]}
 	]
 
 GTE.main = function(){
@@ -165,6 +166,22 @@ GTE.mousedown = function(x,y){
 	GTE.mouse = "down";
 	GTE.mouseDownPos = {x:x,y:y};
 	GTE.mouseDownIndex = -1;
+
+
+	for(var i = 0; i < GTE.buttons.length; i++){
+		var button = GTE.buttons[i];
+	
+		if(x >= button.box[0] && x <= button.box[2] && y >= button.box[1] && y <= button.box[3]){
+			if(button.name == "group1"){
+				GTE.clickGroup(1);
+				return;
+			}else{
+				GTE.clickGroup(2);
+				return;
+			}
+		}
+	}
+
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 		if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) < p.r*p.r){
@@ -183,6 +200,35 @@ GTE.mouseup = function(x,y){
 	if(GTE.mouseDownIndex >= 0){
 		GTE.destroyMouseForce(0,x,y);
 	}
+};
+
+GTE.clickGroup = function(groupID){
+
+	var winningGroup = GTE.getGTEGroup();
+
+	if(winningGroup == groupID || winningGroup == 0){
+		GTE.winLevel();
+	}else{
+		GTE.loseLevel();
+	}
+};
+
+GTE.winLevel = function(){
+	console.log("Win!");
+	GTE.lastWon = true;
+	GTE.resetLevel();
+};
+
+GTE.loseLevel = function(){
+	console.log("Lose!");
+	GTE.lastWon = false;
+	GTE.resetLevel();
+};
+
+GTE.resetLevel = function(){
+	GTE.initModel();
+	GTE.startNewLevelAnimation = true;
+	GTE.dirtyCanvas = true;
 };
 
 GTE.winGame = function(){
@@ -212,7 +258,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mouseup(2*x,y);
+		GTE.mouseup(x,y);
 	});
 
 	$(document).mousedown(function (e) {
@@ -225,7 +271,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 		
-		GTE.mousedown(2*x,y);
+		GTE.mousedown(x,y);
 	});
 
 	$(document).mousemove(function (e) {
@@ -238,7 +284,7 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mousemove(2*x,y);
+		GTE.mousemove(x,y);
 	});
 
 	$(document).keydown(function (e) {
@@ -255,13 +301,13 @@ GTE.initEvents = function(){
 
 // *** Helper functions *** //
 GTE.internalToRenderSpace = function(x,y){
-	var xRender = x * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
+	var xRender = x / 2 * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
 	var yRender = y * GTE.getRenderBoxHeight() + GTE.renderBox[1];
 	return [xRender,yRender];
 };
 
 GTE.renderToInternalSpace = function(x,y){
-	var xInternal = (x - GTE.renderBox[0]) / GTE.getRenderBoxWidth();
+	var xInternal = 2*(x - GTE.renderBox[0]) / GTE.getRenderBoxWidth();
 	var yInternal = (y - GTE.renderBox[1]) / GTE.getRenderBoxHeight();
 	return [xInternal,yInternal];
 };
