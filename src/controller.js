@@ -8,7 +8,9 @@ GTE.startTime = (new Date()).getTime();
 GTE.lastFrameTime = 0;
 GTE.frameRenderTime = 0;
 GTE.startNewLevelAnimationTime = 0;
+GTE.startEndLevelAnimationTime = 0;
 GTE.newLevelAnimationTime = 500;
+GTE.endLevelAnimationTime = 2000;
 GTE.UIUpdateTime = 10;
 GTE.lastUIUpdateTime = 0;
 
@@ -22,12 +24,15 @@ GTE.gameInProgress = false;
 GTE.wonGame = false;
 GTE.toSaveGame = true;
 GTE.startNewLevelAnimation = false;
+GTE.startEndLevelAnimation = false;
 GTE.animatingNewLevel = false;
+GTE.animatingEndLevel = false;
 
 GTE.maxLevel = 1;
 GTE.level = GTE.maxLevel;
 GTE.levelState = {};
 GTE.lastWon = true;
+GTE.gameDifficulty = 0;
 
 //Mouse state
 GTE.mouse = "up";
@@ -51,8 +56,7 @@ window.onload = GTE.main;
 GTE.gameLoop = function(time){
 	var ctx = GTE.ctx;
 
-	if(GTE.lastFrameTime - GTE.lastFrameTime > 5000){GTE.lastFrameTime = time-100;}
-	GTE.updateModel(time - GTE.lastFrameTime);	
+	if(time - GTE.lastFrameTime > 5000){GTE.lastFrameTime = time-100;}
 
 	if(GTE.startNewLevelAnimation){
 		GTE.startNewLevelAnimation = false;
@@ -60,9 +64,24 @@ GTE.gameLoop = function(time){
 		GTE.startNewLevelAnimationTime = time;
 		GTE.dirtyCanvas = true;
 	}
-
 	if(GTE.animatingNewLevel && time - GTE.startNewLevelAnimationTime > GTE.newLevelAnimationTime){
 		GTE.animatingNewLevel = false;
+	}
+
+
+	if(GTE.startEndLevelAnimation){
+		GTE.startEndLevelAnimation = false;
+		GTE.animatingEndLevel = true;
+		GTE.startEndLevelAnimationTime = time;
+		GTE.dirtyCanvas = true;
+	}
+	if(GTE.animatingEndLevel && time - GTE.startEndLevelAnimationTime > GTE.endLevelAnimationTime){
+		GTE.animatingEndLevel = false;
+		GTE.startNewLevel();
+	}
+
+	if(!GTE.animatingEndLevel){
+		GTE.updateModel(time - GTE.lastFrameTime);
 	}
 
 	if(GTE.dirtyCanvas){
@@ -73,6 +92,9 @@ GTE.gameLoop = function(time){
 		//New level animation
 		if(GTE.animatingNewLevel){
 			GTE.newLevelAnimation(time - GTE.startNewLevelAnimationTime);
+			GTE.dirtyCanvas = true;
+		}else if(GTE.animatingEndLevel){
+			GTE.endLevelAnimation(time - GTE.startEndLevelAnimationTime);
 			GTE.dirtyCanvas = true;
 		}
 
@@ -216,18 +238,25 @@ GTE.clickGroup = function(groupID){
 GTE.winLevel = function(){
 	console.log("Win!");
 	GTE.lastWon = true;
-	GTE.resetLevel();
+	GTE.gameDifficulty += 1;
+	GTE.endLevel();
 };
 
 GTE.loseLevel = function(){
 	console.log("Lose!");
+	GTE.gameDifficulty -= 2;
+	if(GTE.gameDifficulty < 0){GTE.gameDifficulty = 0;}
 	GTE.lastWon = false;
-	GTE.resetLevel();
+	GTE.endLevel();
 };
 
-GTE.resetLevel = function(){
+GTE.endLevel = function(){
+	GTE.startEndLevelAnimation = true;
+	GTE.dirtyCanvas = true;
+};
+
+GTE.startNewLevel = function(){	
 	GTE.initModel();
-	GTE.startNewLevelAnimation = true;
 	GTE.dirtyCanvas = true;
 };
 
@@ -296,6 +325,12 @@ GTE.initEvents = function(){
 		// 38 - up
 		// 39 - right
 		// 40 - down
+		if(e.which == 37){
+			GTE.clickGroup(1);
+		}else if(e.which == 39){
+			GTE.clickGroup(2);
+		}
+
 	});
 };
 

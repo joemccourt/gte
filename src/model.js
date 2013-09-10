@@ -1,5 +1,10 @@
 GTE.initModel = function(){
 
+	var v0 = (1+GTE.gameDifficulty) * 0.003;
+	var N = 2 + GTE.gameDifficulty;
+	GTE.levelViscosity = 1 / (1+GTE.gameDifficulty);
+	GTE.CoeffRestitution = 0.7*(1 - 1 / (1+GTE.gameDifficulty));
+
 	GTE.levelState = {
 		levelID: GTE.level,
 		particles: [],
@@ -11,15 +16,18 @@ GTE.initModel = function(){
 	// y: [0,1]
 
 	//Tmp generate particles
-	for(var i = 0; i < 20; i++){
+	for(var i = 0; i < N; i++){
 		
 		do{
+			var angle = Math.random() * Math.PI * 2;
+			var vX = v0 * Math.cos(angle);
+			var vY = v0 * Math.sin(angle);
 			var particle = {
 				id: i,
 				x: 2*Math.random(),
 				y:   Math.random(),
-				vX: 0,
-				vY: 0,
+				vX: vX,
+				vY: vY,
 				m: 1,
 				r: 0.05,
 				resolved: false
@@ -154,12 +162,12 @@ GTE.updateModel = function(deltaTime){
 			}
 		}
 
-		//Viscocity force
+		//Viscosity force
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];
 
-			p.vX -= dT * (0.3 + Math.abs(p.vX))*p.vX;
-			p.vY -= dT * (0.3 + Math.abs(p.vY))*p.vY;
+			p.vX -= dT * GTE.levelViscosity * (0.3 + Math.abs(p.vX))*p.vX;
+			p.vY -= dT * GTE.levelViscosity * (0.3 + Math.abs(p.vY))*p.vY;
 		}
 
 		//Update positions
@@ -173,6 +181,72 @@ GTE.updateModel = function(deltaTime){
 				//Collision check
 				var pXNew = p.x + dT*p.vX;
 				var pYNew = p.y + dT*p.vY;
+
+				var pA = p;
+				var vxA = pA.vX;
+				var vyA = pA.vY;
+
+				var xA  = pA.x + dT*vxA;
+				var yA  = pA.y + dT*vyA;
+
+				var mA  = pA.m;
+				var rA  = pA.r;
+
+				//Inefficient TODO: use AABB tree
+				for(var j = i+1; j < GTE.levelState.particles.length; j++){
+					var pB = GTE.levelState.particles[j];
+
+					var vxB = pB.vX;
+					var vyB = pB.vY;
+					var mB  = pB.m;
+					var rB  = pB.r;
+
+					var xB = pB.x + dT*vxB;
+					var yB = pB.y + dT*vyB;
+
+					var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
+					var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
+
+					if(distNow < rA + rB){
+
+						var xNorm = (xB-xA) / dist;
+						var yNorm = (yB-yA) / dist;
+
+						//Penalty forces
+						var k = 0.03;
+						var force = -(dist - (rA + rB)) / (dist + 0.0001) * mB * mA;
+						pA.vX -= k * force * xNorm / mA;
+						pA.vY -= k * force * yNorm / mA;
+						pB.vX += k * force * xNorm / mB;
+						pB.vY += k * force * yNorm / mB;
+					}else if(dist < rA + rB){
+
+						//Collision detected
+						var Cr = GTE.CoeffRestitution;
+
+						// Proper collision reolution
+						var xNorm = (xB-xA) / dist;
+						var yNorm = (yB-yA) / dist;
+
+						var xTan =  yNorm;
+						var yTan = -xNorm;
+
+						var vA = vxA * xNorm + vyA * yNorm;
+						var vB = vxB * xNorm + vyB * yNorm;
+
+						var vAT = vxA * xTan + vyA * yTan;
+						var vBT = vxB * xTan + vyB * yTan;
+
+						var vANew = (Cr * mB * (vB - vA) + mB * vB + mA * vA) / (mA + mB);
+						var vBNew = (Cr * mA * (vA - vB) + mB * vB + mA * vA) / (mA + mB);
+
+						pA.vX = vANew * xNorm + vAT * xTan;
+						pA.vY = vANew * yNorm + vAT * yTan;
+						pB.vX = vBNew * xNorm + vBT * xTan;
+						pB.vY = vBNew * yNorm + vBT * yTan;
+					}
+				}
+
 
 				//Left box collision
 				if(pXNew - p.r < 0){
