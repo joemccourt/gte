@@ -14,7 +14,16 @@ GTE.drawMouseForces = function(){
 	for(var forceID = 0; forceID < 10; forceID++){
 		var f = GTE.levelState.mouseForces[forceID];
 		if(typeof f !== 'object'){continue;}
-		var p = GTE.levelState.particles[f.pID];
+		
+		var found = false;
+		var p;
+		for(var j = 0; j < GTE.levelState.particles.length; j++){
+			p = GTE.levelState.particles[j];
+			if(p.id == f.pID){found = true; break;}
+		}
+		if(!found){continue;}
+
+
 		if(typeof p !== 'object'){continue;}
 
 		var canvasCoordP = GTE.internalToRenderSpace(p.x,p.y);
@@ -40,7 +49,11 @@ GTE.drawLevel = function(){
 
 		var radius = p.r * GTE.getRenderBoxHeight();
 		
-		var color = [0,0,255];
+		var color = [0,0,200];
+		if(p.m < 0){
+			color = [200,0,0];
+		}
+
 		var colorStr = GTE.arrayColorToString(color);
 
 		ctx.beginPath();
@@ -159,6 +172,8 @@ GTE.endLevelAnimation = function(time){
 
 	var sumL = 0;
 	var sumR = 0;
+	var sumLAbs = 0;
+	var sumRAbs = 0;
 	var firstRender = true;
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
@@ -170,8 +185,10 @@ GTE.endLevelAnimation = function(time){
 		}
 
 		if(p.x < 1){
+			sumLAbs+=Math.abs(p.m);
 			sumL+=p.m;
 		}else{
+			sumRAbs+=Math.abs(p.m);
 			sumR+=p.m;
 		}
 	}
@@ -180,14 +197,18 @@ GTE.endLevelAnimation = function(time){
 	var x2 = GTE.renderBox[0] + 3*(GTE.renderBox[2] - GTE.renderBox[0])/4;
 	var y1 = GTE.renderBox[1] +   (GTE.renderBox[3] - GTE.renderBox[1])/2;
 	var y2 = GTE.renderBox[1] +   (GTE.renderBox[3] - GTE.renderBox[1])/2;
-    
-    ctx.fillStyle = 'rgb(255,255,255)';
-    ctx.font = "72px Verdana";
-    ctx.fillText(sumL,x1,y1);
-    ctx.fillText(sumR,x2,y2);
 
-    //Right side
-	if(sumL >= sumR){
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.font = "72px Verdana";
+
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+
+	ctx.fillText(sumL,x1,y1);
+	ctx.fillText(sumR,x2,y2);
+
+	//Right side
+if(sumL >= sumR){
 		ctx.fillStyle = 'rgba(0,150,0,'+(time/GTE.endLevelAnimationTime)+')';
 	}else{
 		ctx.fillStyle = 'rgba(150,0,0,'+(time/GTE.endLevelAnimationTime)+')';
@@ -222,20 +243,23 @@ GTE.endLevelAnimation = function(time){
     ctx.restore();
 
     var dT = time/GTE.endLevelAnimationTime;
+
+    //Special cases for 1 and 2 for now
     var goals = [
-    				[{x:0.5,y:0.5}],
-    				[{x:0.5,y:0.5}], //
-    				[{x:0.4,y:0.5},{x:0.6,y:0.5}],
-    				[{x:0.4,y:0.6},{x:0.6,y:0.6},{x:0.5,y:0.4}]
+    				[{x:0.5,y:0.6}],
+    				[{x:0.5,y:0.65}], //
+    				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
     			];
-	var cL,cR;
-    if(sumL < goals.length){
-    	cL = goals[sumL];
+
+	var cL,cR,r;
+	r = 0.15 * Math.sqrt(sumLAbs/3);
+	r = r > 0.45 ? r = 0.45 : r;
+    if(sumLAbs < goals.length){
+    	cL = goals[sumLAbs];
     }else{
     	cL = [];
-		for(var i = 0; i < sumL; i++){
-			var r = 0.3;
-			var angle = i / sumL * 2 * Math.PI;
+		for(var i = 0; i < sumLAbs; i++){
+			var angle = i / sumLAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cL[i] = {
 				x:0.5+r*Math.cos(angle),
 				y:0.5+r*Math.sin(angle)
@@ -243,13 +267,14 @@ GTE.endLevelAnimation = function(time){
 		}
     }
 
-    if(sumR < goals.length){
-    	cR = goals[sumR];
+	r = 0.15 * Math.sqrt(sumRAbs/3);
+	r = r > 0.45 ? r = 0.45 : r;
+    if(sumRAbs < goals.length){
+    	cR = goals[sumRAbs];
     }else{
     	cR = [];
-		for(var i = 0; i < sumR; i++){
-			var r = 0.3;
-			var angle = i / sumR * 2 * Math.PI;
+		for(var i = 0; i < sumRAbs; i++){
+			var angle = i / sumRAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cR[i] = {
 				x:0.5+r*Math.cos(angle),
 				y:0.5+r*Math.sin(angle)
@@ -258,14 +283,14 @@ GTE.endLevelAnimation = function(time){
     }
 
 
-	    //Find closest particles
+	//Find closest particles
 	if(firstRender){
 	    var iL = 0;
 	    var iR = 0;
 	    for(var j = 0; j < cL.length; j++){
 	    	var c = cL[j];
 	    	var best = 100;
-	    	var bestI = -1;
+	    	var bestI = 0;
 		  	for(var i = 0; i < GTE.levelState.particles.length; i++){
 				var p = GTE.levelState.particles[i];
 				if(p.x < 1){
@@ -277,15 +302,13 @@ GTE.endLevelAnimation = function(time){
 				}
 			}
 
-			if(bestI >= 0){
-				GTE.levelState.particles[bestI].iE = j;
-			}
+			GTE.levelState.particles[bestI].iE = j;
 	    }
 
 	    for(var j = 0; j < cR.length; j++){
 	    	var c = cR[j];
 	    	var best = 100;
-	    	var bestI = -1;
+	    	var bestI = 0;
 		  	for(var i = 0; i < GTE.levelState.particles.length; i++){
 				var p = GTE.levelState.particles[i];
 				if(p.x >= 1){
@@ -296,9 +319,7 @@ GTE.endLevelAnimation = function(time){
 					}
 				}
 			}
-			if(bestI >= 0){
-				GTE.levelState.particles[bestI].iE = j;
-			}
+			GTE.levelState.particles[bestI].iE = j;
 	    }
 	}
 

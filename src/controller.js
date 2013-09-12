@@ -27,9 +27,10 @@ GTE.startNewLevelAnimation = false;
 GTE.startEndLevelAnimation = false;
 GTE.animatingNewLevel = false;
 GTE.animatingEndLevel = false;
+GTE.playingLevel = true;
 
-GTE.maxLevel = 1;
-GTE.level = GTE.maxLevel;
+GTE.maxLevel = 100;
+GTE.level = 1;
 GTE.levelState = {};
 GTE.lastWon = true;
 GTE.gameDifficulty = 0;
@@ -162,7 +163,7 @@ GTE.startSession = function(){
 
 	GTE.renderBox = [20,20,w-20,h-20];
 	
-	GTE.initModel();
+	GTE.startNewLevel();
 
 	GTE.loadGameState();
 
@@ -210,7 +211,7 @@ GTE.mousedown = function(x,y){
 			GTE.mouseDownIndex = p.id;
 
 			//idForces for possible multitouch ability in future
-			GTE.createMouseForce(0,p.id,x,y);
+			GTE.createMouseForce(0,i,x,y);
 			break;
 		}
 	}
@@ -226,19 +227,25 @@ GTE.mouseup = function(x,y){
 
 GTE.clickGroup = function(groupID){
 
-	var winningGroup = GTE.getGTEGroup();
+	if(GTE.playingLevel){
+		var winningGroup = GTE.getGTEGroup();
 
-	if(winningGroup == groupID || winningGroup == 0){
-		GTE.winLevel();
-	}else{
-		GTE.loseLevel();
+		if(winningGroup == groupID || winningGroup == 0){
+			GTE.winLevel();
+		}else{
+			GTE.loseLevel();
+		}
 	}
 };
 
 GTE.winLevel = function(){
 	console.log("Win!");
 	GTE.lastWon = true;
-	GTE.gameDifficulty += 1;
+	GTE.gameDifficulty += 4;
+	//if(GTE.gameDifficulty > 4){
+	//	GTE.level++;
+	//	GTE.gameDifficulty = 0;
+	//}
 	GTE.endLevel();
 };
 
@@ -251,11 +258,13 @@ GTE.loseLevel = function(){
 };
 
 GTE.endLevel = function(){
+	GTE.playingLevel = false;
 	GTE.startEndLevelAnimation = true;
 	GTE.dirtyCanvas = true;
 };
 
 GTE.startNewLevel = function(){	
+	GTE.playingLevel = true;
 	GTE.initModel();
 	GTE.dirtyCanvas = true;
 };
