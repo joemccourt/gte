@@ -1,8 +1,15 @@
 GTE.initModel = function(){
-	var v0 = (1+GTE.gameDifficulty) * 0.003;
+
+	GTE.levelSettings = {
+		'viscosity' : 1,    //1 / (1+GTE.gameDifficulty);
+		'CoeffRestitution' : 0.6, //0.7*(1 - 1 / (1+GTE.gameDifficulty));
+		'annihilate' : false,
+		'transfer' : true
+	};
+
+
+	var v0 = 0;//(1+GTE.gameDifficulty) * 0.003;
 	var N = 2 + GTE.gameDifficulty;
-	GTE.levelViscosity = 1 / (1+GTE.gameDifficulty);
-	GTE.CoeffRestitution = 0.7*(1 - 1 / (1+GTE.gameDifficulty));
 
 	console.log("Level: " + GTE.level + ", Difficulty: " + GTE.gameDifficulty);
 	GTE.levelState = {
@@ -29,7 +36,7 @@ GTE.initModel = function(){
 				y:   Math.random(),
 				vX: vX,
 				vY: vY,
-				m: 1*sign,
+				m: 1*sign*Math.random(),
 				r: 0.05,
 				resolved: false
 			};
@@ -188,8 +195,8 @@ GTE.updateModel = function(deltaTime){
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];
 
-			p.vX -= dT * GTE.levelViscosity * (0.3 + Math.abs(p.vX))*p.vX;
-			p.vY -= dT * GTE.levelViscosity * (0.3 + Math.abs(p.vY))*p.vY;
+			p.vX -= dT * GTE.levelSettings.viscosity * (0.3 + Math.abs(p.vX))*p.vX;
+			p.vY -= dT * GTE.levelSettings.viscosity * (0.3 + Math.abs(p.vY))*p.vY;
 		}
 
 		//Update positions
@@ -211,7 +218,7 @@ GTE.updateModel = function(deltaTime){
 				var xA  = pA.x + dT*vxA;
 				var yA  = pA.y + dT*vyA;
 
-				var mA  = Math.abs(pA.m);
+				var mA  = pA.m;
 				var rA  = pA.r;
 
 				var toRemove = false;
@@ -223,7 +230,7 @@ GTE.updateModel = function(deltaTime){
 					if(pA.x < 1 && pB.x > 1 || pA.x > 1 && pB.x < 1){continue;}
 					var vxB = pB.vX;
 					var vyB = pB.vY;
-					var mB  = Math.abs(pB.m);
+					var mB  = pB.m;
 					var rB  = pB.r;
 
 					var xB = pB.x + dT*vxB;
@@ -233,9 +240,14 @@ GTE.updateModel = function(deltaTime){
 					var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
 
 					if(dist < rA + rB && pA.m != pB.m){
-						GTE.levelState.particles.splice(j,1);
-						toRemove = true;
-						break;
+						if(GTE.levelSettings.annihilate){
+							GTE.levelState.particles.splice(j,1);
+							toRemove = true;
+							break;
+						}else{
+							mA = Math.abs(mA);
+							mB = Math.abs(mB);
+						}
 					}
 
 					if(distNow < rA + rB){
@@ -252,7 +264,7 @@ GTE.updateModel = function(deltaTime){
 					}else if(dist < rA + rB){
 
 						//Collision detected
-						var Cr = GTE.CoeffRestitution;
+						var Cr = GTE.levelSettings.CoeffRestitution;
 
 						// Proper collision reolution
 						var xNorm = (xB-xA) / dist;
@@ -279,59 +291,57 @@ GTE.updateModel = function(deltaTime){
 
 				if(toRemove){
 					GTE.levelState.particles.splice(i,1);
+					GTE.dirtyCanvas = true;
 					break;
 				}
 
 				//Left box collision
 				if(pXNew - p.r < 0){
 					pXNew = p.r - pXNew + p.r;
-					p.vX = -p.vX;
+					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Right box collision
 				if(pXNew + p.r > 2){
 					pXNew = 2-(p.r + pXNew - 2) - p.r;
-					p.vX = -p.vX;
+					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Top box collision
 				if(pYNew - p.r < 0){
 					pYNew = p.r - pYNew + p.r;
-					p.vY = -p.vY;
+					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Bottom box collision
 				if(pYNew + p.r > 1){
 					pYNew = 1-(p.r + pYNew-1) - p.r;
-					p.vY = -p.vY;
+					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
-				//Left to Right collision
-				if(p.x < 1 && pXNew > 1){
-					//p.vX = -p.vX;
+				if(GTE.levelSettings.transfer){
+					if(p.x < 1 && pXNew > 1){
+						p.m *= -1;
+					}else if(p.x > 1 && pXNew < 1){
+						p.m *= -1;
+					}
+				}else{
 
-					// var newP = GTE.cloneParticle(p);
-					// newP.m = -p.m;
-					// newP.x = 1-(p.r + pXNew - 1) - p.r;
-					// newP.vX = -p.vX;
+					//Left to Right collision
+					if(p.x < 1 && pXNew+p.r > 1){
+						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
-					p.m = -p.m;
-
-					// GTE.levelState.particles.push(newP);
-				} else 
-				
-				//Right to Left collision
-				if(p.x > 1 && pXNew < 1){
-
-					p.m = -p.m;
-					// var newP = GTE.cloneParticle(p);
-					// newP.m = -p.m;
-					// newP.x = 1+(p.r - pXNew + 1) + p.r;
-					// newP.vX = -p.vX;
-
-					// pXNew += p.r;
-
-					// GTE.levelState.particles.push(newP);
+						// newP.m = -p.m;
+						pXNew = 1-(p.r + pXNew - 1) - p.r;
+						// newP.vX = -p.vX;
+					} else 
+					
+					//Right to Left collision
+					if(p.x > 1 && pXNew-p.r < 1){
+						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
+						// newP.m = -p.m;
+						pXNew = 1+(p.r - pXNew + 1) + p.r;
+					}
 				}
 
 				GTE.updateParticlePos(p, pXNew, pYNew);

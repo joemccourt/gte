@@ -14,7 +14,7 @@ GTE.drawMouseForces = function(){
 	for(var forceID = 0; forceID < 10; forceID++){
 		var f = GTE.levelState.mouseForces[forceID];
 		if(typeof f !== 'object'){continue;}
-		
+
 		var found = false;
 		var p;
 		for(var j = 0; j < GTE.levelState.particles.length; j++){
@@ -57,11 +57,23 @@ GTE.drawLevel = function(){
 		var colorStr = GTE.arrayColorToString(color);
 
 		ctx.beginPath();
-		ctx.arc(canvasCoord[0], canvasCoord[1], radius, 0, 2 * Math.PI, false);
+		ctx.arc(canvasCoord[0], canvasCoord[1], radius * Math.sqrt(Math.abs(p.m)), 0, 2 * Math.PI, false);
 		ctx.closePath();
 
 		ctx.fillStyle = colorStr;
 		ctx.fill();
+
+		ctx.beginPath();
+		ctx.arc(canvasCoord[0], canvasCoord[1], radius, 0, 2 * Math.PI, false);
+		ctx.closePath();
+
+		if(!GTE.levelSettings.annihilate){
+			ctx.lineWidth = 3;
+		}else{
+			ctx.lineWidth = 1;	
+		}
+		
+		ctx.stroke();
 	}
 
 	ctx.restore();
@@ -120,6 +132,15 @@ GTE.drawButtons = function(){
 	    ctx.lineWidth = 3;
 	    ctx.stroke();
 	    ctx.fill();
+
+
+		ctx.fillStyle = 'rgb(255,255,255)';
+		ctx.font = "36px Verdana";
+
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'bottom';
+
+	    ctx.fillText('GTE',(canvasCoordTL[0]+canvasCoordBR[0])/2,canvasCoordBR[1]);
 	}
 
     ctx.restore();
@@ -131,14 +152,18 @@ GTE.drawMidline = function(){
 
 	var midX = (GTE.renderBox[0] + GTE.renderBox[2])/2+0.5|0;
 
-	ctx.beginPath();
-    ctx.moveTo(midX+0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(midX+0.5,GTE.renderBox[3]+0.5);
+	if(GTE.levelSettings.transfer){
+		ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+	}else{
+		ctx.strokeStyle = '000';
+	}
 
-    ctx.closePath();
-    ctx.strokeStyle = '000';
-    ctx.lineWidth = 3;
-    ctx.stroke();
+	ctx.beginPath();
+	ctx.moveTo(midX+0.5,GTE.renderBox[1]-0.5);
+	ctx.lineTo(midX+0.5,GTE.renderBox[3]+0.5);
+	ctx.closePath();
+	ctx.lineWidth = 3;
+	ctx.stroke();
 
     ctx.restore();
 };
@@ -185,10 +210,10 @@ GTE.endLevelAnimation = function(time){
 		}
 
 		if(p.x < 1){
-			sumLAbs+=Math.abs(p.m);
+			sumLAbs++;
 			sumL+=p.m;
 		}else{
-			sumRAbs+=Math.abs(p.m);
+			sumRAbs++;
 			sumR+=p.m;
 		}
 	}
@@ -204,8 +229,8 @@ GTE.endLevelAnimation = function(time){
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
-	ctx.fillText(sumL,x1,y1);
-	ctx.fillText(sumR,x2,y2);
+	ctx.fillText(sumL.toFixed(2),x1,y1);
+	ctx.fillText(sumR.toFixed(2),x2,y2);
 
 	//Right side
 if(sumL >= sumR){
@@ -254,10 +279,10 @@ if(sumL >= sumR){
 	var cL,cR,r;
 	r = 0.15 * Math.sqrt(sumLAbs/3);
 	r = r > 0.45 ? r = 0.45 : r;
-    if(sumLAbs < goals.length){
+    cL = [];
+    if(sumLAbs > 0 && sumLAbs <= 2){
     	cL = goals[sumLAbs];
     }else{
-    	cL = [];
 		for(var i = 0; i < sumLAbs; i++){
 			var angle = i / sumLAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cL[i] = {
@@ -269,10 +294,10 @@ if(sumL >= sumR){
 
 	r = 0.15 * Math.sqrt(sumRAbs/3);
 	r = r > 0.45 ? r = 0.45 : r;
-    if(sumRAbs < goals.length){
+    cR = [];
+    if(sumRAbs > 0 && sumRAbs <= 2){
     	cR = goals[sumRAbs];
     }else{
-    	cR = [];
 		for(var i = 0; i < sumRAbs; i++){
 			var angle = i / sumRAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cR[i] = {
