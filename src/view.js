@@ -56,24 +56,59 @@ GTE.drawLevel = function(){
 
 		var colorStr = GTE.arrayColorToString(color);
 
-		ctx.beginPath();
-		ctx.arc(canvasCoord[0], canvasCoord[1], radius * Math.sqrt(Math.abs(p.m)), 0, 2 * Math.PI, false);
-		ctx.closePath();
+		var absMass = Math.abs(p.m);
+		var discLevel = 0;
 
-		ctx.fillStyle = colorStr;
-		ctx.fill();
+		while(absMass > 0){
+			var drawMass = absMass >= 1 ? 1 : absMass;
+			absMass -= drawMass;
 
-		ctx.beginPath();
-		ctx.arc(canvasCoord[0], canvasCoord[1], radius, 0, 2 * Math.PI, false);
-		ctx.closePath();
+			var discX = canvasCoord[0]-discLevel*4;
+			var discY = canvasCoord[1]-discLevel*4;
 
-		if(!GTE.levelSettings.annihilate){
-			ctx.lineWidth = 3;
-		}else{
-			ctx.lineWidth = 1;	
+			ctx.beginPath();
+			ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
+			ctx.closePath();
+
+			ctx.fillStyle = colorStr;
+
+			if(discLevel > 0){
+				// ctx.shadowColor = 'rgba(0,0,0,0.25)';
+				ctx.shadowBlur = 10;
+				ctx.shadowOffsetX = 3;
+				ctx.shadowOffsetY = 3;
+				
+				if(drawMass < 1){
+					// ctx.shadowColor = 'rgba(0,0,0,0.75)';
+				}
+			}
+
+
+			ctx.fill();
+
+			//Surrounding circle
+			// ctx.shadowColor = 'rgba(0,0,0,0)';
+			ctx.fillStyle = 'rgb(0,0,0)';
+
+			ctx.beginPath();
+			if(discLevel == 0){
+				ctx.arc(discX, discY, radius, 0, 2 * Math.PI, false);
+			}else{
+				ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
+			}
+			ctx.closePath();
+
+			if(!GTE.levelSettings.annihilate){
+				ctx.lineWidth = 3;
+			}else{
+				ctx.lineWidth = 1;	
+			}
+			
+			ctx.stroke();
+
+			discLevel++;
 		}
-		
-		ctx.stroke();
+
 	}
 
 	ctx.restore();

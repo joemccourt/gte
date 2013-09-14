@@ -4,7 +4,10 @@ GTE.initModel = function(){
 		'viscosity' : 1,    //1 / (1+GTE.gameDifficulty);
 		'CoeffRestitution' : 0.6, //0.7*(1 - 1 / (1+GTE.gameDifficulty));
 		'annihilate' : false,
-		'transfer' : true
+		'combine' : true,
+		'transfer' : false,
+		'massSigma' : 0.001,
+		'massMax' : 5
 	};
 
 
@@ -36,7 +39,7 @@ GTE.initModel = function(){
 				y:   Math.random(),
 				vX: vX,
 				vY: vY,
-				m: 1*sign*Math.random(),
+				m: GTE.levelSettings.massMax*sign*Math.random(),
 				r: 0.05,
 				resolved: false
 			};
@@ -239,10 +242,47 @@ GTE.updateModel = function(deltaTime){
 					var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
 					var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
 
-					if(dist < rA + rB && pA.m != pB.m){
-						if(GTE.levelSettings.annihilate){
-							GTE.levelState.particles.splice(j,1);
-							toRemove = true;
+					if(dist < rA + rB){
+						if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
+
+							var massTransfer = pA.m;
+							if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
+								massTransfer = Math.abs(pA.m+pB.m) - GTE.levelSettings.massMax;
+
+								if(pB.m > 0){
+									massTransfer = pA.m - massTransfer;
+								}else{
+									massTransfer = pA.m + massTransfer;	
+								}
+							}else{
+								toRemove = true;
+							}
+
+							if(Math.abs(pB.m - massTransfer) < GTE.levelSettings.massSigma){
+								GTE.levelState.particles.splice(j,1);
+							}else{
+								var absA = Math.abs(massTransfer);
+								var absB = Math.abs(pB.m);
+								var absMass = absA+absB;
+								pB.vX = (pB.vX*absB+pA.vX*absA)/absMass;
+								pB.vY = (pB.vY*absB+pA.vY*absA)/absMass;
+
+								pB.x = (pB.x*absB+pA.x*absA)/absMass;
+								pB.y = (pB.y*absB+pA.y*absA)/absMass;
+
+								pB.m += massTransfer;
+								pA.m -= massTransfer;
+
+								if(toRemove){
+									for(var k = 0; k < GTE.levelState.mouseForces.length; k++){
+										var f = GTE.levelState.mouseForces[k];
+										if(typeof f === 'object' && f.pID == pA.id){
+											f.pID = pB.id;
+										}
+									}
+								}
+							}
+
 							break;
 						}else{
 							mA = Math.abs(mA);

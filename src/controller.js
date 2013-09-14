@@ -33,7 +33,7 @@ GTE.maxLevel = 100;
 GTE.level = 1;
 GTE.levelState = {};
 GTE.lastWon = true;
-GTE.gameDifficulty = 0;
+GTE.gameDifficulty = 30;
 
 //Mouse state
 GTE.mouse = "up";
