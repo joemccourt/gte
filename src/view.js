@@ -1,10 +1,53 @@
 GTE.drawGame = function(){
-	GTE.drawBackground();
-	GTE.drawMidline();
-	GTE.drawLevel();
-	GTE.drawMouseForces();
-	GTE.drawButtons();
+
+	if(GTE.boardGameView){
+		GTE.drawBoredGame();
+	}else{
+		GTE.drawBackground();
+		GTE.drawMidline();
+		GTE.drawLevel();
+		GTE.drawMouseForces();
+		GTE.drawButtons();
+	}
 };
+
+GTE.drawBoredGame = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+	ctx.clearRect(0,0,GTE.canvas.width,GTE.canvas.height);
+
+	//Box border
+	ctx.beginPath();
+	ctx.moveTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
+	ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[3]+0.5);
+	ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[3]+0.5);
+	ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
+	ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
+	ctx.closePath();
+	ctx.strokeStyle = '000';
+	ctx.lineWidth = 3;
+	ctx.stroke();
+
+	ctx.restore();
+	
+	ctx.save();
+	
+
+	ctx.transform(1,0,0,1,GTE.getRenderBoxWidth()*GTE.drawBoredGameTransform[3],GTE.getRenderBoxHeight()*GTE.drawBoredGameTransform[7]);
+
+	var grd;
+	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
+	grd.addColorStop(0, 'rgb(50,150,50)');
+	grd.addColorStop(1, 'rgb(29,100,50)');
+
+	ctx.fillStyle = grd;
+	ctx.fillRect(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight());		
+
+    ctx.restore();
+
+};
+
+
 
 GTE.drawMouseForces = function(){
 
@@ -38,6 +81,8 @@ GTE.drawMouseForces = function(){
 	}
 	ctx.restore();
 };
+
+GTE.sign = function(x){return x < 0 ? -1 : x > 0 ? 1 : 0;}
 
 GTE.drawLevel = function(){
 	var ctx = GTE.ctx;
@@ -170,12 +215,12 @@ GTE.drawButtons = function(){
 
 
 		ctx.fillStyle = 'rgb(255,255,255)';
-		ctx.font = "36px Verdana";
+		ctx.font = "32px Verdana";
 
 		ctx.textAlign = 'center';
-		ctx.textBaseline = 'bottom';
+		ctx.textBaseline = 'baseline';
 
-	    ctx.fillText('GTE',(canvasCoordTL[0]+canvasCoordBR[0])/2,canvasCoordBR[1]);
+	    ctx.fillText('GTE',(canvasCoordTL[0]+canvasCoordBR[0])/2,canvasCoordTL[1] + (canvasCoordBR[1]-canvasCoordTL[1])*0.75);
 	}
 
     ctx.restore();
@@ -264,8 +309,22 @@ GTE.endLevelAnimation = function(time){
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
-	ctx.fillText(sumL.toFixed(2),x1,y1);
-	ctx.fillText(sumR.toFixed(2),x2,y2);
+	var leftFormat, rightFormat;
+
+	if(Math.abs(sumL - Math.round(sumL)) <= 0.005){
+		leftFormat = Math.round(sumL);
+	}else{
+		leftFormat = sumL.toFixed(2);
+	}
+
+	if(Math.abs(sumR - Math.round(sumR)) <= 0.005){
+		rightFormat = Math.round(sumR);
+	}else{
+		rightFormat = sumR.toFixed(2);
+	}
+
+	ctx.fillText(leftFormat,x1,y1);
+	ctx.fillText(rightFormat,x2,y2);
 
 	//Right side
 if(sumL >= sumR){
@@ -403,3 +462,21 @@ if(sumL >= sumR){
 GTE.updateUI = function(){
 	$('#renderTime').text("Frame Render Time: "+(GTE.frameRenderTime+0.5|0)+"ms");
 };
+
+GTE.updateHUD = function(){
+	var outText = "";
+	outText += "Level: " + GTE.level + " ";
+	outText += "Stage: " + GTE.stage + "/" + GTE.levelSettings['rounds'] + " ";
+	outText += "Record: " +  GTE.stagesWon + "-" + GTE.stagesLost + " ";
+
+	if(GTE.stagesWon < GTE.levelSettings['starReqs'][0]){
+		outText += "(need " + (GTE.levelSettings['starReqs'][0] - GTE.stagesWon)+ " more to pass)" + " ";
+	}else if(GTE.stagesWon < GTE.levelSettings['starReqs'][1]){
+		outText += "(need " + (GTE.levelSettings['starReqs'][1] - GTE.stagesWon)+ " more to get two stars)" + " ";
+	}else if(GTE.stagesWon < GTE.levelSettings['starReqs'][2]){
+		outText += "(need " + (GTE.levelSettings['starReqs'][2] - GTE.stagesWon)+ " more to get three stars)" + " ";
+	}
+
+	$('#hud').text(outText);
+};
+

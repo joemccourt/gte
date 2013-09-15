@@ -1,20 +1,42 @@
-GTE.initModel = function(){
+GTE.sanitizeLevelSettings = function(s){
+	if(typeof s !== 'object'){s = {};}
 
-	GTE.levelSettings = {
-		'viscosity' : 0,    //1 / (1+GTE.gameDifficulty);
-		'CoeffRestitution' : 1, //0.7*(1 - 1 / (1+GTE.gameDifficulty));
+	var defaultS = {
+		'levelID' : 0,
+		'rounds' : 10,
+		'starReqs' : [7, 9, 10],
+
+		'viscosity' : 0.7,
+		'CoeffRestitution' : 0.6,
 		'annihilate' : false,
 		'combine' : true,
-		'transfer' : true,
+		'transfer' : false,
+		'integerMass' : false,
 		'massSigma' : 0.001,
-		'massMax' : 100
+		'massMax' : 100,
+		'initMassMax' : 3,
+
+		'numParticles' : 20,
+		'signBias' : 0, //1 for all positive, -1 for all negative
+		'v0' : 0
 	};
 
+	for(key in defaultS){
+		if(s[key] == null){
+			s[key] = defaultS[key];
+		}
+	}
 
-	var v0 = 0;//(1+GTE.gameDifficulty) * 0.003;
-	var N = 2 + GTE.gameDifficulty;
+	return s;
+};
 
-	console.log("Level: " + GTE.level + ", Difficulty: " + GTE.gameDifficulty);
+GTE.initModel = function(){
+
+	GTE.levelSettings = GTE.sanitizeLevelSettings(GTE.gameLevels['level'+GTE.level]);
+
+	var v0 = GTE.levelSettings.v0;
+	var N  = GTE.levelSettings.numParticles;
+
 	GTE.levelState = {
 		levelID: GTE.level,
 		particles: [],
@@ -31,17 +53,28 @@ GTE.initModel = function(){
 	for(var i = 0; i < N; i++){
 		
 		do{
-			var sign = (Math.random()*2|0)*2 - 1;
+
+			var sign = 1;
+			if(Math.random()*2-1 >= GTE.levelSettings['signBias']){
+				sign = -1;
+			}
+
+			var mass = GTE.levelSettings['initMassMax'] * sign* Math.random();
+			if(GTE.levelSettings['integerMass']){
+				mass = Math.round(mass);
+			}
+
 			var angle = Math.random() * Math.PI * 2;
 			var vX = v0 * Math.cos(angle);
 			var vY = v0 * Math.sin(angle);
+
 			var particle = {
 				id: i,
 				x: 2*Math.random(),
 				y:   Math.random(),
 				vX: vX,
 				vY: vY,
-				m: 4*sign*Math.random(),
+				m: mass,
 				r: 0.05,
 				resolved: false
 			};

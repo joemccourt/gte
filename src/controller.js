@@ -28,12 +28,23 @@ GTE.startEndLevelAnimation = false;
 GTE.animatingNewLevel = false;
 GTE.animatingEndLevel = false;
 GTE.playingLevel = true;
+GTE.boardGameView = false;
+
+GTE.drawBoredGameTransform = [1,0,0,0,
+							  0,1,0,0,
+							  0,0,1,0];
+GTE.drawBoredGameTransformTmp = [1,0,0,0,
+								 0,1,0,0,
+								 0,0,1,0];
 
 GTE.maxLevel = 100;
-GTE.level = 1;
+GTE.level = 0;
+GTE.stage = 0;
+GTE.stagesWon = 0;
+GTE.stagesLost = 0;
+
 GTE.levelState = {};
 GTE.lastWon = true;
-GTE.gameDifficulty = 30;
 
 //Mouse state
 GTE.mouse = "up";
@@ -43,8 +54,8 @@ GTE.mouseDownPos = {x:0,y:0};
 var kongregate = parent.kongregate;
 
 GTE.buttons = [
-	{'name':'group1','box': [0.25,0.1,0.50,0.2]},
-	{'name':'group2','box': [1.50,0.1,1.75,0.2]}
+	{'name':'group1','box': [0.1,0.05,0.25,0.15]},
+	{'name':'group2','box': [1.75,0.05,1.9,0.15]}
 	]
 
 GTE.main = function(){
@@ -81,7 +92,7 @@ GTE.gameLoop = function(time){
 		GTE.startNewLevel();
 	}
 
-	if(!GTE.animatingEndLevel){
+	if(!GTE.animatingEndLevel && !GTE.boardGameView){
 		GTE.updateModel(time - GTE.lastFrameTime);
 	}
 
@@ -241,23 +252,37 @@ GTE.clickGroup = function(groupID){
 GTE.winLevel = function(){
 	console.log("Win!");
 	GTE.lastWon = true;
-	GTE.gameDifficulty += 4;
-	//if(GTE.gameDifficulty > 4){
-	//	GTE.level++;
-	//	GTE.gameDifficulty = 0;
-	//}
+
+	GTE.stagesWon++;
+	GTE.stage++;
+
 	GTE.endLevel();
 };
 
 GTE.loseLevel = function(){
 	console.log("Lose!");
-	GTE.gameDifficulty -= 2;
-	if(GTE.gameDifficulty < 0){GTE.gameDifficulty = 0;}
 	GTE.lastWon = false;
+
+	GTE.stagesLost++;
+	GTE.stage++;
+
 	GTE.endLevel();
 };
 
 GTE.endLevel = function(){
+
+	if(GTE.stage >= GTE.levelSettings['rounds']){
+		if(GTE.stagesWon >= GTE.levelSettings['starReqs'][0]){
+			GTE.level++;
+		}
+
+		GTE.stage      = 0;
+		GTE.stagesLost = 0;
+		GTE.stagesWon  = 0;
+	}
+
+	GTE.updateHUD();
+
 	GTE.playingLevel = false;
 	GTE.startEndLevelAnimation = true;
 	GTE.dirtyCanvas = true;
@@ -266,6 +291,7 @@ GTE.endLevel = function(){
 GTE.startNewLevel = function(){	
 	GTE.playingLevel = true;
 	GTE.initModel();
+	GTE.updateHUD();
 	GTE.dirtyCanvas = true;
 };
 
@@ -284,6 +310,39 @@ GTE.winGame = function(){
 	GTE.startGame();
 };
 
+// *** Board View Events ***
+GTE.boardMouseup = function(x,y){
+	GTE.mouse = "up";
+
+	GTE.drawBoredGameTransformTmp = GTE.drawBoredGameTransform;
+};
+
+GTE.boardMousedown = function(x,y){
+	GTE.mouse = "down";
+
+	GTE.mouseDownPos.x = x;
+	GTE.mouseDownPos.y = y;
+
+	GTE.drawBoredGameTransform = GTE.drawBoredGameTransformTmp;
+};
+
+GTE.boardMousemove = function(x,y){
+	if(GTE.mouse == "down"){
+		GTE.drawBoredGameTransform = GTE.transfromTranslate(GTE.drawBoredGameTransformTmp, x - GTE.mouseDownPos.x, y - GTE.mouseDownPos.y);
+		GTE.dirtyCanvas = true;
+	}
+};
+
+
+// *** Transforms ***
+GTE.transfromTranslate = function(t,x,y){
+	var newT = t.slice(0);
+	newT[3] += x;
+	newT[7] += y;
+	return newT;
+};
+
+
 // *** Event binding ***
 GTE.initEvents = function(){
 	$(document).mouseup(function (e) {
@@ -296,7 +355,11 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mouseup(x,y);
+		if(GTE.boardGameView){
+			GTE.boardMouseup(x/2,y);
+		}else{
+			GTE.mouseup(x,y);
+		}
 	});
 
 	$(document).mousedown(function (e) {
@@ -308,8 +371,12 @@ GTE.initEvents = function(){
 		var internalPoint = GTE.renderToInternalSpace(x,y);
 		x = internalPoint[0];
 		y = internalPoint[1];
-		
-		GTE.mousedown(x,y);
+			
+		if(GTE.boardGameView){
+			GTE.boardMousedown(x/2,y);
+		}else{
+			GTE.mousedown(x,y);
+		}
 	});
 
 	$(document).mousemove(function (e) {
@@ -322,7 +389,11 @@ GTE.initEvents = function(){
 		x = internalPoint[0];
 		y = internalPoint[1];
 
-		GTE.mousemove(x,y);
+		if(GTE.boardGameView){
+			GTE.boardMousemove(x/2,y);
+		}else{
+			GTE.mousemove(x,y);
+		}
 	});
 
 	$(document).keydown(function (e) {
