@@ -1,13 +1,13 @@
 GTE.initModel = function(){
 
 	GTE.levelSettings = {
-		'viscosity' : 1,    //1 / (1+GTE.gameDifficulty);
-		'CoeffRestitution' : 0.6, //0.7*(1 - 1 / (1+GTE.gameDifficulty));
+		'viscosity' : 0,    //1 / (1+GTE.gameDifficulty);
+		'CoeffRestitution' : 1, //0.7*(1 - 1 / (1+GTE.gameDifficulty));
 		'annihilate' : false,
 		'combine' : true,
-		'transfer' : false,
+		'transfer' : true,
 		'massSigma' : 0.001,
-		'massMax' : 5
+		'massMax' : 100
 	};
 
 
@@ -26,6 +26,8 @@ GTE.initModel = function(){
 	// y: [0,1]
 
 	//Tmp generate particles
+	var maxItter = 10000;
+	var itter = 0;
 	for(var i = 0; i < N; i++){
 		
 		do{
@@ -39,12 +41,12 @@ GTE.initModel = function(){
 				y:   Math.random(),
 				vX: vX,
 				vY: vY,
-				m: GTE.levelSettings.massMax*sign*Math.random(),
+				m: 4*sign*Math.random(),
 				r: 0.05,
 				resolved: false
 			};
-
-		}while(GTE.isCollision(particle));
+			itter++;
+		}while(itter < maxItter && GTE.isCollision(particle) || Math.abs(particle.m) < GTE.levelSettings.massSigma);
 		
 		GTE.levelState.particles.push(particle);
 	}
@@ -258,7 +260,7 @@ GTE.updateModel = function(deltaTime){
 								toRemove = true;
 							}
 
-							if(Math.abs(pB.m - massTransfer) < GTE.levelSettings.massSigma){
+							if(Math.abs(pB.m + massTransfer) < GTE.levelSettings.massSigma){
 								GTE.levelState.particles.splice(j,1);
 							}else{
 								var absA = Math.abs(massTransfer);

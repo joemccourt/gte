@@ -63,8 +63,8 @@ GTE.drawLevel = function(){
 			var drawMass = absMass >= 1 ? 1 : absMass;
 			absMass -= drawMass;
 
-			var discX = canvasCoord[0]-discLevel*4;
-			var discY = canvasCoord[1]-discLevel*4;
+			var discX = canvasCoord[0]-(Math.log(Math.E*(discLevel+1))-1)*5;
+			var discY = canvasCoord[1]-(Math.log(Math.E*(discLevel+1))-1)*5;
 
 			ctx.beginPath();
 			ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
@@ -99,7 +99,7 @@ GTE.drawLevel = function(){
 			ctx.closePath();
 
 			if(!GTE.levelSettings.annihilate){
-				ctx.lineWidth = 3;
+				ctx.lineWidth = 1;
 			}else{
 				ctx.lineWidth = 1;	
 			}
