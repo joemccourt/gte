@@ -1,7 +1,7 @@
 GTE.drawGame = function(){
 
 	if(GTE.boardGameView){
-		GTE.drawBoredGame();
+		GTE.drawBoardGame();
 	}else{
 		GTE.drawBackground();
 		GTE.drawMidline();
@@ -11,11 +11,120 @@ GTE.drawGame = function(){
 	}
 };
 
-GTE.drawBoredGame = function(){
+GTE.drawBoardGame = function(){
+
+	var gameBox = GTE.drawBoardGameBox;
 	var ctx = GTE.ctx;
 	ctx.save();
 	ctx.clearRect(0,0,GTE.canvas.width,GTE.canvas.height);
+	ctx.restore();
+	
+	ctx.save();
 
+	//TODO: make this work for scaling
+	var w  = GTE.getRenderBoxWidth();
+	var h  = GTE.getRenderBoxHeight();
+	var x1 = GTE.renderBox[0];
+	var y1 = GTE.renderBox[1];
+
+	var offX = w*GTE.drawBoardGameTransform[3];
+	var offY = h*GTE.drawBoardGameTransform[7];
+
+	ctx.transform(1,0,0,1,offX,offY);
+
+	var grd;
+	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],w,h/2);
+	grd.addColorStop(0, 'rgb(50,150,50)');
+	grd.addColorStop(0.5, 'rgb(209,100,50)');
+	grd.addColorStop(1, 'rgb(29,255,50)');
+
+	ctx.fillStyle = grd;
+	var boardWidth  = w*(gameBox[2]-gameBox[0]);
+	var boardHeight = h*(gameBox[3]-gameBox[1]);
+	var boardStartX = GTE.renderBox[0]+gameBox[0]*w;
+	var boardStartY = GTE.renderBox[1]+gameBox[1]*h;
+	ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
+
+	// *** Draw Levels *** //
+	var r = 0.02*w;
+	ctx.fillStyle = '000';
+
+	var coords = [
+					[1/6,5/6],
+					[2/6,5/6],
+					[3/6,5/6],
+					[4/6,5/6],
+					[5/6,5/6],
+					[5/6,4/6],
+					[4/6,4/6],
+					[3/6,4/6],
+					[2/6,4/6],
+					[1/6,4/6],
+					[1/6,3/6],
+					[2/6,3/6],
+					[3/6,3/6],
+					[4/6,3/6],
+					[5/6,3/6],
+					[5/6,2/6],
+					[4/6,2/6],
+					[3/6,2/6],
+					[2/6,2/6],
+					[1/6,2/6],
+					[1/6,1/6],
+					[2/6,1/6],
+					[3/6,1/6],
+					[4/6,1/6],
+					[5/6,1/6],
+					[5/6,0/6],
+					[4/6,0/6],
+					[3/6,0/6],
+					[2/6,0/6],
+					[1/6,0/6],
+					[1/6,-1/6],
+					[2/6,-1/6],
+					[3/6,-1/6],
+					[4/6,-1/6],
+					[5/6,-1/6],
+					[5/6,-2/6],
+					[4/6,-2/6],
+					[3/6,-2/6],
+					[2/6,-2/6],
+					[1/6,-2/6],
+					[1/6,-3/6],
+					[2/6,-3/6],
+					[3/6,-3/6],
+					[4/6,-3/6],
+					[5/6,-3/6],
+					[5/6,-4/6],
+					[4/6,-4/6],
+					[3/6,-4/6],
+					[2/6,-4/6],
+					[1/6,-4/6]	
+					];
+
+	for(var i = 0; i < coords.length; i++){
+		ctx.beginPath();
+		ctx.arc(coords[i][0]*w, coords[i][1]*h, r, 0, 2 * Math.PI, false);
+		ctx.closePath();
+		ctx.fill();
+
+		if(i < coords.length-1){
+			ctx.moveTo(coords[i][0]*w, coords[i][1]*h);
+			ctx.lineTo(coords[i+1][0]*w, coords[i+1][1]*h);
+		}
+		ctx.stroke();
+	}
+
+
+
+    ctx.restore();
+
+	ctx.save();
+	ctx.clearRect(0,0,GTE.canvas.width,GTE.renderBox[1]-0.5);
+	ctx.clearRect(0,0,GTE.renderBox[0]-0.5,GTE.canvas.height);
+	ctx.clearRect(0,GTE.renderBox[3]+0.5,GTE.canvas.width,GTE.canvas.height);
+	ctx.clearRect(GTE.renderBox[2]+0.5,0,GTE.canvas.width,GTE.canvas.height);
+	
 	//Box border
 	ctx.beginPath();
 	ctx.moveTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
@@ -28,26 +137,10 @@ GTE.drawBoredGame = function(){
 	ctx.lineWidth = 3;
 	ctx.stroke();
 
+	
 	ctx.restore();
-	
-	ctx.save();
-	
-
-	ctx.transform(1,0,0,1,GTE.getRenderBoxWidth()*GTE.drawBoredGameTransform[3],GTE.getRenderBoxHeight()*GTE.drawBoredGameTransform[7]);
-
-	var grd;
-	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
-	grd.addColorStop(0, 'rgb(50,150,50)');
-	grd.addColorStop(1, 'rgb(29,100,50)');
-
-	ctx.fillStyle = grd;
-	ctx.fillRect(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight());		
-
-    ctx.restore();
 
 };
-
-
 
 GTE.drawMouseForces = function(){
 

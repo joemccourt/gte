@@ -30,10 +30,12 @@ GTE.animatingEndLevel = false;
 GTE.playingLevel = true;
 GTE.boardGameView = false;
 
-GTE.drawBoredGameTransform = [1,0,0,0,
+GTE.drawBoardGameBox = [0,-2,1,1];
+
+GTE.drawBoardGameTransform = [1,0,0,0,
 							  0,1,0,0,
 							  0,0,1,0];
-GTE.drawBoredGameTransformTmp = [1,0,0,0,
+GTE.drawBoardGameTransformTmp = [1,0,0,0,
 								 0,1,0,0,
 								 0,0,1,0];
 
@@ -314,7 +316,7 @@ GTE.winGame = function(){
 GTE.boardMouseup = function(x,y){
 	GTE.mouse = "up";
 
-	GTE.drawBoredGameTransformTmp = GTE.drawBoredGameTransform;
+	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 };
 
 GTE.boardMousedown = function(x,y){
@@ -323,12 +325,12 @@ GTE.boardMousedown = function(x,y){
 	GTE.mouseDownPos.x = x;
 	GTE.mouseDownPos.y = y;
 
-	GTE.drawBoredGameTransform = GTE.drawBoredGameTransformTmp;
+	GTE.drawBoardGameTransform = GTE.drawBoardGameTransformTmp;
 };
 
 GTE.boardMousemove = function(x,y){
 	if(GTE.mouse == "down"){
-		GTE.drawBoredGameTransform = GTE.transfromTranslate(GTE.drawBoredGameTransformTmp, x - GTE.mouseDownPos.x, y - GTE.mouseDownPos.y);
+		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransformTmp, x - GTE.mouseDownPos.x, y - GTE.mouseDownPos.y);
 		GTE.dirtyCanvas = true;
 	}
 };
@@ -339,6 +341,21 @@ GTE.transfromTranslate = function(t,x,y){
 	var newT = t.slice(0);
 	newT[3] += x;
 	newT[7] += y;
+
+	var gameBox = GTE.drawBoardGameBox;
+
+	var offX = -newT[3];
+	var offY = -newT[7];
+
+	offX = offX < gameBox[0]   ? gameBox[0]   : offX;
+	offX = offX > gameBox[2]-1 ? gameBox[2]-1 : offX;
+
+	offY = offY < gameBox[1]   ? gameBox[1]   : offY;
+	offY = offY > gameBox[3]-1 ? gameBox[3]-1 : offY;
+
+	newT[3] = -offX;
+	newT[7] = -offY;
+
 	return newT;
 };
 
