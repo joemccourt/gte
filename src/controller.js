@@ -28,7 +28,7 @@ GTE.startEndLevelAnimation = false;
 GTE.animatingNewLevel = false;
 GTE.animatingEndLevel = false;
 GTE.playingLevel = true;
-GTE.boardGameView = false;
+GTE.boardGameView = true;
 
 GTE.drawBoardGameBox = [0,-2,1,1];
 
@@ -38,12 +38,18 @@ GTE.drawBoardGameTransform = [1,0,0,0,
 GTE.drawBoardGameTransformTmp = [1,0,0,0,
 								 0,1,0,0,
 								 0,0,1,0];
+GTE.boardLevelRadius = 0.03; //*(w+h)/2
 
 GTE.maxLevel = 100;
 GTE.level = 0;
 GTE.stage = 0;
 GTE.stagesWon = 0;
 GTE.stagesLost = 0;
+GTE.userStats = {
+	'level0' : {'stars':2},
+	'level1' : {'stars':3},
+	'level2' : {'stars':1},
+};
 
 GTE.levelState = {};
 GTE.lastWon = true;
@@ -290,10 +296,16 @@ GTE.endLevel = function(){
 	GTE.dirtyCanvas = true;
 };
 
+GTE.viewBoard = function(){
+	GTE.boardGameView = true;
+	GTE.dirtyCanvas = true;
+};
+
 GTE.startNewLevel = function(){	
 	GTE.playingLevel = true;
 	GTE.initModel();
 	GTE.updateHUD();
+	GTE.boardGameView = false;
 	GTE.dirtyCanvas = true;
 };
 
@@ -312,6 +324,11 @@ GTE.winGame = function(){
 	GTE.startGame();
 };
 
+GTE.selectLevel = function(i){
+	GTE.level = i;
+	GTE.startNewLevel();
+}
+
 // *** Board View Events ***
 GTE.boardMouseup = function(x,y){
 	GTE.mouse = "up";
@@ -326,6 +343,38 @@ GTE.boardMousedown = function(x,y){
 	GTE.mouseDownPos.y = y;
 
 	GTE.drawBoardGameTransform = GTE.drawBoardGameTransformTmp;
+
+	var w  = GTE.getRenderBoxWidth();
+	var h  = GTE.getRenderBoxHeight();
+	var x1 = GTE.renderBox[0];
+	var y1 = GTE.renderBox[1];
+
+	var posC = GTE.internalToRenderSpace(x*2,y);
+	var pC = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posC[0],posC[1]);
+
+	var coords = GTE.levelCoords;
+	var r = GTE.boardLevelRadius * (w+h)/2;
+	for(var i = 0; i < coords.length; i++){
+		var posL = GTE.internalToRenderSpace(coords[i][0]*2,coords[i][1]);
+		var pL   = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posL[0],posL[1]);
+
+		var unlocked = false;
+		if(i > 0){
+			var stars = GTE.userStats['level'+(i-1)];
+			if(stars != null){
+				if(stars.stars > 0){
+					unlocked = true;
+				}
+			}
+		}else{
+			unlocked = true;
+		}
+
+		if(unlocked&&Math.pow(pC[0]-pL[0],2)+Math.pow(pC[1]-pL[1],2) < r*r){
+			GTE.selectLevel(i);
+			break;
+		}
+	}
 };
 
 GTE.boardMousemove = function(x,y){
@@ -337,6 +386,13 @@ GTE.boardMousemove = function(x,y){
 
 
 // *** Transforms ***
+GTE.getTransformedCoords = function(t,x,y){
+	var xNew = t[0]*x+t[1]*y+t[3];
+	var yNew = t[4]*x+t[5]*y+t[7];
+
+	return [xNew,yNew];
+};
+
 GTE.transfromTranslate = function(t,x,y){
 	var newT = t.slice(0);
 	newT[3] += x;
@@ -426,6 +482,8 @@ GTE.initEvents = function(){
 			GTE.clickGroup(1);
 		}else if(e.which == 39){
 			GTE.clickGroup(2);
+		}else if(e.which == 81){
+			GTE.viewBoard();
 		}
 
 	});

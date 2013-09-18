@@ -34,9 +34,9 @@ GTE.drawBoardGame = function(){
 
 	var grd;
 	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],w,h/2);
-	grd.addColorStop(0, 'rgb(50,150,50)');
-	grd.addColorStop(0.5, 'rgb(209,100,50)');
-	grd.addColorStop(1, 'rgb(29,255,50)');
+	grd.addColorStop(0, 'rgb(0,150,0)');
+	grd.addColorStop(0.5, 'rgb(209,100,250)');
+	grd.addColorStop(1, 'rgb(0,255,0)');
 
 	ctx.fillStyle = grd;
 	var boardWidth  = w*(gameBox[2]-gameBox[0]);
@@ -45,76 +45,94 @@ GTE.drawBoardGame = function(){
 	var boardStartY = GTE.renderBox[1]+gameBox[1]*h;
 	ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
 
+	ctx.fillStyle = 'rgba(0,0,0,1)';
 	// *** Draw Levels *** //
-	var r = 0.02*w;
-	ctx.fillStyle = '000';
+	var r = GTE.boardLevelRadius * (w+h)/2;
 
-	var coords = [
-					[1/6,5/6],
-					[2/6,5/6],
-					[3/6,5/6],
-					[4/6,5/6],
-					[5/6,5/6],
-					[5/6,4/6],
-					[4/6,4/6],
-					[3/6,4/6],
-					[2/6,4/6],
-					[1/6,4/6],
-					[1/6,3/6],
-					[2/6,3/6],
-					[3/6,3/6],
-					[4/6,3/6],
-					[5/6,3/6],
-					[5/6,2/6],
-					[4/6,2/6],
-					[3/6,2/6],
-					[2/6,2/6],
-					[1/6,2/6],
-					[1/6,1/6],
-					[2/6,1/6],
-					[3/6,1/6],
-					[4/6,1/6],
-					[5/6,1/6],
-					[5/6,0/6],
-					[4/6,0/6],
-					[3/6,0/6],
-					[2/6,0/6],
-					[1/6,0/6],
-					[1/6,-1/6],
-					[2/6,-1/6],
-					[3/6,-1/6],
-					[4/6,-1/6],
-					[5/6,-1/6],
-					[5/6,-2/6],
-					[4/6,-2/6],
-					[3/6,-2/6],
-					[2/6,-2/6],
-					[1/6,-2/6],
-					[1/6,-3/6],
-					[2/6,-3/6],
-					[3/6,-3/6],
-					[4/6,-3/6],
-					[5/6,-3/6],
-					[5/6,-4/6],
-					[4/6,-4/6],
-					[3/6,-4/6],
-					[2/6,-4/6],
-					[1/6,-4/6]	
-					];
+	var coords = GTE.levelCoords;
 
+	ctx.beginPath();
 	for(var i = 0; i < coords.length; i++){
-		ctx.beginPath();
-		ctx.arc(coords[i][0]*w, coords[i][1]*h, r, 0, 2 * Math.PI, false);
-		ctx.closePath();
-		ctx.fill();
-
 		if(i < coords.length-1){
-			ctx.moveTo(coords[i][0]*w, coords[i][1]*h);
-			ctx.lineTo(coords[i+1][0]*w, coords[i+1][1]*h);
+			ctx.moveTo(x1+coords[i][0]*w, y1+coords[i][1]*h);
+			ctx.lineTo(x1+coords[i+1][0]*w, y1+coords[i+1][1]*h);
 		}
 		ctx.stroke();
 	}
 
+	for(var i = 0; i < coords.length; i++){
+		var stars = GTE.userStats['level'+i];
+
+		if(stars != null){
+			stars = stars.stars;
+		}else{
+			if(i > 0){
+				var lastStars = GTE.userStats['level'+(i-1)];
+				if(lastStars != null){
+					stars = 0;
+				}else{
+					stars = -1;
+				}
+			}else{
+				stars = 0;
+			}
+		}
+
+	
+		if(stars > 0){
+			ctx.fillStyle = '4e8';
+		}else if(stars == 0){
+			ctx.fillStyle = '44e';
+
+		}else{
+			ctx.fillStyle = '888';
+		}
+
+		ctx.beginPath();
+		ctx.arc(x1+coords[i][0]*w, y1+coords[i][1]*h, r, 0, 2 * Math.PI, false);
+		ctx.closePath();
+		ctx.fill();
+	}
+	
+	ctx.fillStyle = 'cc0';
+	for(var i = 0; i < coords.length; i++){
+		var stars = GTE.userStats['level'+i];
+
+		if(stars != null){
+			stars = stars.stars;
+		}else{
+			stars = 0;
+		}
+		
+		var x = x1+coords[i][0]*w;
+		var y = y1+coords[i][1]*h;
+
+		var rStar = 1.7*r;
+
+		if(stars > 0){
+			ctx.beginPath();
+			var angle = 130 * Math.PI/180;
+			ctx.arc(x+rStar*Math.cos(angle), y-rStar*Math.sin(angle), r*0.35, 0, 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		if(stars > 1){
+			ctx.beginPath();
+			var angle = 90 * Math.PI/180;
+			ctx.arc(x+rStar*Math.cos(angle), y-rStar*Math.sin(angle), r*0.35, 0, 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		if(stars > 2){
+			ctx.beginPath();
+			var angle = 50 * Math.PI/180;
+			ctx.arc(x+rStar*Math.cos(angle), y-rStar*Math.sin(angle), r*0.35, 0, 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
+		}
+	}
 
 
     ctx.restore();
