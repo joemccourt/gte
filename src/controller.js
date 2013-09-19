@@ -29,8 +29,10 @@ GTE.animatingNewLevel = false;
 GTE.animatingEndLevel = false;
 GTE.playingLevel = true;
 GTE.boardGameView = true;
+GTE.levelCompleted = false;
 
-GTE.drawBoardGameBox = [0,-2,1,1];
+
+GTE.drawBoardGameBox = [-0.1,-1,1.1,1.1];
 
 GTE.drawBoardGameTransform = [1,0,0,0,
 							  0,1,0,0,
@@ -45,10 +47,12 @@ GTE.level = 0;
 GTE.stage = 0;
 GTE.stagesWon = 0;
 GTE.stagesLost = 0;
+
+//TODO: localstorage this
 GTE.userStats = {
-	'level0' : {'stars':2},
-	'level1' : {'stars':3},
-	'level2' : {'stars':1},
+	//'level0' : {'stars':2},
+	// 'level1' : {'stars':3},
+	// 'level2' : {'stars':1},
 };
 
 GTE.levelState = {};
@@ -97,7 +101,12 @@ GTE.gameLoop = function(time){
 	}
 	if(GTE.animatingEndLevel && time - GTE.startEndLevelAnimationTime > GTE.endLevelAnimationTime){
 		GTE.animatingEndLevel = false;
-		GTE.startNewLevel();
+
+		if(GTE.levelCompleted){
+			GTE.viewBoard();
+		}else{
+			GTE.startNewLevel();
+		}
 	}
 
 	if(!GTE.animatingEndLevel && !GTE.boardGameView){
@@ -158,19 +167,21 @@ GTE.loadGameState = function() {
 	GTE.gameInProgress = (localStorage["GTE.gameInProgress"] == "true");
 
 	if(GTE.gameInProgress){
-		GTE.maxLevel = parseInt(localStorage["GTE.maxLevel"]);
-		GTE.wonGame = (localStorage["GTE.wonGame"] == "true");
+		GTE.userStats = JSON.parse(localStorage["GTE.userStats"]);
 		GTE.level = parseInt(localStorage["GTE.level"]);
+		GTE.stagesWon = parseInt(localStorage["GTE.stagesWon"]);
+		GTE.stagesLost = parseInt(localStorage["GTE.stagesLost"]);
 	}
 }
 
 GTE.saveGameState = function() {
 	if (!supports_html5_storage()) { return false; }
-	// localStorage["GTE.gameInProgress"] = true; //temp disable for testing
+	localStorage["GTE.gameInProgress"] = true; //temp disable for testing
 
-	localStorage["GTE.maxLevel"] = GTE.maxLevel;
-	localStorage["GTE.wonGame"] = GTE.wonGame;
-	localStorage["GTE.level"] = GTE.level;
+	localStorage["GTE.userStats"]  = JSON.stringify(GTE.userStats);
+	localStorage["GTE.level"]      = GTE.level;
+	localStorage["GTE.stagesWon"]  = GTE.stagesWon;
+	localStorage["GTE.stagesLost"] = GTE.stagesLost;
 }
 
 GTE.startSession = function(){
@@ -182,7 +193,8 @@ GTE.startSession = function(){
 
 	GTE.renderBox = [20,20,w-20,h-20];
 	
-	GTE.startNewLevel();
+	//GTE.startNewLevel();
+	GTE.viewBoard();
 
 	GTE.loadGameState();
 
@@ -280,15 +292,34 @@ GTE.loseLevel = function(){
 GTE.endLevel = function(){
 
 	if(GTE.stage >= GTE.levelSettings['rounds']){
-		if(GTE.stagesWon >= GTE.levelSettings['starReqs'][0]){
-			GTE.level++;
+		var stars = 0;
+		if(GTE.stagesWon >= GTE.levelSettings['starReqs'][2]){
+			stars = 3;
+		}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][1]){
+			stars = 2;
+		}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][0]){
+			stars = 1;			
+		}
+
+		if(stars > 0){
+			var levelStr = 'level'+GTE.level;
+			if(GTE.userStats[levelStr] != null){
+				GTE.userStats[levelStr].stars = Math.max(stars,GTE.userStats[levelStr].stars);
+			}else{
+				GTE.userStats[levelStr] = {};
+				GTE.userStats[levelStr].stars = stars;
+			}
 		}
 
 		GTE.stage      = 0;
 		GTE.stagesLost = 0;
 		GTE.stagesWon  = 0;
+		GTE.levelCompleted = true;
+	}else{
+		GTE.levelCompleted = false;
 	}
 
+	GTE.saveGameState();
 	GTE.updateHUD();
 
 	GTE.playingLevel = false;
@@ -349,14 +380,15 @@ GTE.boardMousedown = function(x,y){
 	var x1 = GTE.renderBox[0];
 	var y1 = GTE.renderBox[1];
 
-	var posC = GTE.internalToRenderSpace(x*2,y);
-	var pC = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posC[0],posC[1]);
+	var posC = GTE.getTransformedCoordsInv(GTE.drawBoardGameTransform,x,y);
+	var pC = GTE.internalToRenderSpace(posC[0]*2,posC[1]);
 
 	var coords = GTE.levelCoords;
 	var r = GTE.boardLevelRadius * (w+h)/2;
 	for(var i = 0; i < coords.length; i++){
 		var posL = GTE.internalToRenderSpace(coords[i][0]*2,coords[i][1]);
-		var pL   = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posL[0],posL[1]);
+		var pL = posL;
+		// var pL   = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posL[0],posL[1]);
 
 		var unlocked = false;
 		if(i > 0){
@@ -389,6 +421,14 @@ GTE.boardMousemove = function(x,y){
 GTE.getTransformedCoords = function(t,x,y){
 	var xNew = t[0]*x+t[1]*y+t[3];
 	var yNew = t[4]*x+t[5]*y+t[7];
+
+	return [xNew,yNew];
+};
+
+//TODO: make this actually inv
+GTE.getTransformedCoordsInv = function(t,x,y){
+	var xNew = x-t[3];
+	var yNew = y-t[7];
 
 	return [xNew,yNew];
 };

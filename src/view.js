@@ -45,20 +45,35 @@ GTE.drawBoardGame = function(){
 	var boardStartY = GTE.renderBox[1]+gameBox[1]*h;
 	ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
 
-	ctx.fillStyle = 'rgba(0,0,0,1)';
 	// *** Draw Levels *** //
 	var r = GTE.boardLevelRadius * (w+h)/2;
-
 	var coords = GTE.levelCoords;
 
 	ctx.beginPath();
 	for(var i = 0; i < coords.length; i++){
 		if(i < coords.length-1){
-			ctx.moveTo(x1+coords[i][0]*w, y1+coords[i][1]*h);
-			ctx.lineTo(x1+coords[i+1][0]*w, y1+coords[i+1][1]*h);
+			var i1x = x1+coords[i][0]*w;
+			var i1y = y1+coords[i][1]*h;
+			var i2x = x1+coords[i+1][0]*w;
+			var i2y = y1+coords[i+1][1]*h;
+
+			if(i == 0){
+				ctx.moveTo(i1x,i1y);
+				ctx.lineTo((i1x+i2x)/2,(i1y+i2y)/2);
+			}else{
+				var i0x = x1+coords[i-1][0]*w;
+				var i0y = y1+coords[i-1][1]*h;
+
+				// ctx.moveTo((i0x+i1x)/2,(i0y+i1y)/2);
+				ctx.quadraticCurveTo(i1x,i1y,(i1x+i2x)/2,(i1y+i2y)/2);
+			}
 		}
-		ctx.stroke();
 	}
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 3;
+	ctx.stroke();
+	
+	ctx.closePath();
 
 	for(var i = 0; i < coords.length; i++){
 		var stars = GTE.userStats['level'+i];
@@ -88,10 +103,21 @@ GTE.drawBoardGame = function(){
 			ctx.fillStyle = '888';
 		}
 
+		var x = x1+coords[i][0]*w;
+		var y = y1+coords[i][1]*h;
 		ctx.beginPath();
-		ctx.arc(x1+coords[i][0]*w, y1+coords[i][1]*h, r, 0, 2 * Math.PI, false);
+		ctx.arc(x, y, r, 0, 2 * Math.PI, false);
 		ctx.closePath();
 		ctx.fill();
+
+
+		ctx.fillStyle = 'rgb(255,255,255)';
+		ctx.font = "" + (r) + "px Verdana";
+
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'baseline';
+		ctx.fillText(""+i,x+1.3*r,y+1.3*r);
+
 	}
 	
 	ctx.fillStyle = 'cc0';
