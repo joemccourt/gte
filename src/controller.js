@@ -330,6 +330,7 @@ GTE.endLevel = function(){
 GTE.viewBoard = function(){
 	GTE.boardGameView = true;
 	GTE.dirtyCanvas = true;
+	GTE.playingLevel = false;
 };
 
 GTE.startNewLevel = function(){	
@@ -373,6 +374,8 @@ GTE.boardMousedown = function(x,y){
 	GTE.mouseDownPos.x = x;
 	GTE.mouseDownPos.y = y;
 
+	GTE.mouseDownLast = {x:x,y:y};
+
 	GTE.drawBoardGameTransform = GTE.drawBoardGameTransformTmp;
 
 	var w  = GTE.getRenderBoxWidth();
@@ -411,8 +414,9 @@ GTE.boardMousedown = function(x,y){
 
 GTE.boardMousemove = function(x,y){
 	if(GTE.mouse == "down"){
-		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransformTmp, x - GTE.mouseDownPos.x, y - GTE.mouseDownPos.y);
-		GTE.dirtyCanvas = true;
+		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, x - GTE.mouseDownLast.x, y - GTE.mouseDownLast.y);
+		GTE.dirtyCanvas = true;	
+		GTE.mouseDownLast = {x:x,y:y};
 	}
 };
 
@@ -518,9 +522,9 @@ GTE.initEvents = function(){
 		// 38 - up
 		// 39 - right
 		// 40 - down
-		if(e.which == 37){
+		if(e.which == 37 && GTE.playingLevel){
 			GTE.clickGroup(1);
-		}else if(e.which == 39){
+		}else if(e.which == 39 && GTE.playingLevel){
 			GTE.clickGroup(2);
 		}else if(e.which == 81){
 			GTE.viewBoard();

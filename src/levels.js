@@ -2,6 +2,7 @@ GTE.gameLevels =
 {
 	'level0': 
 	{
+		'description' : 'Begining Level. Very simple to ease new players into game.',
 		'levelID' : 0,
 		'rounds'  : 5,
 		'starReqs': [3, 4, 5],
@@ -22,6 +23,7 @@ GTE.gameLevels =
 	
 	'level1': 
 	{
+		'description' : 'Now add more particles and more rounds.',
 		'levelID' : 1,
 		'rounds'  : 7,
 		'starReqs': [5, 6, 7],
@@ -42,11 +44,12 @@ GTE.gameLevels =
 	
 	'level2': 
 	{
+		'description' : 'Even more particles.  With some initial velocity to show particles can move.',
 		'levelID' : 2,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'rounds'  : 8,
+		'starReqs': [6, 7, 8],
 
-		'numParticles'    : 6,
+		'numParticles'    : 30,
 		'viscosity'       : 0.7,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
@@ -55,84 +58,92 @@ GTE.gameLevels =
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0
+		'signBias'        : 1,
+		'v0'              : 0.1
 	},
 	
 	'level3': 
 	{
+		'description' : 'More, smaller particles and faster. Plus lower viscosity',
 		'levelID' : 3,
 		'rounds'  : 10,
-		'starReqs': [6, 8, 10],
+		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 20,
-		'viscosity'       : 0.7,
-		'CoeffRestitution': 0.6,
+		'numParticles'    : 70,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0
+		'signBias'        : 1,
+		'v0'              : 0.15,
+		'r'               : 0.03
 	},
 	
 	'level4': 
 	{
-		'levelID' : 4,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'description' : 'Fewer and larger, but now they stack to 2.',
+		'levelID' : 3,
+		'rounds'  : 10,
+		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 6,
-		'viscosity'       : 0.7,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : false,
-		'combine'         : true,
-		'transfer'        : false,
-		'integerMass'     : false,
-		'massMax'         : 1,
-		'initMassMax'     : 1,
-		'signBias'        : 1,
-		'v0'              : 0
-	},
-	
-	'level5': 
-	{
-		'levelID' : 5,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
-
-		'numParticles'    : 6,
-		'viscosity'       : 0.7,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : false,
-		'combine'         : false,
-		'transfer'        : true,
-		'integerMass'     : false,
-		'massMax'         : 1,
-		'initMassMax'     : 1,
-		'signBias'        : 1,
-		'v0'              : 0
-	},
-	
-	'level6': 
-	{
-		'levelID' : 6,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
-
-		'numParticles'    : 6,
-		'viscosity'       : 0.7,
-		'CoeffRestitution': 0.6,
+		'numParticles'    : 20,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : true,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 3,
+		'massMax'         : 2,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
-		'v0'              : 0.07
+		'v0'              : 0.15,
+		'r'               : 0.05
+	},
+	
+	'level5': 
+	{
+		'description' : 'Some more and stack up to 5.',
+		'levelID' : 3,
+		'rounds'  : 10,
+		'starReqs': [7, 9, 10],
+
+		'numParticles'    : 30,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 5,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.10,
+		'r'               : 0.04
+	},
+	
+	'level6': 
+	{
+		'description' : 'Start up to 5, stack up to 10',
+		'levelID' : 3,
+		'rounds'  : 10,
+		'starReqs': [7, 9, 10],
+
+		'numParticles'    : 40,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 10,
+		'initMassMax'     : 5,
+		'signBias'        : 1,
+		'v0'              : 0.10,
+		'r'               : 0.035
 	},
 	
 	'level7': 

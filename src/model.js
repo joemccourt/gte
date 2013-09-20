@@ -18,7 +18,8 @@ GTE.sanitizeLevelSettings = function(s){
 
 		'numParticles' : 20,
 		'signBias' : 0, //1 for all positive, -1 for all negative
-		'v0' : 0
+		'v0' : 0,
+		'r' : 0.05
 	};
 
 	for(key in defaultS){
@@ -75,7 +76,7 @@ GTE.initModel = function(){
 				vX: vX,
 				vY: vY,
 				m: mass,
-				r: 0.05,
+				r: GTE.levelSettings['r'],
 				resolved: false
 			};
 			itter++;
