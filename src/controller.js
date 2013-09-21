@@ -109,6 +109,11 @@ GTE.gameLoop = function(time){
 		}
 	}
 
+	if(GTE.boardGameView){
+		GTE.animatingEndLevel = false;
+		GTE.animatingNewLevel = false;
+	}
+
 	if(!GTE.animatingEndLevel && !GTE.boardGameView){
 		GTE.updateModel(time - GTE.lastFrameTime);
 	}
@@ -162,15 +167,22 @@ GTE.startGame = function(){
 	GTE.saveGameState();
 };
 
+
 GTE.loadGameState = function() {
 	if (!supports_html5_storage()) { return false; }
 	GTE.gameInProgress = (localStorage["GTE.gameInProgress"] == "true");
 
 	if(GTE.gameInProgress){
-		GTE.userStats = JSON.parse(localStorage["GTE.userStats"]);
-		GTE.level = parseInt(localStorage["GTE.level"]);
-		GTE.stagesWon = parseInt(localStorage["GTE.stagesWon"]);
-		GTE.stagesLost = parseInt(localStorage["GTE.stagesLost"]);
+		GTE.userStats    = JSON.parse(localStorage["GTE.userStats"]);
+		GTE.level        = parseInt(localStorage["GTE.level"]);
+		GTE.stagesWon    = parseInt(localStorage["GTE.stagesWon"]);
+		GTE.stagesLost   = parseInt(localStorage["GTE.stagesLost"]);
+		GTE.boardGameView = parseInt(localStorage["GTE.boardGameView"]);	
+		if(!GTE.boardGameView){
+			GTE.levelState    = JSON.parse(localStorage["GTE.levelState"]);
+			GTE.levelSettings = JSON.parse(localStorage["GTE.levelSettings"]);
+			GTE.playingLevel = parseInt(localStorage["GTE.playingLevel"]);	
+		}
 	}
 }
 
@@ -178,10 +190,14 @@ GTE.saveGameState = function() {
 	if (!supports_html5_storage()) { return false; }
 	localStorage["GTE.gameInProgress"] = true; //temp disable for testing
 
-	localStorage["GTE.userStats"]  = JSON.stringify(GTE.userStats);
-	localStorage["GTE.level"]      = GTE.level;
-	localStorage["GTE.stagesWon"]  = GTE.stagesWon;
-	localStorage["GTE.stagesLost"] = GTE.stagesLost;
+	localStorage["GTE.userStats"]     = JSON.stringify(GTE.userStats);
+	localStorage["GTE.levelState"]    = JSON.stringify(GTE.levelState);
+	localStorage["GTE.levelSettings"] = JSON.stringify(GTE.levelSettings);
+	localStorage["GTE.level"]         = GTE.level;
+	localStorage["GTE.stagesWon"]     = GTE.stagesWon;
+	localStorage["GTE.stagesLost"]    = GTE.stagesLost;
+	localStorage["GTE.boardGameView"] = GTE.boardGameView;
+	localStorage["GTE.playingLevel"]  = GTE.playingLevel == true ? 1 : 0;
 }
 
 GTE.startSession = function(){
@@ -220,7 +236,6 @@ GTE.mousedown = function(x,y){
 	GTE.mouse = "down";
 	GTE.mouseDownPos = {x:x,y:y};
 	GTE.mouseDownIndex = -1;
-
 
 	for(var i = 0; i < GTE.buttons.length; i++){
 		var button = GTE.buttons[i];
@@ -339,6 +354,7 @@ GTE.startNewLevel = function(){
 	GTE.updateHUD();
 	GTE.boardGameView = false;
 	GTE.dirtyCanvas = true;
+	GTE.saveGameState();
 };
 
 GTE.winGame = function(){

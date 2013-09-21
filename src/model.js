@@ -192,6 +192,7 @@ GTE.updateModel = function(deltaTime){
 
 	while(deltaTime > 0){
 
+		var sx = 2 * GTE.getRenderBoxHeight() / GTE.getRenderBoxWidth();
 		var dT = Math.min(5,deltaTime) / 500;
 		deltaTime -= 5;
 
@@ -372,14 +373,14 @@ GTE.updateModel = function(deltaTime){
 				}
 
 				//Left box collision
-				if(pXNew - p.r < 0){
-					pXNew = p.r - pXNew + p.r;
+				if(pXNew - p.r*sx < 0){
+					pXNew = p.r*sx - pXNew + p.r*sx;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Right box collision
-				if(pXNew + p.r > 2){
-					pXNew = 2-(p.r + pXNew - 2) - p.r;
+				if(pXNew + p.r*sx > 2){
+					pXNew = 2-(p.r*sx + pXNew - 2) - p.r*sx;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
@@ -404,19 +405,19 @@ GTE.updateModel = function(deltaTime){
 				}else{
 
 					//Left to Right collision
-					if(p.x < 1 && pXNew+p.r > 1){
+					if(p.x < 1 && pXNew+p.r*sx > 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
 						// newP.m = -p.m;
-						pXNew = 1-(p.r + pXNew - 1) - p.r;
+						pXNew = 1-(p.r*sx + pXNew - 1) - p.r*sx;
 						// newP.vX = -p.vX;
 					} else 
 					
 					//Right to Left collision
-					if(p.x > 1 && pXNew-p.r < 1){
+					if(p.x > 1 && pXNew-p.r*sx < 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 						// newP.m = -p.m;
-						pXNew = 1+(p.r - pXNew + 1) + p.r;
+						pXNew = 1+(p.r*sx - pXNew + 1) + p.r*sx;
 					}
 				}
 

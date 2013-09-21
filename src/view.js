@@ -210,10 +210,8 @@ GTE.drawBoardGame = function(){
 	ctx.strokeStyle = '000';
 	ctx.lineWidth = 3;
 	ctx.stroke();
-
 	
 	ctx.restore();
-
 };
 
 GTE.drawMouseForces = function(){
@@ -367,16 +365,30 @@ GTE.drawButtons = function(){
 		var canvasCoordTL = GTE.internalToRenderSpace(button.box[0],button.box[1]);
 		var canvasCoordBR = GTE.internalToRenderSpace(button.box[2],button.box[3]);
 
+		var x1 = canvasCoordTL[0]+0.5;
+		var y1 = canvasCoordTL[1]+0.5;
+		var x2 = canvasCoordBR[0]+0.5;
+		var y2 = canvasCoordBR[1]+0.5;
+
+		var r = 0.25 * (x2 - x1 + y2 - y1) / 2;
+
+
 		ctx.beginPath();
-	    ctx.moveTo(canvasCoordTL[0]+0.5,canvasCoordTL[1]+0.5);
-	    ctx.lineTo(canvasCoordBR[0]+0.5,canvasCoordTL[1]+0.5);
-	    ctx.lineTo(canvasCoordBR[0]+0.5,canvasCoordBR[1]+0.5);
-	    ctx.lineTo(canvasCoordTL[0]+0.5,canvasCoordBR[1]+0.5);
-	    ctx.lineTo(canvasCoordTL[0]+0.5,canvasCoordTL[1]+0.5);
+	    ctx.moveTo(x1+r,y1);
+	    ctx.lineTo(x2-r,y1);
+	    ctx.arc(x2-r,y1+r,r,-Math.PI/2,0,false);
+	    ctx.lineTo(x2,y2-r);
+	    ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+	    ctx.lineTo(x1+r,y2);
+	    ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+	    ctx.lineTo(x1,y1+r);
+	    ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+
 	    ctx.closePath();
-	    ctx.strokeStyle = '000';
+
+	    ctx.strokeStyle  = 'rgba(0,0,0,0.8)';
 	    ctx.fillStyle  = 'rgba(0,0,0,0.3)';
-	    ctx.lineWidth = 3;
+	    ctx.lineWidth = 2;
 	    ctx.stroke();
 	    ctx.fill();
 
@@ -387,7 +399,7 @@ GTE.drawButtons = function(){
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'baseline';
 
-	    ctx.fillText('GTE',(canvasCoordTL[0]+canvasCoordBR[0])/2,canvasCoordTL[1] + (canvasCoordBR[1]-canvasCoordTL[1])*0.75);
+	    ctx.fillText('GTE',(x1+x2)/2,y1 + (y2-y1)*0.75);
 	}
 
     ctx.restore();
