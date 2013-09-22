@@ -114,7 +114,8 @@ GTE.gameLoop = function(time){
 		GTE.animatingNewLevel = false;
 	}
 
-	if(!GTE.animatingEndLevel && !GTE.boardGameView){
+	if(GTE.animatingEndLevel || GTE.boardGameView){
+	}else{
 		GTE.updateModel(time - GTE.lastFrameTime);
 	}
 
@@ -175,11 +176,12 @@ GTE.loadGameState = function() {
 	if(GTE.gameInProgress){
 		GTE.userStats    = JSON.parse(localStorage["GTE.userStats"]);
 		GTE.level        = parseInt(localStorage["GTE.level"]);
+		GTE.stage        = parseInt(localStorage["GTE.stage"]);
 		GTE.stagesWon    = parseInt(localStorage["GTE.stagesWon"]);
 		GTE.stagesLost   = parseInt(localStorage["GTE.stagesLost"]);
 		GTE.boardGameView = parseInt(localStorage["GTE.boardGameView"]);	
-		if(!GTE.boardGameView){
-			GTE.levelState    = JSON.parse(localStorage["GTE.levelState"]);
+		GTE.levelState    = JSON.parse(localStorage["GTE.levelState"]);
+		if(GTE.boardGameView === 0){
 			GTE.levelSettings = JSON.parse(localStorage["GTE.levelSettings"]);
 			GTE.playingLevel = parseInt(localStorage["GTE.playingLevel"]);	
 		}
@@ -196,11 +198,14 @@ GTE.saveGameState = function() {
 	localStorage["GTE.level"]         = GTE.level;
 	localStorage["GTE.stagesWon"]     = GTE.stagesWon;
 	localStorage["GTE.stagesLost"]    = GTE.stagesLost;
-	localStorage["GTE.boardGameView"] = GTE.boardGameView;
+	localStorage["GTE.stage"]         = GTE.stage;
+	localStorage["GTE.boardGameView"] = GTE.boardGameView == true ? 1 : 0;
 	localStorage["GTE.playingLevel"]  = GTE.playingLevel == true ? 1 : 0;
 }
 
 GTE.startSession = function(){
+	GTE.loadGameState();
+
 	GTE.canvas = $(GTE.canvasID)[0];
 	GTE.ctx = GTE.canvas.getContext("2d");
 	
@@ -210,9 +215,8 @@ GTE.startSession = function(){
 	GTE.renderBox = [20,20,w-20,h-20];
 	
 	//GTE.startNewLevel();
-	GTE.viewBoard();
+	// GTE.viewBoard();
 
-	GTE.loadGameState();
 
 	//Start new game
 	if(!GTE.gameInProgress){
@@ -346,6 +350,7 @@ GTE.viewBoard = function(){
 	GTE.boardGameView = true;
 	GTE.dirtyCanvas = true;
 	GTE.playingLevel = false;
+	GTE.saveGameState();
 };
 
 GTE.startNewLevel = function(){	

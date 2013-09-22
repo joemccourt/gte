@@ -192,7 +192,27 @@ GTE.updateModel = function(deltaTime){
 
 	while(deltaTime > 0){
 
-		var sx = 2 * GTE.getRenderBoxHeight() / GTE.getRenderBoxWidth();
+		var w = GTE.getRenderBoxWidth();
+		var h = GTE.getRenderBoxHeight();
+
+		// r = (w+h)/2;
+		// x = [0,2] = [0,w];
+		// y = [0,1] = [0,h];
+
+		// r/x = (w+h)/2 / w / 2 = (1+h/w)/2/2
+		// r/y = (w+h)/2 / h = (1+w/h)/2
+
+		// x/r = (w/2) / ((w+h)/2) = 4*w/(w+h)
+		// y/r = h / (w+h)/2
+
+
+		var sxr = w / (w+h);
+		var syr = 2 * h / (w+h);
+
+		var srx = 1 / sxr;
+		var sry = 1 / syr;
+
+		// var syr = 1 / sxr;
 		var dT = Math.min(5,deltaTime) / 500;
 		deltaTime -= 5;
 
@@ -212,9 +232,9 @@ GTE.updateModel = function(deltaTime){
 			}
 			if(!found){continue;}
 
-			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX) + (p.y-f.fY)*(p.y-f.fY)); 
-			var cX = (f.fX-p.x) / dr;
-			var cY = (f.fY-p.y) / dr;
+			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX)*srx*srx + (p.y-f.fY)*(p.y-f.fY)*sry*sry); 
+			var cX = (f.fX-p.x)*srx / dr;
+			var cY = (f.fY-p.y)*sry / dr;
 
 			// if(dr < p.r && p.r > 0){
 			// 	dr *= dr/p.r;
@@ -222,12 +242,12 @@ GTE.updateModel = function(deltaTime){
 
 			var force = f.k*dr;
 
-			var vF = p.vX*cX+p.vY*cY;
+			var vF = p.vX*srx*cX+p.vY*sry*cY;
 			var forceDamp = -0;//Math.sqrt(4 * f.k * p.m) * vF;
 
 			if(dr > 0){
-				p.vX += dT * (force+forceDamp) * cX / Math.abs(p.m);
-				p.vY += dT * (force+forceDamp) * cY / Math.abs(p.m);
+				p.vX += dT * (force+forceDamp) * cX / Math.abs(p.m) * sxr;
+				p.vY += dT * (force+forceDamp) * cY / Math.abs(p.m) * syr;
 			}
 		}
 
@@ -251,7 +271,7 @@ GTE.updateModel = function(deltaTime){
 				var pXNew = p.x + dT*p.vX;
 				var pYNew = p.y + dT*p.vY;
 
-				var pA = p;
+				var pA  = p;
 				var vxA = pA.vX;
 				var vyA = pA.vY;
 
@@ -276,8 +296,8 @@ GTE.updateModel = function(deltaTime){
 					var xB = pB.x + dT*vxB;
 					var yB = pB.y + dT*vyB;
 
-					var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
-					var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
+					var dist = Math.sqrt(Math.pow(xB*srx-xA*srx,2) + Math.pow(yB*sry-yA*sry,2));
+					var distNow = Math.sqrt(Math.pow(pB.x*srx-pA.x*srx,2)+Math.pow(pB.y*sry-pA.y*sry,2));
 
 					if(dist < rA + rB){
 						if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
@@ -328,8 +348,8 @@ GTE.updateModel = function(deltaTime){
 					}
 
 					if(distNow < rA + rB){
-						var xNorm = (xB-xA) / dist;
-						var yNorm = (yB-yA) / dist;
+						var xNorm = (xB-xA)*srx / dist;
+						var yNorm = (yB-yA)*sry / dist;
 
 						//Penalty forces
 						var k = 0.03;
@@ -344,8 +364,8 @@ GTE.updateModel = function(deltaTime){
 						var Cr = GTE.levelSettings.CoeffRestitution;
 
 						// Proper collision reolution
-						var xNorm = (xB-xA) / dist;
-						var yNorm = (yB-yA) / dist;
+						var xNorm = (xB-xA)*srx / dist;
+						var yNorm = (yB-yA)*sry / dist;
 
 						var xTan =  yNorm;
 						var yTan = -xNorm;
@@ -373,26 +393,26 @@ GTE.updateModel = function(deltaTime){
 				}
 
 				//Left box collision
-				if(pXNew - p.r*sx < 0){
-					pXNew = p.r*sx - pXNew + p.r*sx;
+				if(pXNew - p.r*srx < 0){
+					pXNew = p.r*srx - pXNew + p.r*srx;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Right box collision
-				if(pXNew + p.r*sx > 2){
-					pXNew = 2-(p.r*sx + pXNew - 2) - p.r*sx;
+				if(pXNew + p.r*srx > 2){
+					pXNew = 2-(p.r*srx + pXNew - 2) - p.r*srx;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Top box collision
-				if(pYNew - p.r < 0){
-					pYNew = p.r - pYNew + p.r;
+				if(pYNew - p.r*sry < 0){
+					pYNew = p.r*sry - pYNew + p.r*sry;
 					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Bottom box collision
-				if(pYNew + p.r > 1){
-					pYNew = 1-(p.r + pYNew-1) - p.r;
+				if(pYNew + p.r*sry > 1){
+					pYNew = 1-(p.r*sry + pYNew-1) - p.r*sry;
 					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
@@ -405,19 +425,19 @@ GTE.updateModel = function(deltaTime){
 				}else{
 
 					//Left to Right collision
-					if(p.x < 1 && pXNew+p.r*sx > 1){
+					if(p.x < 1 && pXNew+p.r*srx > 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
 						// newP.m = -p.m;
-						pXNew = 1-(p.r*sx + pXNew - 1) - p.r*sx;
+						pXNew = 1-(p.r*srx + pXNew - 1) - p.r*srx;
 						// newP.vX = -p.vX;
 					} else 
 					
 					//Right to Left collision
-					if(p.x > 1 && pXNew-p.r*sx < 1){
+					if(p.x > 1 && pXNew-p.r*srx < 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 						// newP.m = -p.m;
-						pXNew = 1+(p.r*sx - pXNew + 1) + p.r*sx;
+						pXNew = 1+(p.r*srx - pXNew + 1) + p.r*srx;
 					}
 				}
 

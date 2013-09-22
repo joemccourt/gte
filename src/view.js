@@ -118,12 +118,11 @@ GTE.drawBoardGame = function(){
 
 	
 		if(stars > 0){
-			ctx.fillStyle = '4e8';
+			ctx.fillStyle = '#4e8';
 		}else if(stars == 0){
-			ctx.fillStyle = '44e';
-
+			ctx.fillStyle = '#44e';
 		}else{
-			ctx.fillStyle = 'ddd';
+			ctx.fillStyle = '#ddd';
 		}
 
 		var x = x1+coords[i][0]*w;
@@ -257,7 +256,7 @@ GTE.drawLevel = function(){
 		var p = GTE.levelState.particles[i];
 		var canvasCoord = GTE.internalToRenderSpace(p.x,p.y);
 
-		var radius = p.r * GTE.getRenderBoxHeight();
+		var radius = p.r * (GTE.getRenderBoxHeight() + GTE.getRenderBoxWidth())/2;
 		
 		var color = [0,0,200];
 		if(p.m < 0){
