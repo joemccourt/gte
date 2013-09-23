@@ -233,8 +233,8 @@ GTE.drawMouseForces = function(){
 
 		if(typeof p !== 'object'){continue;}
 
-		var canvasCoordP = GTE.internalToRenderSpace(p.x,p.y);
-		var canvasCoordF = GTE.internalToRenderSpace(f.fX,f.fY);
+		var canvasCoordP = GTE.gameInternalToRenderSpace(p.x,p.y);
+		var canvasCoordF = GTE.gameInternalToRenderSpace(f.fX,f.fY);
 
 		ctx.beginPath();
 	    ctx.moveTo(canvasCoordF[0], canvasCoordF[1]);
@@ -254,9 +254,9 @@ GTE.drawLevel = function(){
 
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
-		var canvasCoord = GTE.internalToRenderSpace(p.x,p.y);
+		var canvasCoord = GTE.gameInternalToRenderSpace(p.x,p.y);
 
-		var radius = p.r * (GTE.getRenderBoxHeight() + GTE.getRenderBoxWidth())/2;
+		var radius = p.r * GTE.getRenderBoxWidth() / 2;
 		
 		var color = [0,0,200];
 		if(p.m < 0){
@@ -371,7 +371,6 @@ GTE.drawButtons = function(){
 
 		var r = 0.25 * (x2 - x1 + y2 - y1) / 2;
 
-
 		ctx.beginPath();
 	    ctx.moveTo(x1+r,y1);
 	    ctx.lineTo(x2-r,y1);
@@ -393,12 +392,13 @@ GTE.drawButtons = function(){
 
 
 		ctx.fillStyle = 'rgb(255,255,255)';
-		ctx.font = "32px Verdana";
+		var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
+		ctx.font = height + "px Verdana";
 
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'baseline';
 
-	    ctx.fillText('GTE',(x1+x2)/2,y1 + (y2-y1)*0.75);
+	    ctx.fillText('GTE',(x1+x2)/2,y1 + height*1.5);
 	}
 
     ctx.restore();
@@ -505,7 +505,7 @@ GTE.endLevelAnimation = function(time){
 	ctx.fillText(rightFormat,x2,y2);
 
 	//Right side
-if(sumL >= sumR){
+	if(sumL >= sumR){
 		ctx.fillStyle = 'rgba(0,150,0,'+(time/GTE.endLevelAnimationTime)+')';
 	}else{
 		ctx.fillStyle = 'rgba(150,0,0,'+(time/GTE.endLevelAnimationTime)+')';
@@ -520,6 +520,8 @@ if(sumL >= sumR){
     ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
     ctx.closePath();
     ctx.fill();
+
+    var yScale = GTE.getYScale();
 
     //Right side box
 	if(sumR >= sumL){
@@ -559,7 +561,7 @@ if(sumL >= sumR){
 			var angle = i / sumLAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cL[i] = {
 				x:0.5+r*Math.cos(angle),
-				y:0.5+r*Math.sin(angle)
+				y:0.5*yScale+r*Math.sin(angle)
 			}
 		}
     }
@@ -574,7 +576,7 @@ if(sumL >= sumR){
 			var angle = i / sumRAbs * 2 * Math.PI - Math.PI/2; //One always on top
 			cR[i] = {
 				x:0.5+r*Math.cos(angle),
-				y:0.5+r*Math.sin(angle)
+				y:0.5*yScale+r*Math.sin(angle)
 			}
 		}
     }

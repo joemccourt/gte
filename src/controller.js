@@ -67,7 +67,7 @@ var kongregate = parent.kongregate;
 
 GTE.buttons = [
 	{'name':'group1','box': [0.1,0.05,0.25,0.15]},
-	{'name':'group2','box': [1.75,0.05,1.9,0.15]}
+	{'name':'group2','box': [0.75,0.05,0.9,0.15]}
 	]
 
 GTE.main = function(){
@@ -200,7 +200,7 @@ GTE.saveGameState = function() {
 	localStorage["GTE.stagesLost"]    = GTE.stagesLost;
 	localStorage["GTE.stage"]         = GTE.stage;
 	localStorage["GTE.boardGameView"] = GTE.boardGameView == true ? 1 : 0;
-	localStorage["GTE.playingLevel"]  = GTE.playingLevel == true ? 1 : 0;
+	localStorage["GTE.playingLevel"]  = GTE.playingLevel  == true ? 1 : 0;
 }
 
 GTE.startSession = function(){
@@ -242,9 +242,14 @@ GTE.mousedown = function(x,y){
 	GTE.mouseDownIndex = -1;
 
 	for(var i = 0; i < GTE.buttons.length; i++){
+
+		var tmpCoords = GTE.gameToBoardInternalSpace(x,y);
+		var xI = tmpCoords[0];
+		var yI = tmpCoords[1];
+
 		var button = GTE.buttons[i];
-	
-		if(x >= button.box[0] && x <= button.box[2] && y >= button.box[1] && y <= button.box[3]){
+		
+		if(xI >= button.box[0] && xI <= button.box[2] && yI >= button.box[1] && yI <= button.box[3]){
 			if(button.name == "group1"){
 				GTE.clickGroup(1);
 				return;
@@ -489,14 +494,12 @@ GTE.initEvents = function(){
 		var y = e.pageY - offset.top;
 
 		//Convert to internal coord system
-		var internalPoint = GTE.renderToInternalSpace(x,y);
-		x = internalPoint[0];
-		y = internalPoint[1];
-
 		if(GTE.boardGameView){
-			GTE.boardMouseup(x/2,y);
+			var internalPoint = GTE.renderToInternalSpace(x,y);
+			GTE.boardMouseup(internalPoint[0],internalPoint[1]);
 		}else{
-			GTE.mouseup(x,y);
+			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+			GTE.mouseup(internalPoint[0],internalPoint[1]);
 		}
 	});
 
@@ -506,14 +509,12 @@ GTE.initEvents = function(){
 		var y = e.pageY - offset.top;
 
 		//Convert to internal coord system
-		var internalPoint = GTE.renderToInternalSpace(x,y);
-		x = internalPoint[0];
-		y = internalPoint[1];
-			
 		if(GTE.boardGameView){
-			GTE.boardMousedown(x/2,y);
+			var internalPoint = GTE.renderToInternalSpace(x,y);
+			GTE.boardMousedown(internalPoint[0],internalPoint[1]);
 		}else{
-			GTE.mousedown(x,y);
+			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+			GTE.mousedown(internalPoint[0],internalPoint[1]);
 		}
 	});
 
@@ -523,14 +524,12 @@ GTE.initEvents = function(){
 		var y = e.pageY - offset.top;
 
 		//Convert to intenal coord system
-		var internalPoint = GTE.renderToInternalSpace(x,y);
-		x = internalPoint[0];
-		y = internalPoint[1];
-
 		if(GTE.boardGameView){
-			GTE.boardMousemove(x/2,y);
+			var internalPoint = GTE.renderToInternalSpace(x,y);
+			GTE.boardMousemove(internalPoint[0],internalPoint[1]);
 		}else{
-			GTE.mousemove(x,y);
+			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+			GTE.mousemove(internalPoint[0],internalPoint[1]);
 		}
 	});
 
@@ -555,17 +554,6 @@ GTE.initEvents = function(){
 };
 
 // *** Helper functions *** //
-GTE.internalToRenderSpace = function(x,y){
-	var xRender = x / 2 * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
-	var yRender = y * GTE.getRenderBoxHeight() + GTE.renderBox[1];
-	return [xRender,yRender];
-};
-
-GTE.renderToInternalSpace = function(x,y){
-	var xInternal = 2*(x - GTE.renderBox[0]) / GTE.getRenderBoxWidth();
-	var yInternal = (y - GTE.renderBox[1]) / GTE.getRenderBoxHeight();
-	return [xInternal,yInternal];
-};
 
 GTE.arrayColorToString = function(color){
 	return "rgb("+Math.round(color[0])+","+Math.round(color[1])+","+Math.round(color[2])+")";

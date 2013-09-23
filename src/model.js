@@ -1,3 +1,42 @@
+GTE.gameInternalToRenderSpace = function(x,y){
+	var xRender = x / 2 * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
+	var yRender = GTE.renderBox[1] + y*GTE.getRenderBoxWidth()/2;
+	return [xRender,yRender];
+};
+
+GTE.gameRenderToInternalSpace = function(x,y){
+	var xInternal = 2*(x - GTE.renderBox[0]) / GTE.getRenderBoxWidth();
+	var yInternal = (y - GTE.renderBox[1]) / GTE.getRenderBoxWidth()*2;
+	return [xInternal,yInternal];
+};
+
+GTE.internalToRenderSpace = function(x,y){
+	var xRender = x * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
+	var yRender = y * GTE.getRenderBoxHeight() + GTE.renderBox[1];
+	return [xRender,yRender];
+};
+
+GTE.renderToInternalSpace = function(x,y){
+	var xInternal = (x - GTE.renderBox[0]) / GTE.getRenderBoxWidth();
+	var yInternal = (y - GTE.renderBox[1]) / GTE.getRenderBoxHeight();
+	return [xInternal,yInternal];
+};
+
+GTE.gameToBoardInternalSpace = function(x,y){
+	var newX = x/2;
+	var newY = y/2*GTE.getRenderBoxWidth()/GTE.getRenderBoxHeight();
+
+	return [newX,newY];
+};
+
+GTE.getYScale = function(x,y){
+	var w = GTE.getRenderBoxWidth();
+	var h = GTE.getRenderBoxHeight();
+	var yScale = 2*h/w;
+
+	return yScale;
+};
+
 GTE.sanitizeLevelSettings = function(s){
 	if(typeof s !== 'object'){s = {};}
 
@@ -84,6 +123,8 @@ GTE.initModel = function(){
 		
 		GTE.levelState.particles.push(particle);
 	}
+
+	GTE.scaleModel();
 };
 
 GTE.cloneParticle = function(p){
@@ -188,12 +229,28 @@ GTE.setParticlesUnresolved = function(){
 	}
 };
 
+GTE.scaleModel = function(){
+	var w = GTE.getRenderBoxWidth();
+	var h = GTE.getRenderBoxHeight();
+	var yScale = GTE.getYScale();
+
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+
+		p.r  *= (w+h)/2/w;
+		p.y  *= yScale;
+		p.vY *= yScale;
+	}
+};
+
 GTE.updateModel = function(deltaTime){
 
 	while(deltaTime > 0){
 
 		var w = GTE.getRenderBoxWidth();
 		var h = GTE.getRenderBoxHeight();
+
+		var yLimit = 2*h/w;
 
 		// r = (w+h)/2;
 		// x = [0,2] = [0,w];
@@ -205,14 +262,7 @@ GTE.updateModel = function(deltaTime){
 		// x/r = (w/2) / ((w+h)/2) = 4*w/(w+h)
 		// y/r = h / (w+h)/2
 
-
-		var sxr = w / (w+h);
-		var syr = 2 * h / (w+h);
-
-		var srx = 1 / sxr;
-		var sry = 1 / syr;
-
-		// var syr = 1 / sxr;
+		// v = 1 /;
 		var dT = Math.min(5,deltaTime) / 500;
 		deltaTime -= 5;
 
@@ -232,9 +282,9 @@ GTE.updateModel = function(deltaTime){
 			}
 			if(!found){continue;}
 
-			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX)*srx*srx + (p.y-f.fY)*(p.y-f.fY)*sry*sry); 
-			var cX = (f.fX-p.x)*srx / dr;
-			var cY = (f.fY-p.y)*sry / dr;
+			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX) + (p.y-f.fY)*(p.y-f.fY)); 
+			var cX = (f.fX-p.x) / dr;
+			var cY = (f.fY-p.y) / dr;
 
 			// if(dr < p.r && p.r > 0){
 			// 	dr *= dr/p.r;
@@ -242,12 +292,12 @@ GTE.updateModel = function(deltaTime){
 
 			var force = f.k*dr;
 
-			var vF = p.vX*srx*cX+p.vY*sry*cY;
+			var vF = p.vX*cX+p.vY*cY;
 			var forceDamp = -0;//Math.sqrt(4 * f.k * p.m) * vF;
 
 			if(dr > 0){
-				p.vX += dT * (force+forceDamp) * cX / Math.abs(p.m) * sxr;
-				p.vY += dT * (force+forceDamp) * cY / Math.abs(p.m) * syr;
+				p.vX += dT * (force+forceDamp) * cX / Math.abs(p.m);
+				p.vY += dT * (force+forceDamp) * cY / Math.abs(p.m);
 			}
 		}
 
@@ -296,8 +346,8 @@ GTE.updateModel = function(deltaTime){
 					var xB = pB.x + dT*vxB;
 					var yB = pB.y + dT*vyB;
 
-					var dist = Math.sqrt(Math.pow(xB*srx-xA*srx,2) + Math.pow(yB*sry-yA*sry,2));
-					var distNow = Math.sqrt(Math.pow(pB.x*srx-pA.x*srx,2)+Math.pow(pB.y*sry-pA.y*sry,2));
+					var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
+					var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
 
 					if(dist < rA + rB){
 						if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
@@ -348,8 +398,8 @@ GTE.updateModel = function(deltaTime){
 					}
 
 					if(distNow < rA + rB){
-						var xNorm = (xB-xA)*srx / dist;
-						var yNorm = (yB-yA)*sry / dist;
+						var xNorm = (xB-xA) / dist;
+						var yNorm = (yB-yA) / dist;
 
 						//Penalty forces
 						var k = 0.03;
@@ -364,8 +414,8 @@ GTE.updateModel = function(deltaTime){
 						var Cr = GTE.levelSettings.CoeffRestitution;
 
 						// Proper collision reolution
-						var xNorm = (xB-xA)*srx / dist;
-						var yNorm = (yB-yA)*sry / dist;
+						var xNorm = (xB-xA) / dist;
+						var yNorm = (yB-yA) / dist;
 
 						var xTan =  yNorm;
 						var yTan = -xNorm;
@@ -393,26 +443,26 @@ GTE.updateModel = function(deltaTime){
 				}
 
 				//Left box collision
-				if(pXNew - p.r*srx < 0){
-					pXNew = p.r*srx - pXNew + p.r*srx;
+				if(pXNew - p.r < 0){
+					pXNew = p.r - pXNew + p.r;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Right box collision
-				if(pXNew + p.r*srx > 2){
-					pXNew = 2-(p.r*srx + pXNew - 2) - p.r*srx;
+				if(pXNew + p.r > 2){
+					pXNew = 2-(p.r + pXNew - 2) - p.r;
 					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Top box collision
-				if(pYNew - p.r*sry < 0){
-					pYNew = p.r*sry - pYNew + p.r*sry;
+				if(pYNew - p.r < 0){
+					pYNew = p.r - pYNew + p.r;
 					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
 				//Bottom box collision
-				if(pYNew + p.r*sry > 1){
-					pYNew = 1-(p.r*sry + pYNew-1) - p.r*sry;
+				if(pYNew + p.r > yLimit){
+					pYNew = yLimit-(p.r + pYNew-yLimit) - p.r;
 					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 				}
 
@@ -425,19 +475,19 @@ GTE.updateModel = function(deltaTime){
 				}else{
 
 					//Left to Right collision
-					if(p.x < 1 && pXNew+p.r*srx > 1){
+					if(p.x < 1 && pXNew+p.r > 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
 						// newP.m = -p.m;
-						pXNew = 1-(p.r*srx + pXNew - 1) - p.r*srx;
+						pXNew = 1-(p.r + pXNew - 1) - p.r;
 						// newP.vX = -p.vX;
 					} else 
 					
 					//Right to Left collision
-					if(p.x > 1 && pXNew-p.r*srx < 1){
+					if(p.x > 1 && pXNew-p.r < 1){
 						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 						// newP.m = -p.m;
-						pXNew = 1+(p.r*srx - pXNew + 1) + p.r*srx;
+						pXNew = 1+(p.r - pXNew + 1) + p.r;
 					}
 				}
 
