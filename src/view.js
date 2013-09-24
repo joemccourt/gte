@@ -502,9 +502,9 @@ GTE.endLevelAnimation = function(time){
 	}
 
 	var centerText;
-	if(sumR > sumL){
+	if(sumL > sumR){
 		centerText = ">";
-	}else if(sumR < sumL){
+	}else if(sumL < sumR){
 		centerText = "<";
 	}else{
 		centerText = "=";

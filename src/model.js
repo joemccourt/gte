@@ -233,7 +233,7 @@ GTE.setParticlesUnresolved = function(){
 GTE.scaleModel = function(){
 	var w = GTE.getRenderBoxWidth();
 	var h = GTE.getRenderBoxHeight();
-	console.log(w,h,GTE.levelState.aspect);
+	// console.log(w,h,GTE.levelState.aspect);
 	var yScale = GTE.levelState.aspect * (h/w);
 	GTE.levelState.aspect = w/h;
 
