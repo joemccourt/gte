@@ -369,7 +369,7 @@ GTE.drawButtons = function(){
 		var x2 = canvasCoordBR[0]+0.5;
 		var y2 = canvasCoordBR[1]+0.5;
 
-		var r = 0.25 * (x2 - x1 + y2 - y1) / 2;
+		var r = 0.25 * (y2 - y1);
 
 		ctx.beginPath();
 	    ctx.moveTo(x1+r,y1);
@@ -482,7 +482,7 @@ GTE.endLevelAnimation = function(time){
 	var y2 = GTE.renderBox[1] +   (GTE.renderBox[3] - GTE.renderBox[1])/2;
 
 	ctx.fillStyle = 'rgb(255,255,255)';
-	ctx.font = "72px Verdana";
+	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
 
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
@@ -501,6 +501,16 @@ GTE.endLevelAnimation = function(time){
 		rightFormat = sumR.toFixed(2);
 	}
 
+	var centerText;
+	if(sumR > sumL){
+		centerText = ">";
+	}else if(sumR < sumL){
+		centerText = "<";
+	}else{
+		centerText = "=";
+	}
+
+	ctx.fillText(centerText,(x1+x2)/2,y1);
 	ctx.fillText(leftFormat,x1,y1);
 	ctx.fillText(rightFormat,x2,y2);
 

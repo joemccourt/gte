@@ -32,7 +32,7 @@ GTE.boardGameView = true;
 GTE.levelCompleted = false;
 
 
-GTE.drawBoardGameBox = [-0.1,-1,1.1,1.1];
+GTE.drawBoardGameBox = [-0.1,-2,1.1,1.1];
 
 GTE.drawBoardGameTransform = [1,0,0,0,
 							  0,1,0,0,
@@ -181,6 +181,7 @@ GTE.loadGameState = function() {
 		GTE.stagesLost   = parseInt(localStorage["GTE.stagesLost"]);
 		GTE.boardGameView = parseInt(localStorage["GTE.boardGameView"]);	
 		GTE.levelState    = JSON.parse(localStorage["GTE.levelState"]);
+		GTE.drawBoardGameTransform = JSON.parse(localStorage['GTE.drawBoardGameTransform']);
 		if(GTE.boardGameView === 0){
 			GTE.levelSettings = JSON.parse(localStorage["GTE.levelSettings"]);
 			GTE.playingLevel = parseInt(localStorage["GTE.playingLevel"]);	
@@ -195,6 +196,7 @@ GTE.saveGameState = function() {
 	localStorage["GTE.userStats"]     = JSON.stringify(GTE.userStats);
 	localStorage["GTE.levelState"]    = JSON.stringify(GTE.levelState);
 	localStorage["GTE.levelSettings"] = JSON.stringify(GTE.levelSettings);
+	localStorage["GTE.drawBoardGameTransform"] = JSON.stringify(GTE.drawBoardGameTransform);
 	localStorage["GTE.level"]         = GTE.level;
 	localStorage["GTE.stagesWon"]     = GTE.stagesWon;
 	localStorage["GTE.stagesLost"]    = GTE.stagesLost;
@@ -204,8 +206,6 @@ GTE.saveGameState = function() {
 }
 
 GTE.startSession = function(){
-	GTE.loadGameState();
-
 	GTE.canvas = $(GTE.canvasID)[0];
 	GTE.ctx = GTE.canvas.getContext("2d");
 	
@@ -214,6 +214,9 @@ GTE.startSession = function(){
 
 	GTE.renderBox = [20,20,w-20,h-20];
 	
+	GTE.loadGameState();
+	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+	GTE.scaleModel();
 	//GTE.startNewLevel();
 	// GTE.viewBoard();
 
@@ -390,8 +393,8 @@ GTE.selectLevel = function(i){
 // *** Board View Events ***
 GTE.boardMouseup = function(x,y){
 	GTE.mouse = "up";
-
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+	GTE.saveGameState();
 };
 
 GTE.boardMousedown = function(x,y){
@@ -410,12 +413,13 @@ GTE.boardMousedown = function(x,y){
 	var y1 = GTE.renderBox[1];
 
 	var posC = GTE.getTransformedCoordsInv(GTE.drawBoardGameTransform,x,y);
-	var pC = GTE.internalToRenderSpace(posC[0]*2,posC[1]);
+	console.log("["+posC[0].toFixed(2)+","+posC[1].toFixed(2)+"]");
+	var pC = GTE.internalToRenderSpace(posC[0],posC[1]);
 
 	var coords = GTE.levelCoords;
 	var r = GTE.boardLevelRadius * (w+h)/2;
 	for(var i = 0; i < coords.length; i++){
-		var posL = GTE.internalToRenderSpace(coords[i][0]*2,coords[i][1]);
+		var posL = GTE.internalToRenderSpace(coords[i][0],coords[i][1]);
 		var pL = posL;
 		// var pL   = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posL[0],posL[1]);
 
@@ -504,10 +508,13 @@ GTE.initEvents = function(){
 	});
 
 	$(document).mousedown(function (e) {
+		if("#"+e.target.id !== GTE.canvasID){
+			return;
+		}
+
 		var offset = $(GTE.canvasID).offset();
 		var x = e.pageX - offset.left;
 		var y = e.pageY - offset.top;
-
 		//Convert to internal coord system
 		if(GTE.boardGameView){
 			var internalPoint = GTE.renderToInternalSpace(x,y);
@@ -538,16 +545,43 @@ GTE.initEvents = function(){
 		//112 = 'p'
 		//114 = 'r'
 		//115 = 's'
-		// 37 - left
-		// 38 - up
-		// 39 - right
-		// 40 - down
-		if(e.which == 37 && GTE.playingLevel){
-			GTE.clickGroup(1);
-		}else if(e.which == 39 && GTE.playingLevel){
-			GTE.clickGroup(2);
-		}else if(e.which == 81){
-			GTE.viewBoard();
+		// 37 - left 65 - a
+		// 38 - up  87 - w
+		// 39 - right 68 - d
+		// 40 - down 83 - s
+
+		if(GTE.boardGameView){
+			if(e.which == 37 || e.which == 65){
+				GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, 0.05, 0);
+				GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+				GTE.saveGameState();
+				GTE.dirtyCanvas = true;
+			}else if(e.which == 39 || e.which == 68){
+				GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, -0.05, 0);
+				GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+				GTE.saveGameState();
+				GTE.dirtyCanvas = true;
+			}else if(e.which == 38 || e.which == 87){
+				GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, 0, 0.05);
+				GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+				GTE.saveGameState();
+				GTE.dirtyCanvas = true;
+			}else if(e.which == 40 || e.which == 83){
+				GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, 0,-0.05);
+				GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+				GTE.saveGameState();
+				GTE.dirtyCanvas = true;
+			}
+			
+
+		}else{
+			if(e.which == 37 && GTE.playingLevel){
+				GTE.clickGroup(1);
+			}else if(e.which == 39 && GTE.playingLevel){
+				GTE.clickGroup(2);
+			}else if(e.which == 81){
+				GTE.viewBoard();
+			}
 		}
 
 	});

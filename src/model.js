@@ -124,6 +124,7 @@ GTE.initModel = function(){
 		GTE.levelState.particles.push(particle);
 	}
 
+	GTE.levelState.aspect = 2;
 	GTE.scaleModel();
 };
 
@@ -232,12 +233,14 @@ GTE.setParticlesUnresolved = function(){
 GTE.scaleModel = function(){
 	var w = GTE.getRenderBoxWidth();
 	var h = GTE.getRenderBoxHeight();
-	var yScale = GTE.getYScale();
+	console.log(w,h,GTE.levelState.aspect);
+	var yScale = GTE.levelState.aspect * (h/w);
+	GTE.levelState.aspect = w/h;
 
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 
-		p.r  *= (w+h)/2/w;
+		// p.r  *= (w+h)/2 / w;
 		p.y  *= yScale;
 		p.vY *= yScale;
 	}
