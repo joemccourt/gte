@@ -1,14 +1,40 @@
-GTE.drawGame = function(){
-
-	if(GTE.boardGameView){
+GTE.drawGame = function(drawGameParams){
+	// console.log(drawGameParams.phase);
+	if(drawGameParams.phase === 'board'){
 		GTE.drawBoardGame();
-	}else{
-		GTE.drawBackground();
-		GTE.drawMidline();
-		GTE.drawLevel();
-		GTE.drawMouseForces();
-		GTE.drawButtons();
+	}else if(drawGameParams.phase === 'run'){
+		GTE.drawGameRun(drawGameParams);
+	}else if(drawGameParams.phase === 'start'){
+		GTE.drawGameStart(drawGameParams);
+	}else if(drawGameParams.phase === 'end'){
+		GTE.drawGameEnd(drawGameParams);
 	}
+};
+
+GTE.drawGameRun = function(drawGameParams){
+	GTE.drawBackground();
+	GTE.drawMidline();
+	GTE.drawLevel();
+	GTE.drawMouseForces();
+	GTE.drawButtons();
+};
+
+GTE.drawGameStart = function(drawGameParams){
+	GTE.drawBackground();
+	GTE.drawMidline(drawGameParams.timeSinceStart/GTE.newLevelAnimationTime);
+	GTE.drawLevel();
+	GTE.drawMouseForces();
+	GTE.drawButtons();
+	GTE.newLevelAnimation(drawGameParams.timeSinceStart);
+};
+
+GTE.drawGameEnd = function(drawGameParams){
+	GTE.drawBackground();
+	GTE.drawMidline(Math.pow(drawGameParams.timeUntilEnd/GTE.endLevelAnimationTime,4));
+	GTE.drawLevel();
+	GTE.drawMouseForces();
+	GTE.drawButtons();
+	GTE.endLevelAnimation(drawGameParams.timeUntilEnd);
 };
 
 GTE.drawStar = function(ctx, x,y,r){
@@ -404,24 +430,52 @@ GTE.drawButtons = function(){
     ctx.restore();
 };
 
-GTE.drawMidline = function(){
+GTE.drawMidline = function(alpha){
+	// console.log(alpha);
+	if(typeof alpha !== 'number'){alpha = 1;}
 	var ctx = GTE.ctx;
 	ctx.save();
 
 	var midX = (GTE.renderBox[0] + GTE.renderBox[2])/2+0.5|0;
-
+	var x = midX+0.5;
+	var y1 = GTE.renderBox[1] - 0.5;
+	var y2 = GTE.renderBox[3] + 0.5;
+	
+	ctx.lineWidth = 3;
+	
+	ctx.strokeStyle = 'rgba(0,0,0,'+alpha.toFixed(2)+')';
 	if(GTE.levelSettings.transfer){
-		ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+
+		var n = 51;
+		ctx.beginPath();
+
+		var yLast = y1;
+		var dy = (y2-y1)/n;
+		var yGoal,yActual;
+		for(var i = 0; i <= n; i++){
+
+			yGoal = y1+i*dy;
+			yActual = (yGoal|0)+0.5;
+
+			if(i%2 == 0){
+				ctx.moveTo(x,yActual);
+			}else{
+				ctx.lineTo(x,yActual);
+			}
+
+			yLast = yActual;
+		}
+
+		ctx.closePath();
+		ctx.stroke();
 	}else{
-		ctx.strokeStyle = '000';
+		ctx.beginPath();
+		ctx.moveTo(x,y1);
+		ctx.lineTo(x,y2);
+		ctx.closePath();
+		ctx.stroke();
 	}
 
-	ctx.beginPath();
-	ctx.moveTo(midX+0.5,GTE.renderBox[1]-0.5);
-	ctx.lineTo(midX+0.5,GTE.renderBox[3]+0.5);
-	ctx.closePath();
-	ctx.lineWidth = 3;
-	ctx.stroke();
 
     ctx.restore();
 };
