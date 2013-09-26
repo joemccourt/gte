@@ -17,14 +17,16 @@ GTE.drawGameRun = function(drawGameParams){
 	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
+	GTE.drawProgress();
 };
 
 GTE.drawGameStart = function(drawGameParams){
 	GTE.drawBackground();
-	GTE.drawMidline(drawGameParams.timeSinceStart/GTE.newLevelAnimationTime);
+	GTE.drawMidline(Math.pow(drawGameParams.timeSinceStart/GTE.newLevelAnimationTime,4));
 	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
+	GTE.drawProgress();
 	GTE.newLevelAnimation(drawGameParams.timeSinceStart);
 };
 
@@ -34,6 +36,7 @@ GTE.drawGameEnd = function(drawGameParams){
 	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
+	GTE.drawProgress();
 	GTE.endLevelAnimation(drawGameParams.timeUntilEnd);
 };
 
@@ -187,7 +190,7 @@ GTE.drawBoardGame = function(){
 		var rStar = 1.7*r;
 
 		if(stars > 0){
-			ctx.fillStyle = 'rgb(150,90,56)';
+			ctx.fillStyle = GTE.starColorStr[0];
 			ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 			ctx.lineWidth = 2;
 			var angle = 130 * Math.PI/180;
@@ -197,7 +200,7 @@ GTE.drawBoardGame = function(){
 		}
 
 		if(stars > 1){
-			ctx.fillStyle = 'rgb(204,194,194)';
+			ctx.fillStyle = GTE.starColorStr[1];
 			ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 			var angle = 90 * Math.PI/180;
 			GTE.drawStar(ctx, x+rStar*Math.cos(angle), y-rStar*Math.sin(angle), r*0.45);
@@ -206,7 +209,7 @@ GTE.drawBoardGame = function(){
 		}
 
 		if(stars > 2){
-			ctx.fillStyle = 'rgb(217,164,65)';
+			ctx.fillStyle = GTE.starColorStr[2];
 			ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 			var angle = 50 * Math.PI/180;
 			GTE.drawStar(ctx, x+rStar*Math.cos(angle), y-rStar*Math.sin(angle), r*0.45);
@@ -379,6 +382,109 @@ GTE.drawBackground = function(){
     ctx.restore();
 };
 
+GTE.drawProgress = function(){
+
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var box = [1.02,0,1.05,1];
+	
+	var canvasCoordTL = GTE.internalToRenderSpace(box[0],box[1]);
+	var canvasCoordBR = GTE.internalToRenderSpace(box[2],box[3]);
+
+	var x1 = canvasCoordTL[0]+0.5;
+	var y1 = canvasCoordTL[1]+0.5;
+	var x2 = canvasCoordBR[0]+0.5;
+	var y2 = canvasCoordBR[1]+0.5;
+
+	var r = 0.5 * Math.min(y2 - y1, x2 - x1);
+
+	var n = GTE.levelSettings['rounds'];
+	var l = GTE.stagesLost;
+	var w = GTE.stagesWon;
+
+	//Lost portion
+	if(l > 0){
+		var y = y1+(y2-y1)*l/n+0.5|0;
+		ctx.beginPath();
+		ctx.moveTo(x1+r,y1);
+		ctx.lineTo(x2-r,y1);
+		ctx.arc(x2-r,y1+r,r,-Math.PI/2,0,false);
+		ctx.lineTo(x2,y+0.5);
+		ctx.lineTo(x1,y+0.5);
+		
+		ctx.lineTo(x1,y1+r);
+    	ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+    
+		ctx.closePath();
+    	ctx.fillStyle    = 'rgba(150,0,0,1)';
+    	ctx.fill();
+		//TODO: special case for all lost
+	}
+
+	if(w > 0){
+		var y = y2-(y2-y1)*w/n+0.5|0;
+		ctx.beginPath();
+		ctx.moveTo(x1,y+0.5);
+		ctx.lineTo(x2,y+0.5);
+		ctx.lineTo(x2,y2-r);
+		ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+		ctx.lineTo(x1+r,y2);
+		ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+		ctx.lineTo(x1,y+0.5);
+		ctx.closePath();
+
+    	ctx.fillStyle    = 'rgba(0,150,0,1)';
+    	ctx.fill();
+		//TODO: special case for all won
+	}
+
+	ctx.beginPath();
+    ctx.moveTo(x1+r,y1);
+    ctx.lineTo(x2-r,y1);
+    ctx.arc(x2-r,y1+r,r,-Math.PI/2,0,false);
+    ctx.lineTo(x2,y2-r);
+    ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+    ctx.lineTo(x1+r,y2);
+    ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+    ctx.lineTo(x1,y1+r);
+    ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+    ctx.closePath();
+
+    ctx.strokeStyle  = 'rgba(0,0,0,1)';
+    ctx.fillStyle    = 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // ctx.fill();
+
+
+	ctx.beginPath();
+	ctx.strokeStyle = 'rgba(0,0,0,1)';
+	ctx.lineWidth = 1;
+	for(var i = 1; i < n; i++){
+		var targetHeight = y1+i*(y2-y1)/n + 0.5 | 0;
+		ctx.moveTo(x1,targetHeight+0.5);
+		ctx.lineTo(x2,targetHeight+0.5);
+	}
+	ctx.stroke();
+	ctx.closePath();
+
+	for(var s = 0; s < GTE.levelSettings['starReqs'].length; s++){
+		var reqN = GTE.levelSettings['starReqs'][s];
+		var targetHeight = y1+(n-reqN+0.5)*(y2-y1)/n + 0.5 | 0;
+		
+		ctx.beginPath();	
+	    ctx.fillStyle = GTE.starColorStr[s];
+		ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+		GTE.drawStar(ctx, (x1+x2)/2, targetHeight, r*0.8);
+		ctx.stroke();
+		ctx.fill();
+		ctx.closePath();
+	}
+
+    ctx.restore();
+};
+
 
 GTE.drawButtons = function(){
 	var ctx = GTE.ctx;
@@ -395,7 +501,7 @@ GTE.drawButtons = function(){
 		var x2 = canvasCoordBR[0]+0.5;
 		var y2 = canvasCoordBR[1]+0.5;
 
-		var r = 0.25 * (y2 - y1);
+		var r = 0.5 * Math.min(y2 - y1, x2 - x1);
 
 		ctx.beginPath();
 	    ctx.moveTo(x1+r,y1);
@@ -411,7 +517,7 @@ GTE.drawButtons = function(){
 	    ctx.closePath();
 
 	    ctx.strokeStyle  = 'rgba(0,0,0,0.8)';
-	    ctx.fillStyle  = 'rgba(0,0,0,0.3)';
+	    ctx.fillStyle    = 'rgba(0,0,0,0.3)';
 	    ctx.lineWidth = 2;
 	    ctx.stroke();
 	    ctx.fill();
@@ -424,7 +530,7 @@ GTE.drawButtons = function(){
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'baseline';
 
-	    ctx.fillText('GTE',(x1+x2)/2,y1 + height*1.5);
+	    // ctx.fillText('GTE',(x1+x2)/2,y1 + height*1.5);
 	}
 
     ctx.restore();
@@ -569,10 +675,11 @@ GTE.endLevelAnimation = function(time){
 	ctx.fillText(rightFormat,x2,y2);
 
 	//Right side
+	var alpha = Math.pow((time/GTE.endLevelAnimationTime),4);
 	if(sumL >= sumR){
-		ctx.fillStyle = 'rgba(0,150,0,'+(time/GTE.endLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(0,150,0,'+alpha+')';
 	}else{
-		ctx.fillStyle = 'rgba(150,0,0,'+(time/GTE.endLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(150,0,0,'+alpha+')';
 	}
 
 	var xMid = GTE.renderBox[0] + (GTE.renderBox[2] - GTE.renderBox[0])/2;
@@ -589,9 +696,9 @@ GTE.endLevelAnimation = function(time){
 
     //Right side box
 	if(sumR >= sumL){
-		ctx.fillStyle = 'rgba(0,150,0,'+(time/GTE.endLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(0,150,0,'+alpha+')';
 	}else{
-		ctx.fillStyle = 'rgba(150,0,0,'+(time/GTE.endLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(150,0,0,'+alpha+')';
 	}
 
 	var xMid = GTE.renderBox[0] + (GTE.renderBox[2] - GTE.renderBox[0])/2;
