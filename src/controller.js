@@ -7,10 +7,10 @@ GTE.canvasID = "#gameCanvas";
 GTE.startTime = (new Date()).getTime();
 GTE.lastFrameTime = 0;
 GTE.frameRenderTime = 0;
-GTE.startNewLevelAnimationTime = 0;
-GTE.startEndLevelAnimationTime = 0;
-GTE.newLevelAnimationTime = 500;
-GTE.endLevelAnimationTime = 2000;
+GTE.startNewStageAnimationTime = 0;
+GTE.startEndStageAnimationTime = 0;
+GTE.newStageAnimationTime = 500;
+GTE.endStageAnimationTime = 2000;
 GTE.UIUpdateTime = 10;
 GTE.lastUIUpdateTime = 0;
 
@@ -23,13 +23,15 @@ GTE.dirtyCanvas = true;
 GTE.gameInProgress = false;
 GTE.wonGame = false;
 GTE.toSaveGame = true;
-GTE.startNewLevelAnimation = false;
-GTE.startEndLevelAnimation = false;
-GTE.animatingNewLevel = false;
-GTE.animatingEndLevel = false;
+GTE.startNewStageAnimation = false;
+GTE.startEndStageAnimation = false;
+GTE.animatingNewStage = false;
+GTE.animatingEndStage = false;
 GTE.playingLevel = true;
 GTE.boardGameView = true;
 GTE.levelCompleted = false;
+GTE.endLevelView = false;
+
 
 GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
 
@@ -49,7 +51,6 @@ GTE.stage = 0;
 GTE.stagesWon = 0;
 GTE.stagesLost = 0;
 
-//TODO: localstorage this
 GTE.userStats = {
 	//'level0' : {'stars':2},
 	// 'level1' : {'stars':3},
@@ -67,9 +68,44 @@ GTE.mouseDownPos = {x:0,y:0};
 var kongregate = parent.kongregate;
 
 GTE.buttons = [
-	{'name':'group1','box': [0.05,1.015,0.4,1.1]},
-	{'name':'group2','box': [0.6,1.015,0.95,1.1]},
-	]
+	{
+		'name':'group1',
+		'text':'',
+		'box': [0.05,1.015,0.4,1.1],
+		'r':0.5
+	},
+	{
+		'name':'group2',
+		'text':'',
+		'box': [0.6,1.015,0.95,1.1],
+		'r':0.5
+	},
+	{
+		'name':'quit',
+		'text':'q',
+		'box': [1.01,0,1.07,0.08],
+		'r':0.1
+	}];
+
+GTE.buttonsLevelEnd = [
+	{
+		'name':'group1',
+		'text':'',
+		'box': [0.05,1.015,0.4,1.1],
+		'r':0.5
+	},
+	{
+		'name':'group2',
+		'text':'',
+		'box': [0.6,1.015,0.95,1.1],
+		'r':0.5
+	},
+	{
+		'name':'quit',
+		'text':'v',
+		'box': [1.01,0,1.07,0.08],
+		'r':0.1
+	}]
 
 GTE.main = function(){
 	GTE.startSession();
@@ -83,59 +119,56 @@ GTE.gameLoop = function(time){
 
 	if(time - GTE.lastFrameTime > 5000){GTE.lastFrameTime = time-100;}
 
-	if(GTE.startEndLevelAnimation){
-		GTE.startEndLevelAnimation = false;
-		GTE.animatingEndLevel = true;
-		GTE.startEndLevelAnimationTime = time;
+	if(GTE.startEndStageAnimation){
+		GTE.startEndStageAnimation = false;
+		GTE.animatingEndStage = true;
+		GTE.startEndStageAnimationTime = time;
 		GTE.dirtyCanvas = true;
 	}
 
-	if(GTE.animatingEndLevel && time - GTE.startEndLevelAnimationTime > GTE.endLevelAnimationTime){
-		GTE.animatingEndLevel = false;
+	if(GTE.animatingEndStage && time - GTE.startEndStageAnimationTime > GTE.endStageAnimationTime){
+		GTE.animatingEndStage = false;
 
 		if(GTE.levelCompleted){
-			GTE.viewBoard();
+			GTE.endLevel();
+			// GTE.dirtyCanvas = true;
 		}else{
 			GTE.startNewLevel();
 		}
 	}
 
-	if(GTE.startNewLevelAnimation){
-		GTE.startNewLevelAnimation = false;
-		GTE.animatingNewLevel = true;
-		GTE.startNewLevelAnimationTime = time;
+	if(GTE.startNewStageAnimation){
+		GTE.startNewStageAnimation = false;
+		GTE.animatingNewStage = true;
+		GTE.startNewStageAnimationTime = time;
 		GTE.dirtyCanvas = true;
 	}
-	if(GTE.animatingNewLevel && time - GTE.startNewLevelAnimationTime > GTE.newLevelAnimationTime){
-		GTE.animatingNewLevel = false;
+	if(GTE.animatingNewStage && time - GTE.startNewStageAnimationTime > GTE.newStageAnimationTime){
+		GTE.animatingNewStage = false;
 	}
 
-	if(GTE.boardGameView){
-		GTE.animatingEndLevel = false;
-		GTE.animatingNewLevel = false;
-	}
-
-	if(GTE.animatingEndLevel || GTE.boardGameView){
+	if(GTE.animatingEndStage || GTE.boardGameView){
 	}else{
 		GTE.updateModel(time - GTE.lastFrameTime);
 	}
 
 	if(GTE.dirtyCanvas){
-
 		GTE.dirtyCanvas = false;
 
 		var drawGameParams = {
 			'phase' : 'run',
-			'timeSinceStart' : time - GTE.startNewLevelAnimationTime,
-			'timeUntilEnd' : GTE.endLevelAnimationTime - (time - GTE.startEndLevelAnimationTime)
+			'timeSinceStart' : time - GTE.startNewStageAnimationTime,
+			'timeUntilEnd' : GTE.endStageAnimationTime - (time - GTE.startEndStageAnimationTime)
 		};
 
-		if(GTE.animatingNewLevel){
+		if(GTE.animatingNewStage){
 			drawGameParams.phase = 'start';
 			GTE.dirtyCanvas = true;
-		}else if(GTE.animatingEndLevel){
+		}else if(GTE.animatingEndStage){
 			drawGameParams.phase = 'end';
 			GTE.dirtyCanvas = true;
+		}else if(GTE.endLevelView){
+			drawGameParams.phase = 'levelEnd';
 		}
 
 		if(GTE.boardGameView){
@@ -143,12 +176,6 @@ GTE.gameLoop = function(time){
 		}
 
 		GTE.drawGame(drawGameParams);
-
-		//Save game
-		if(GTE.toSaveGame){
-			GTE.saveGameState();
-			GTE.toSaveGame = false;
-		}
 	}
 
 	if(time - GTE.lastUIUpdateTime > GTE.UIUpdateTime){
@@ -159,10 +186,9 @@ GTE.gameLoop = function(time){
 
 	GTE.frameRenderTime = time - GTE.lastFrameTime;
 	GTE.lastFrameTime = time;
-
 };
 
-GTE.loadGameState = function() {
+GTE.loadGameState = function(){
 	if (!supports_html5_storage()) { return false; }
 	GTE.gameInProgress = (localStorage["GTE.gameInProgress"] == "true");
 
@@ -223,8 +249,15 @@ GTE.startSession = function(){
 	
 	GTE.loadGameState();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
-	GTE.scaleModel();
-	//GTE.startNewLevel();
+
+	if(GTE.boardGameView){
+		GTE.setBoardRenderBox();
+	}else{
+		GTE.scaleModel();
+		GTE.setGameRenderBox();
+	}
+
+	//GTE.startNewLevel();	
 	// GTE.viewBoard();
 
 
@@ -262,11 +295,12 @@ GTE.mousedown = function(x,y){
 		if(xI >= button.box[0] && xI <= button.box[2] && yI >= button.box[1] && yI <= button.box[3]){
 			if(button.name == "group1"){
 				GTE.clickGroup(1);
-				return;
-			}else{
+			}else if(button.name == "group2"){
 				GTE.clickGroup(2);
-				return;
+			}else if(button.name == "quit"){
+				GTE.quitLevel();
 			}
+			return;
 		}
 	}
 
@@ -296,35 +330,39 @@ GTE.clickGroup = function(groupID){
 		var winningGroup = GTE.getGTEGroup();
 
 		if(winningGroup == groupID || winningGroup == 0){
-			GTE.winLevel();
+			GTE.winStage();
 		}else{
-			GTE.loseLevel();
+			GTE.loseStage();
 		}
 	}
 };
 
-GTE.winLevel = function(){
+GTE.winStage = function(){
 	console.log("Win!");
 	GTE.lastWon = true;
 
 	GTE.stagesWon++;
 	GTE.stage++;
 
-	GTE.endLevel();
+	GTE.endStage();
 };
 
-GTE.loseLevel = function(){
+GTE.loseStage = function(){
 	console.log("Lose!");
 	GTE.lastWon = false;
 
 	GTE.stagesLost++;
 	GTE.stage++;
 
-	GTE.endLevel();
+	GTE.endStage();
 };
 
 GTE.endLevel = function(){
+	GTE.viewBoard();
+	// GTE.endLevelView = true;
+};
 
+GTE.endStage = function(){
 	if(GTE.stage >= GTE.levelSettings['rounds']){
 		var stars = 0;
 		if(GTE.stagesWon >= GTE.levelSettings['starReqs'][2]){
@@ -354,8 +392,8 @@ GTE.endLevel = function(){
 	GTE.updateHUD();
 
 	GTE.playingLevel = false;
-	GTE.animatingNewLevel = false;
-	GTE.startEndLevelAnimation = true;
+	GTE.animatingNewStage = false;
+	GTE.startEndStageAnimation = true;
 	GTE.dirtyCanvas = true;
 };
 
@@ -363,6 +401,10 @@ GTE.viewBoard = function(){
 	GTE.boardGameView = true;
 	GTE.dirtyCanvas = true;
 	GTE.playingLevel = false;
+
+	GTE.animatingEndStage = false;
+	GTE.animatingNewStage = false;
+
 	GTE.setBoardRenderBox();
 	GTE.saveGameState();
 };
@@ -373,7 +415,7 @@ GTE.startNewLevel = function(){
 	GTE.updateHUD();
 	GTE.boardGameView = false;
 	GTE.dirtyCanvas = true;
-	GTE.startNewLevelAnimation = true;
+	GTE.startNewStageAnimation = true;
 	GTE.setGameRenderBox();
 	GTE.saveGameState();
 };
@@ -400,7 +442,7 @@ GTE.selectLevel = function(i){
 	GTE.stage      = 0;
 	GTE.stagesLost = 0;
 	GTE.stagesWon  = 0;
-	
+
 	GTE.startNewLevel();
 }
 

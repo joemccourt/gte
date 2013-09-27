@@ -4,8 +4,8 @@ GTE.gameLevels =
 	{
 		'description' : 'Begining Level. Very simple to ease new players into game.',
 		'levelID' : 0,
-		'rounds'  : 5,
-		'starReqs': [3, 4, 5],
+		'rounds'  : 1,
+		'starReqs': [0,1,1],
 
 		'numParticles'    : 5,
 		'viscosity'       : 0.7,

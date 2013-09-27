@@ -8,6 +8,8 @@ GTE.drawGame = function(drawGameParams){
 		GTE.drawGameStart(drawGameParams);
 	}else if(drawGameParams.phase === 'end'){
 		GTE.drawGameEnd(drawGameParams);
+	}else if(drawGameParams.phase === 'levelEnd'){
+		GTE.drawGameLevelEnd(drawGameParams);
 	}
 };
 
@@ -22,7 +24,7 @@ GTE.drawGameRun = function(drawGameParams){
 
 GTE.drawGameStart = function(drawGameParams){
 	GTE.drawBackground();
-	GTE.drawMidline(Math.pow(drawGameParams.timeSinceStart/GTE.newLevelAnimationTime,4));
+	GTE.drawMidline(Math.pow(drawGameParams.timeSinceStart/GTE.newStageAnimationTime,4));
 	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
@@ -32,12 +34,21 @@ GTE.drawGameStart = function(drawGameParams){
 
 GTE.drawGameEnd = function(drawGameParams){
 	GTE.drawBackground();
-	GTE.drawMidline(Math.pow(drawGameParams.timeUntilEnd/GTE.endLevelAnimationTime,4));
+	GTE.drawMidline(Math.pow(drawGameParams.timeUntilEnd/GTE.endStageAnimationTime,4));
 	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
 	GTE.drawProgress();
 	GTE.endLevelAnimation(drawGameParams.timeUntilEnd);
+};
+
+GTE.drawGameLevelEnd = function(drawGameParams){
+	GTE.drawBackground();
+	GTE.drawMidline();
+	GTE.drawLevel();
+	GTE.drawMouseForces();
+	GTE.drawButtons("levelEnd");
+	GTE.drawProgress();
 };
 
 GTE.drawStar = function(ctx, x,y,r){
@@ -383,11 +394,14 @@ GTE.drawBackground = function(){
 };
 
 GTE.drawProgress = function(){
-
 	var ctx = GTE.ctx;
 	ctx.save();
 
-	var box = [1.02,0,1.05,1];
+
+	var winColorStr  = 'rgba(0,150,0,1)';
+	var loseColorStr = 'rgba(150,0,0,1)';
+
+	var box = [1.02,0.1,1.06,1];
 	
 	var canvasCoordTL = GTE.internalToRenderSpace(box[0],box[1]);
 	var canvasCoordBR = GTE.internalToRenderSpace(box[2],box[3]);
@@ -404,7 +418,7 @@ GTE.drawProgress = function(){
 	var w = GTE.stagesWon;
 
 	//Lost portion
-	if(l > 0){
+	if(l > 0 && l < n){
 		var y = y1+(y2-y1)*l/n+0.5|0;
 		ctx.beginPath();
 		ctx.moveTo(x1+r,y1);
@@ -417,12 +431,11 @@ GTE.drawProgress = function(){
     	ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
     
 		ctx.closePath();
-    	ctx.fillStyle    = 'rgba(150,0,0,1)';
+    	ctx.fillStyle = loseColorStr;
     	ctx.fill();
-		//TODO: special case for all lost
 	}
 
-	if(w > 0){
+	if(w > 0 && w < n){
 		var y = y2-(y2-y1)*w/n+0.5|0;
 		ctx.beginPath();
 		ctx.moveTo(x1,y+0.5);
@@ -434,9 +447,8 @@ GTE.drawProgress = function(){
 		ctx.lineTo(x1,y+0.5);
 		ctx.closePath();
 
-    	ctx.fillStyle    = 'rgba(0,150,0,1)';
+    	ctx.fillStyle = winColorStr;
     	ctx.fill();
-		//TODO: special case for all won
 	}
 
 	ctx.beginPath();
@@ -452,10 +464,16 @@ GTE.drawProgress = function(){
     ctx.closePath();
 
     ctx.strokeStyle  = 'rgba(0,0,0,1)';
-    ctx.fillStyle    = 'rgba(0,0,0,0.1)';
     ctx.lineWidth = 2;
     ctx.stroke();
-    // ctx.fill();
+
+    if(w == n){
+    	ctx.fillStyle = winColorStr;
+    	ctx.fill();
+    }else if(l == n){
+    	ctx.fillStyle = loseColorStr;
+    	ctx.fill();
+    }
 
 
 	ctx.beginPath();
@@ -486,12 +504,19 @@ GTE.drawProgress = function(){
 };
 
 
-GTE.drawButtons = function(){
+GTE.drawButtons = function(mode){
 	var ctx = GTE.ctx;
 	ctx.save();
 
-	for(var i = 0; i < GTE.buttons.length; i++){
-		var button = GTE.buttons[i];
+	var buttons;
+	if(mode === "levelEnd"){
+		buttons = GTE.buttonsLevelEnd;
+	}else{
+		buttons = GTE.buttons;
+	}
+
+	for(var i = 0; i < buttons.length; i++){
+		var button = buttons[i];
 		
 		var canvasCoordTL = GTE.internalToRenderSpace(button.box[0],button.box[1]);
 		var canvasCoordBR = GTE.internalToRenderSpace(button.box[2],button.box[3]);
@@ -501,7 +526,7 @@ GTE.drawButtons = function(){
 		var x2 = canvasCoordBR[0]+0.5;
 		var y2 = canvasCoordBR[1]+0.5;
 
-		var r = 0.5 * Math.min(y2 - y1, x2 - x1);
+		var r = button.r * Math.min(y2 - y1, x2 - x1);
 
 		ctx.beginPath();
 	    ctx.moveTo(x1+r,y1);
@@ -530,7 +555,7 @@ GTE.drawButtons = function(){
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'baseline';
 
-	    // ctx.fillText('GTE',(x1+x2)/2,y1 + height*1.5);
+	    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
 	}
 
     ctx.restore();
@@ -591,9 +616,9 @@ GTE.newLevelAnimation = function(time){
 	ctx.save();
 
 	if(GTE.lastWon){
-		ctx.fillStyle = 'rgba(0,150,0,'+(1-time/GTE.newLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(0,150,0,'+(1-time/GTE.newStageAnimationTime)+')';
 	}else{
-		ctx.fillStyle = 'rgba(150,0,0,'+(1-time/GTE.newLevelAnimationTime)+')';
+		ctx.fillStyle = 'rgba(150,0,0,'+(1-time/GTE.newStageAnimationTime)+')';
 	}
 
 	//Box border
@@ -610,6 +635,10 @@ GTE.newLevelAnimation = function(time){
 };
 
 GTE.endLevelAnimation = function(time){
+	
+	var timeWidth = GTE.endStageAnimationTime;
+	time = time < 0 ? 0 : time > timeWidth ? timeWidth : time;
+
 	var ctx = GTE.ctx;
 	ctx.save();
 
@@ -675,7 +704,7 @@ GTE.endLevelAnimation = function(time){
 	ctx.fillText(rightFormat,x2,y2);
 
 	//Right side
-	var alpha = Math.pow((time/GTE.endLevelAnimationTime),4);
+	var alpha = (Math.pow((time/timeWidth),4)).toFixed(2);
 	if(sumL >= sumR){
 		ctx.fillStyle = 'rgba(0,150,0,'+alpha+')';
 	}else{
@@ -712,7 +741,7 @@ GTE.endLevelAnimation = function(time){
     ctx.fill();
     ctx.restore();
 
-    var dT = time/GTE.endLevelAnimationTime;
+    var dT = time/timeWidth;
 
     //Special cases for 1 and 2 for now
     var goals = [
@@ -793,7 +822,7 @@ GTE.endLevelAnimation = function(time){
 	    }
 	}
 
-    var v = 200 / GTE.endLevelAnimationTime;
+    var v = 200 / timeWidth;
     for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 		if(p.x < 1){
@@ -828,6 +857,6 @@ GTE.updateHUD = function(){
 		outText += "(need " + (GTE.levelSettings['starReqs'][2] - GTE.stagesWon)+ " more to get three stars)" + " ";
 	}
 
-	$('#hud').text(outText);
+	// $('#hud').text(outText);
 };
 
