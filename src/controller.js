@@ -246,6 +246,23 @@ GTE.setBoardRenderBox = function(){
 	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.98+0.5|0,h*0.98+0.5|0];
 };
 
+GTE.resizeToFit = function(){
+	var w = $(window).width();
+	var h = $(window).height();
+
+	GTE.canvas.width = w;
+	GTE.canvas.height = h;
+
+	if(GTE.boardGameView){
+		GTE.setBoardRenderBox();
+	}else{
+		GTE.scaleModel();
+		GTE.setGameRenderBox();
+	}
+
+	GTE.dirtyCanvas = true;
+};
+
 GTE.startSession = function(){
 	GTE.canvas = $(GTE.canvasID)[0];
 	GTE.ctx = GTE.canvas.getContext("2d");
@@ -258,12 +275,7 @@ GTE.startSession = function(){
 	GTE.loadGameState();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 
-	if(GTE.boardGameView){
-		GTE.setBoardRenderBox();
-	}else{
-		GTE.scaleModel();
-		GTE.setGameRenderBox();
-	}
+	GTE.resizeToFit();
 
 	//GTE.startNewStage();	
 	// GTE.viewBoard();
@@ -312,18 +324,20 @@ GTE.sanitizeButtons = function(){
 
 };
 
-GTE.mousemove = function(x,y){
+GTE.mousemove = function(x,y,touchIndex){
+	if(touchIndex == null){touchIndex = 0;}
 	if(GTE.mouse === "down"){
-		if(GTE.mouseDownIndex >= 0){
-			GTE.updateMouseForce(0,x,y);
-		}
+		//if(GTE.mouseDownIndex >= 0){
+			GTE.updateMouseForce(touchIndex,x,y);
+		//}
 	}
 };
 
-GTE.mousedown = function(x,y){
+GTE.mousedown = function(x,y,touchIndex){
+	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "down";
 	GTE.mouseDownPos = {x:x,y:y};
-	GTE.mouseDownIndex = -1;
+	//GTE.mouseDownIndex = -1;
 
 	var buttons;
 	if(GTE.menuView){
@@ -364,24 +378,30 @@ GTE.mousedown = function(x,y){
 		}
 	}
 
+	var minD2 = 999999999999;
+	var minI = -1;
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
-		if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) < p.r*p.r){
-			GTE.mouseDownIndex = p.id;
-
+		var dist2 = (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y);
+		if(dist2 < minD2){
+			minD2 = dist2;
+			minI = i;
+			//GTE.mouseDownIndex = p.id;
 			//idForces for possible multitouch ability in future
-			GTE.createMouseForce(0,i,x,y);
-			break;
 		}
+	}
+	if(minI >= 0){
+		GTE.createMouseForce(touchIndex,minI,x,y);
 	}
 };
 
-GTE.mouseup = function(x,y){
+GTE.mouseup = function(x,y,touchIndex){
+	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "up";
 
-	if(GTE.mouseDownIndex >= 0){
-		GTE.destroyMouseForce(0,x,y);
-	}
+	//if(GTE.mouseDownIndex >= 0){
+		GTE.destroyMouseForce(touchIndex,x,y);
+	//}
 };
 
 GTE.clickGroup = function(groupID){
@@ -623,6 +643,10 @@ GTE.transfromTranslate = function(t,x,y){
 
 // *** Event binding ***
 GTE.initEvents = function(){
+	$(window).resize(function(){
+		GTE.resizeToFit();
+	});
+
 	$(document).mouseup(function (e) {
 		var offset = $(GTE.canvasID).offset();
 		var x = e.pageX - offset.left;
@@ -637,6 +661,27 @@ GTE.initEvents = function(){
 			GTE.mouseup(internalPoint[0],internalPoint[1]);
 		}
 	});
+
+	document.addEventListener('touchend', function(e) {
+		e.preventDefault();
+
+		for(var i = 0; i < e.touches.length; i++){
+			var touch = e.changedTouches[i];
+			if(!touch){continue;}
+
+			var offset = $(GTE.canvasID).offset();
+			var x = touch.pageX - offset.left;
+			var y = touch.pageY - offset.top;
+
+			if(GTE.boardGameView){
+				var internalPoint = GTE.renderToInternalSpace(x,y);
+				GTE.boardMouseup(internalPoint[0],internalPoint[1],i);
+			}else{
+				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+				GTE.mouseup(internalPoint[0],internalPoint[1],touch.identifier);
+			}
+		}
+	}, false);
 
 	$(document).mousedown(function (e) {
 		if("#"+e.target.id !== GTE.canvasID){
@@ -656,6 +701,27 @@ GTE.initEvents = function(){
 		}
 	});
 
+	document.addEventListener('touchstart', function(e) {
+		e.preventDefault();
+
+		for(var i = 0; i < e.touches.length; i++){
+			var touch = e.touches[i];
+			if(!touch){continue;}
+
+			var offset = $(GTE.canvasID).offset();
+			var x = touch.pageX - offset.left;
+			var y = touch.pageY - offset.top;
+
+			if(GTE.boardGameView){
+				var internalPoint = GTE.renderToInternalSpace(x,y);
+				GTE.boardMousedown(internalPoint[0],internalPoint[1],i);
+			}else{
+				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+				GTE.mousedown(internalPoint[0],internalPoint[1],touch.identifier);
+			}
+		}
+	}, false);
+
 	$(document).mousemove(function (e) {
 		var offset = $(GTE.canvasID).offset();
 		var x = e.pageX - offset.left;
@@ -670,6 +736,27 @@ GTE.initEvents = function(){
 			GTE.mousemove(internalPoint[0],internalPoint[1]);
 		}
 	});
+
+	document.addEventListener('touchmove', function(e) {
+		e.preventDefault();
+		
+		for(var i = 0; i < e.touches.length; i++){
+			var touch = e.touches[i];
+			if(!touch){continue;}
+
+			var offset = $(GTE.canvasID).offset();
+			var x = touch.pageX - offset.left;
+			var y = touch.pageY - offset.top;
+
+			if(GTE.boardGameView){
+				var internalPoint = GTE.renderToInternalSpace(x,y);
+				GTE.boardMousemove(internalPoint[0],internalPoint[1],i);
+			}else{
+				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+				GTE.mousemove(internalPoint[0],internalPoint[1],touch.identifier);
+			}
+		}
+	}, false);
 
 	$(document).keydown(function (e) {
 		console.log("keypress: ", e.which);

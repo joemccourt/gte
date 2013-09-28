@@ -870,7 +870,7 @@ GTE.endLevelAnimation = function(time){
 };
 
 GTE.updateUI = function(){
-	$('#renderTime').text("Frame Render Time: "+(GTE.frameRenderTime+0.5|0)+"ms");
+	//$('#renderTime').text("Frame Render Time: "+(GTE.frameRenderTime+0.5|0)+"ms");
 };
 
 GTE.updateHUD = function(){
