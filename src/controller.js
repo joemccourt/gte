@@ -30,7 +30,7 @@ GTE.animatingEndStage = false;
 GTE.playingLevel = true;
 GTE.boardGameView = true;
 GTE.levelCompleted = false;
-GTE.endLevelView = false;
+GTE.menuView = false;
 
 
 GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
@@ -64,6 +64,8 @@ GTE.lastWon = true;
 GTE.mouse = "up";
 GTE.mouseDownIndex = -1;
 GTE.mouseDownPos = {x:0,y:0};
+GTE.mouseDownLast = {x:0,y:0};
+
 
 var kongregate = parent.kongregate;
 
@@ -81,29 +83,36 @@ GTE.buttons = [
 		'r':0.5
 	},
 	{
-		'name':'quit',
+		'name':'menu',
 		'text':'q',
 		'box': [1.01,0,1.07,0.08],
 		'r':0.1
 	}];
 
-GTE.buttonsLevelEnd = [
+GTE.buttonsMenu = [
 	{
-		'name':'group1',
+		'name':'background',
 		'text':'',
-		'box': [0.05,1.015,0.4,1.1],
-		'r':0.5
+		'fillStyle': 'rgba(255,255,255,0.5)',
+		'box': [0.2,0.2,0.8,0.8],
+		'r':0.05
 	},
 	{
-		'name':'group2',
-		'text':'',
-		'box': [0.6,1.015,0.95,1.1],
-		'r':0.5
+		'name':'replay',
+		'text':'r',
+		'box': [0.26,0.55,0.38,0.7],
+		'r':0.1
 	},
 	{
 		'name':'quit',
-		'text':'v',
-		'box': [1.01,0,1.07,0.08],
+		'text':'q',
+		'box': [0.44,0.55,0.56,0.7],
+		'r':0.1
+	},
+	{
+		'name':'next',
+		'text':'n',
+		'box': [0.62,0.55,0.74,0.7],
 		'r':0.1
 	}]
 
@@ -130,10 +139,9 @@ GTE.gameLoop = function(time){
 		GTE.animatingEndStage = false;
 
 		if(GTE.levelCompleted){
-			GTE.endLevel();
-			// GTE.dirtyCanvas = true;
+			GTE.openMenu();
 		}else{
-			GTE.startNewLevel();
+			GTE.startNewStage();
 		}
 	}
 
@@ -167,8 +175,8 @@ GTE.gameLoop = function(time){
 		}else if(GTE.animatingEndStage){
 			drawGameParams.phase = 'end';
 			GTE.dirtyCanvas = true;
-		}else if(GTE.endLevelView){
-			drawGameParams.phase = 'levelEnd';
+		}else if(GTE.menuView){
+			drawGameParams.phase = 'menu';
 		}
 
 		if(GTE.boardGameView){
@@ -257,7 +265,7 @@ GTE.startSession = function(){
 		GTE.setGameRenderBox();
 	}
 
-	//GTE.startNewLevel();	
+	//GTE.startNewStage();	
 	// GTE.viewBoard();
 
 
@@ -267,9 +275,42 @@ GTE.startSession = function(){
 	//}
 
 	GTE.dirtyCanvas = true;
-
+	GTE.sanitizeButtons();
 	GTE.initEvents();
-}
+};
+
+GTE.sanitizeButtons = function(){
+
+	var defaultButton = 
+	{
+		'name':'',
+		'text':'',
+		'box': [0,0,0,0],
+		'r':0,
+		'fillStyle': 'rgba(200,200,200,1)',
+		'strokeStyle': 'rgba(0,0,0,1)'
+	}
+
+	var i;
+	for(i = 0; i < GTE.buttons.length; i++){
+		var b = GTE.buttons[i];
+		for(key in defaultButton){
+			if(b[key] == null){
+				b[key] = defaultButton[key];
+			}
+		}
+	}
+
+	for(i = 0; i < GTE.buttonsMenu.length; i++){
+		var b = GTE.buttonsMenu[i];
+		for(key in defaultButton){
+			if(b[key] == null){
+				b[key] = defaultButton[key];
+			}
+		}
+	}
+
+};
 
 GTE.mousemove = function(x,y){
 	if(GTE.mouse === "down"){
@@ -284,23 +325,42 @@ GTE.mousedown = function(x,y){
 	GTE.mouseDownPos = {x:x,y:y};
 	GTE.mouseDownIndex = -1;
 
-	for(var i = 0; i < GTE.buttons.length; i++){
+	var buttons;
+	if(GTE.menuView){
+		buttons = GTE.buttonsMenu;
+	}else{
+		buttons = GTE.buttons;
+	}
 
+	for(var i = 0; i < buttons.length; i++){
 		var tmpCoords = GTE.gameToBoardInternalSpace(x,y);
 		var xI = tmpCoords[0];
 		var yI = tmpCoords[1];
 
-		var button = GTE.buttons[i];
+		var button = buttons[i];
 		
 		if(xI >= button.box[0] && xI <= button.box[2] && yI >= button.box[1] && yI <= button.box[3]){
-			if(button.name == "group1"){
+			if(button.name === "group1"){
 				GTE.clickGroup(1);
-			}else if(button.name == "group2"){
+			}else if(button.name === "group2"){
 				GTE.clickGroup(2);
-			}else if(button.name == "quit"){
-				GTE.quitLevel();
+			}else if(button.name === "menu"){
+				GTE.openMenu();
+			}else if(button.name === "quit"){
+				GTE.viewBoard();
+			}else if(button.name === "replay"){
+				if(GTE.levelCompleted){
+					GTE.selectLevel(GTE.level);
+				}else{
+					GTE.closeMenu();
+				}
+			}else if(button.name === "next" && GTE.userStats['level'+GTE.level] && GTE.userStats['level'+GTE.level].stars > 0){
+				GTE.selectLevel(GTE.level+1);	
 			}
-			return;
+
+			if(button.name !== "background"){
+				return;
+			}
 		}
 	}
 
@@ -357,10 +417,13 @@ GTE.loseStage = function(){
 	GTE.endStage();
 };
 
-GTE.endLevel = function(){
+GTE.quit = function(){
+	GTE.stagesWon = 0;
+	GTE.stagesLost = 0;
+	GTE.stage = 0;
 	GTE.viewBoard();
-	// GTE.endLevelView = true;
 };
+
 
 GTE.endStage = function(){
 	if(GTE.stage >= GTE.levelSettings['rounds']){
@@ -409,11 +472,12 @@ GTE.viewBoard = function(){
 	GTE.saveGameState();
 };
 
-GTE.startNewLevel = function(){			
+GTE.startNewStage = function(){			
 	GTE.playingLevel = true;
 	GTE.initModel();
 	GTE.updateHUD();
 	GTE.boardGameView = false;
+	GTE.menuView = false;
 	GTE.dirtyCanvas = true;
 	GTE.startNewStageAnimation = true;
 	GTE.setGameRenderBox();
@@ -442,16 +506,20 @@ GTE.selectLevel = function(i){
 	GTE.stage      = 0;
 	GTE.stagesLost = 0;
 	GTE.stagesWon  = 0;
+	GTE.levelCompleted = false;
 
-	GTE.startNewLevel();
+	GTE.startNewStage();
 }
 
-GTE.quitLevel = function(){
-	GTE.stagesWon = 0;
-	GTE.stagesLost = 0;
-	GTE.stage = 0;
-	GTE.viewBoard();
-}
+GTE.openMenu = function(){
+	GTE.menuView = true;
+	GTE.dirtyCanvas = true;
+};
+
+GTE.closeMenu = function(){
+	GTE.menuView = false;
+	GTE.dirtyCanvas = true;
+};
 
 // *** Board View Events ***
 GTE.boardMouseup = function(x,y){
@@ -643,7 +711,7 @@ GTE.initEvents = function(){
 			}else if(e.which == 39 && GTE.playingLevel){
 				GTE.clickGroup(2);
 			}else if(e.which == 81){
-				GTE.quitLevel();
+				GTE.openMenu();
 			}
 		}
 

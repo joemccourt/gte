@@ -8,8 +8,8 @@ GTE.drawGame = function(drawGameParams){
 		GTE.drawGameStart(drawGameParams);
 	}else if(drawGameParams.phase === 'end'){
 		GTE.drawGameEnd(drawGameParams);
-	}else if(drawGameParams.phase === 'levelEnd'){
-		GTE.drawGameLevelEnd(drawGameParams);
+	}else if(drawGameParams.phase === 'menu'){
+		GTE.drawGameMenu(drawGameParams);
 	}
 };
 
@@ -42,12 +42,12 @@ GTE.drawGameEnd = function(drawGameParams){
 	GTE.endLevelAnimation(drawGameParams.timeUntilEnd);
 };
 
-GTE.drawGameLevelEnd = function(drawGameParams){
+GTE.drawGameMenu = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline();
 	GTE.drawLevel();
 	GTE.drawMouseForces();
-	GTE.drawButtons("levelEnd");
+	GTE.drawButtons("menu");
 	GTE.drawProgress();
 };
 
@@ -509,8 +509,8 @@ GTE.drawButtons = function(mode){
 	ctx.save();
 
 	var buttons;
-	if(mode === "levelEnd"){
-		buttons = GTE.buttonsLevelEnd;
+	if(mode === "menu"){
+		buttons = GTE.buttonsMenu;
 	}else{
 		buttons = GTE.buttons;
 	}
@@ -541,12 +541,11 @@ GTE.drawButtons = function(mode){
 
 	    ctx.closePath();
 
-	    ctx.strokeStyle  = 'rgba(0,0,0,0.8)';
-	    ctx.fillStyle    = 'rgba(0,0,0,0.3)';
-	    ctx.lineWidth = 2;
-	    ctx.stroke();
+	    ctx.strokeStyle = button.strokeStyle;
+	    ctx.fillStyle   = button.fillStyle;
+	    ctx.lineWidth   = 2;
 	    ctx.fill();
-
+	    ctx.stroke();
 
 		ctx.fillStyle = 'rgb(255,255,255)';
 		var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
@@ -556,6 +555,37 @@ GTE.drawButtons = function(mode){
 		ctx.textBaseline = 'baseline';
 
 	    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
+
+		if(button.name === "background"){
+			var stars = 0;
+			if(GTE.stagesWon >= GTE.levelSettings.starReqs[2]){
+				stars = 3;
+			}else if(GTE.stagesWon >= GTE.levelSettings.starReqs[1]){
+				stars = 2;
+			}else if(GTE.stagesWon >= GTE.levelSettings.starReqs[0]){
+				stars = 1;
+			}
+			var levelStats = GTE.userStats['level'+GTE.level];
+			if(levelStats){
+				stars = Math.max(stars,levelStats.stars);
+			}
+
+			for(var j = 0; j < 3; j++){
+				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), y1+0.3*(y2-y1), (x2-x1)*0.1);
+				ctx.stroke();
+
+				if(stars > j){
+					ctx.fillStyle = GTE.starColorStr[j];
+				}else{
+					ctx.fillStyle = 'rgba(30,30,30,1)';
+				}
+				ctx.fill();
+			}
+	
+			ctx.font = 1.6*height + "px Verdana";
+			ctx.fillStyle = 'rgba(0,0,0,1)';
+	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1) + height*1.5);
+		}
 	}
 
     ctx.restore();
