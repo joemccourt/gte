@@ -84,7 +84,7 @@ GTE.buttons = [
 	},
 	{
 		'name':'menu',
-		'text':'q',
+		'text':'',
 		'box': [1.01,0,1.07,0.08],
 		'r':0.1
 	}];
@@ -99,19 +99,19 @@ GTE.buttonsMenu = [
 	},
 	{
 		'name':'replay',
-		'text':'r',
+		'text':'',
 		'box': [0.26,0.55,0.38,0.7],
 		'r':0.1
 	},
 	{
 		'name':'quit',
-		'text':'q',
+		'text':'',
 		'box': [0.44,0.55,0.56,0.7],
 		'r':0.1
 	},
 	{
 		'name':'next',
-		'text':'n',
+		'text':'',
 		'box': [0.62,0.55,0.74,0.7],
 		'r':0.1
 	}]

@@ -286,7 +286,7 @@ GTE.drawMouseForces = function(){
 	ctx.restore();
 };
 
-GTE.sign = function(x){return x < 0 ? -1 : x > 0 ? 1 : 0;}
+GTE.sign = function(x){return x < 0 ? -1 : x > 0 ? 1 : 0;};
 
 GTE.drawLevel = function(){
 	var ctx = GTE.ctx;
@@ -397,11 +397,10 @@ GTE.drawProgress = function(){
 	var ctx = GTE.ctx;
 	ctx.save();
 
-
 	var winColorStr  = 'rgba(0,150,0,1)';
 	var loseColorStr = 'rgba(150,0,0,1)';
 
-	var box = [1.02,0.1,1.06,1];
+	var box = [1.02,0.1,1.06,1.08];
 	
 	var canvasCoordTL = GTE.internalToRenderSpace(box[0],box[1]);
 	var canvasCoordBR = GTE.internalToRenderSpace(box[2],box[3]);
@@ -585,6 +584,90 @@ GTE.drawButtons = function(mode){
 			ctx.font = 1.6*height + "px Verdana";
 			ctx.fillStyle = 'rgba(0,0,0,1)';
 	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1) + height*1.5);
+		}else if(button.name === "menu" || button.name === "quit" ){
+
+			var w = x2-x1;
+			var h = y2-y1;
+
+			// ctx.lineWidth = 3;
+			var left   = x1+w*0.33;
+			var right  = x1+w*0.75;
+			var top    = y1+h*0.25;
+			var bottom = y1+h*0.75;
+
+			ctx.moveTo(left,top+h/10);
+			ctx.lineTo(left,top);
+			ctx.lineTo(right,top);
+			ctx.lineTo(right,bottom);
+			ctx.lineTo(left,bottom);
+			ctx.lineTo(left,bottom-h/10);
+
+			ctx.moveTo(x1+w/2,y1+h/2);
+			ctx.lineTo(left-w/10,y1+h/2);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.moveTo(x1+w/10,     y1+h/2);
+			ctx.lineTo(left-w/10,top+h/10);
+			ctx.lineTo(left-w/10,bottom-h/10);
+			ctx.closePath();
+			ctx.fillStyle = 'rgba(0,0,0,1)';
+
+			ctx.fill();
+		}else if(button.name === "next"){
+
+			var w = x2-x1;
+			var h = y2-y1;
+
+			var left   = x1+w*0.33;
+			var right  = x1+w*0.75;
+			var top    = y1+h*0.35;
+			var bottom = y1+h*0.65;
+
+			ctx.moveTo(left,y1+h/2);
+			ctx.lineTo(right-w/10,y1+h/2);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.moveTo(right-w/10,top);
+			ctx.lineTo(right-w/10,bottom);
+			ctx.lineTo(right,y1+h/2);
+			ctx.closePath();
+			ctx.fillStyle = 'rgba(0,0,0,1)';
+
+			ctx.fill();
+		}else if(button.name === "replay"){
+
+			if(GTE.levelCompleted){
+
+				var w = x2-x1;
+				var h = y2-y1;
+
+				var r = Math.min(w,h)*0.3;
+
+				ctx.beginPath();
+				ctx.arc(x1+w/2,y1+h/2, r, 60 * Math.PI/180, 180 * Math.PI/180, false);
+
+				ctx.moveTo(x1+w/2+r*Math.cos(240 * Math.PI/180),y1+h/2+r*Math.sin(240 * Math.PI/180));
+				ctx.arc(x1+w/2,y1+h/2, r, 240 * Math.PI/180, 360 * Math.PI/180, false);
+				ctx.stroke();
+
+			}else{
+				var w = x2-x1;
+				var h = y2-y1;
+
+				var left   = x1+w*0.25;
+				var right  = x1+w*0.75;
+				var top    = y1+h*0.25;
+				var bottom = y1+h*0.75;
+
+				ctx.moveTo(left,top);
+				ctx.lineTo(right,bottom);
+
+				ctx.moveTo(right,top);
+				ctx.lineTo(left,bottom);
+				ctx.stroke();
+			}
 		}
 	}
 
@@ -792,7 +875,7 @@ GTE.endLevelAnimation = function(time){
 			cL[i] = {
 				x:0.5+r*Math.cos(angle),
 				y:0.5*yScale+r*Math.sin(angle)
-			}
+			};
 		}
     }
 
@@ -807,7 +890,7 @@ GTE.endLevelAnimation = function(time){
 			cR[i] = {
 				x:0.5+r*Math.cos(angle),
 				y:0.5*yScale+r*Math.sin(angle)
-			}
+			};
 		}
     }
 
@@ -889,4 +972,3 @@ GTE.updateHUD = function(){
 
 	// $('#hud').text(outText);
 };
-
