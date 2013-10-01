@@ -371,9 +371,11 @@ GTE.drawBackground = function(){
 
 	var grd;
 
+	var red = (GTE.levelState.temperature * 10).toFixed(0);
+
 	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
-	grd.addColorStop(0, 'rgb(149,215,236)');
-	grd.addColorStop(1, 'rgb(29,141,178)');
+	grd.addColorStop(0,'rgb(' + red + ',215,236)');
+	grd.addColorStop(1,'rgb(' + red + ',141,178)');
 
 	ctx.fillStyle = grd;
 	ctx.fillRect(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight());		

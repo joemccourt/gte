@@ -215,6 +215,7 @@ GTE.loadGameState = function(){
 			GTE.playingLevel = parseInt(localStorage["GTE.playingLevel"]);	
 		}
 	}
+	
 };
 
 GTE.saveGameState = function() {
@@ -326,11 +327,11 @@ GTE.sanitizeButtons = function(){
 
 GTE.mousemove = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
-	if(GTE.mouse === "down"){
+	//if(GTE.mouse === "down"){
 		//if(GTE.mouseDownIndex >= 0){
 			GTE.updateMouseForce(touchIndex,x,y);
 		//}
-	}
+	//}
 };
 
 GTE.mousedown = function(x,y,touchIndex){
@@ -664,9 +665,9 @@ GTE.initEvents = function(){
 
 	document.addEventListener('touchend', function(e) {
 		e.preventDefault();
-
-		for(var i = 0; i < e.touches.length; i++){
+		for(var i = 0; i < e.changedTouches.length; i++){
 			var touch = e.changedTouches[i];
+			// console.log("End: " + touch.identifier);
 			if(!touch){continue;}
 
 			var offset = $(GTE.canvasID).offset();
@@ -675,7 +676,7 @@ GTE.initEvents = function(){
 
 			if(GTE.boardGameView){
 				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMouseup(internalPoint[0],internalPoint[1],i);
+				GTE.boardMouseup(internalPoint[0],internalPoint[1],touch.identifier);
 			}else{
 				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
 				GTE.mouseup(internalPoint[0],internalPoint[1],touch.identifier);
@@ -714,7 +715,7 @@ GTE.initEvents = function(){
 
 			if(GTE.boardGameView){
 				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMousedown(internalPoint[0],internalPoint[1],i);
+				GTE.boardMousedown(internalPoint[0],internalPoint[1],touch.identifier);
 			}else{
 				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
 				GTE.mousedown(internalPoint[0],internalPoint[1],touch.identifier);
@@ -743,6 +744,7 @@ GTE.initEvents = function(){
 		for(var i = 0; i < e.touches.length; i++){
 			var touch = e.touches[i];
 			if(!touch){continue;}
+			// console.log(touch.identifier);
 
 			var offset = $(GTE.canvasID).offset();
 			var x = touch.pageX - offset.left;
@@ -750,7 +752,7 @@ GTE.initEvents = function(){
 
 			if(GTE.boardGameView){
 				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMousemove(internalPoint[0],internalPoint[1],i);
+				GTE.boardMousemove(internalPoint[0],internalPoint[1],touch.identifier);
 			}else{
 				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
 				GTE.mousemove(internalPoint[0],internalPoint[1],touch.identifier);

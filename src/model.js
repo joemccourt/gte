@@ -74,6 +74,7 @@ GTE.initModel = function(){
 
 	GTE.levelSettings = GTE.sanitizeLevelSettings(GTE.gameLevels['level'+GTE.level]);
 
+
 	var v0 = GTE.levelSettings.v0;
 	var N  = GTE.levelSettings.numParticles;
 
@@ -124,6 +125,7 @@ GTE.initModel = function(){
 		GTE.levelState.particles.push(particle);
 	}
 
+	GTE.levelState.temperature = 0;
 	GTE.levelState.aspect = 2;
 	GTE.scaleModel();
 };
@@ -271,6 +273,8 @@ GTE.updateModel = function(deltaTime){
 
 		//Set all particles unresolved
 		GTE.setParticlesUnresolved();
+
+		var temp = 0;
 
 		//Update forces
 		for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
@@ -494,9 +498,14 @@ GTE.updateModel = function(deltaTime){
 					}
 				}
 
+				temp += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
+
 				GTE.updateParticlePos(p, pXNew, pYNew);
 				p.resolved = true;
 			}
 		}
 	}
+
+	// console.log(GTE.levelState.temperature)
+	GTE.levelState.temperature = GTE.levelState.temperature*0.9 + temp*0.1;
 };
