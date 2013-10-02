@@ -8,7 +8,7 @@ GTE.gameLevels =
 		'starReqs': [4,5,6],
 
 		'numParticles'    : 5,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -29,7 +29,7 @@ GTE.gameLevels =
 		'starReqs': [5, 6, 7],
 
 		'numParticles'    : 15,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -50,7 +50,7 @@ GTE.gameLevels =
 		'starReqs': [6, 7, 8],
 
 		'numParticles'    : 30,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -70,7 +70,7 @@ GTE.gameLevels =
 		'starReqs': [7, 9, 10],
 
 		'numParticles'    : 70,
-		'viscosity'       : 0.3,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -91,7 +91,7 @@ GTE.gameLevels =
 		'starReqs': [7, 9, 10],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.3,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -112,7 +112,7 @@ GTE.gameLevels =
 		'starReqs': [7, 9, 10],
 
 		'numParticles'    : 30,
-		'viscosity'       : 0.3,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -133,7 +133,7 @@ GTE.gameLevels =
 		'starReqs': [7, 9, 10],
 
 		'numParticles'    : 40,
-		'viscosity'       : 0.3,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -153,7 +153,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 12,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -172,7 +172,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 12,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -191,7 +191,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : true,
 		'combine'         : true,
@@ -210,7 +210,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : true,
 		'combine'         : true,
@@ -229,7 +229,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : true,
 		'combine'         : true,
@@ -248,7 +248,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 40,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : true,
 		'combine'         : true,
@@ -267,7 +267,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 50,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -286,7 +286,7 @@ GTE.gameLevels =
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 50,
-		'viscosity'       : 0.7,
+		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : true,

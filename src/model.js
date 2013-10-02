@@ -37,6 +37,11 @@ GTE.getYScale = function(x,y){
 	return yScale;
 };
 
+GTE.randGaussian = function(avg,std){
+	var z = Math.sqrt(-2*Math.log(Math.random()))*Math.cos(2*Math.PI*Math.random());
+	return avg + std * z;
+};
+
 GTE.sanitizeLevelSettings = function(s){
 	if(typeof s !== 'object'){s = {};}
 
@@ -45,7 +50,7 @@ GTE.sanitizeLevelSettings = function(s){
 		'rounds' : 10,
 		'starReqs' : [7, 9, 10],
 
-		'viscosity' : 0.7,
+		'viscosity' : 0.02,
 		'CoeffRestitution' : 0.6,
 		'annihilate' : false,
 		'combine' : true,
@@ -56,9 +61,12 @@ GTE.sanitizeLevelSettings = function(s){
 		'initMassMax' : 3,
 
 		'numParticles' : 20,
+		'numParticlesSTD' : 0.10,
+
 		'signBias' : 0, //1 for all positive, -1 for all negative
 		'v0' : 0,
-		'r' : 0.05
+		'r' : 0.05,
+		'g' : 0
 	};
 
 	for(key in defaultS){
@@ -71,12 +79,15 @@ GTE.sanitizeLevelSettings = function(s){
 };
 
 GTE.initModel = function(){
-
 	GTE.levelSettings = GTE.sanitizeLevelSettings(GTE.gameLevels['level'+GTE.level]);
-
 
 	var v0 = GTE.levelSettings.v0;
 	var N  = GTE.levelSettings.numParticles;
+
+	N += GTE.randGaussian(0,N*GTE.levelSettings.numParticlesSTD);
+	if(N < 0){N = 0;}
+
+	N = N+0.5|0;
 
 	GTE.levelState = {
 		levelID: GTE.level,
@@ -91,10 +102,17 @@ GTE.initModel = function(){
 	//Tmp generate particles
 	var maxItter = 10000;
 	var itter = 0;
+
+	var numLeft = GTE.randGaussian(N/2,0.2*N/2);
+	numLeft = numLeft < 0 ? 0 : numLeft > N ? N : numLeft;
+	numLeft = numLeft + 0.5 | 0;
+
+	var numRight = N - numLeft;
+	//TODO: potential problem when hits iter limit, since filling one side first
+
 	for(var i = 0; i < N; i++){
 		
 		do{
-
 			var sign = 1;
 			if(Math.random()*2-1 >= GTE.levelSettings['signBias']){
 				sign = -1;
@@ -109,10 +127,12 @@ GTE.initModel = function(){
 			var vX = v0 * Math.cos(angle);
 			var vY = v0 * Math.sin(angle);
 
+			var side = i < numLeft ? 0 : 1;
+
 			var particle = {
 				id: i,
-				x: 2*Math.random(),
-				y:   Math.random(),
+				x: side + Math.random(),
+				y: Math.random(),
 				vX: vX,
 				vY: vY,
 				m: mass,
@@ -308,12 +328,16 @@ GTE.updateModel = function(deltaTime){
 			}
 		}
 
-		//Viscosity force
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];
 
-			p.vX -= dT * GTE.levelSettings.viscosity * (0.3 + Math.abs(p.vX))*p.vX;
-			p.vY -= dT * GTE.levelSettings.viscosity * (0.3 + Math.abs(p.vY))*p.vY;
+			//Gravity force
+			p.vY += dT * GTE.levelSettings.g;
+	
+			//Viscosity force
+			p.vX -= dT * GTE.levelSettings.viscosity * p.vX;
+			p.vY -= dT * GTE.levelSettings.viscosity * p.vY;
+
 		}
 
 		//Update positions
