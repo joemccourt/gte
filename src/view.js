@@ -292,6 +292,9 @@ GTE.drawLevel = function(){
 	var ctx = GTE.ctx;
 	ctx.save();
 
+	ctx.fillStyle =  'rgb(0,0,200)';
+	ctx.strokeStyle = 'rgb(0,0,0)';
+	ctx.lineWidth = 1;
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 		var canvasCoord = GTE.gameInternalToRenderSpace(p.x,p.y);
@@ -304,6 +307,7 @@ GTE.drawLevel = function(){
 		}
 
 		var colorStr = GTE.arrayColorToString(color);
+		ctx.fillStyle = colorStr;
 
 		var absMass = Math.abs(p.m);
 		var discLevel = 0;
@@ -315,30 +319,7 @@ GTE.drawLevel = function(){
 			var discX = canvasCoord[0]-(Math.log(Math.E*(discLevel+1))-1)*5;
 			var discY = canvasCoord[1]-(Math.log(Math.E*(discLevel+1))-1)*5;
 
-			ctx.beginPath();
-			ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
-			ctx.closePath();
-
-			ctx.fillStyle = colorStr;
-
-			if(discLevel > 0){
-				// ctx.shadowColor = 'rgba(0,0,0,0.25)';
-				ctx.shadowBlur = 10;
-				ctx.shadowOffsetX = 3;
-				ctx.shadowOffsetY = 3;
-				
-				if(drawMass < 1){
-					// ctx.shadowColor = 'rgba(0,0,0,0.75)';
-				}
-			}
-
-
-			ctx.fill();
-
-			//Surrounding circle
-			// ctx.shadowColor = 'rgba(0,0,0,0)';
-			ctx.fillStyle = 'rgb(0,0,0)';
-
+			//Fill arc
 			ctx.beginPath();
 			if(discLevel == 0){
 				ctx.arc(discX, discY, radius, 0, 2 * Math.PI, false);
@@ -346,18 +327,17 @@ GTE.drawLevel = function(){
 				ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
 			}
 			ctx.closePath();
-
-			if(!GTE.levelSettings.annihilate){
-				ctx.lineWidth = 1;
-			}else{
-				ctx.lineWidth = 1;	
-			}
-			
 			ctx.stroke();
+
+			//Storke arc
+			ctx.beginPath();
+				ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
 
 			discLevel++;
 		}
-
+			
 	}
 
 	ctx.restore();
@@ -372,6 +352,13 @@ GTE.drawBackground = function(){
 	var grd;
 
 	var red = (GTE.levelState.temperature * 10).toFixed(0);
+
+	if(isNaN(red)){
+		red = 0;
+	}
+
+	if(red < 0){red = 0;}
+	if(red > 255){red = 255;}
 
 	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
 	grd.addColorStop(0,'rgb(' + red + ',215,236)');

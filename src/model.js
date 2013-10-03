@@ -127,7 +127,7 @@ GTE.initModel = function(){
 			var vX = v0 * Math.cos(angle);
 			var vY = v0 * Math.sin(angle);
 
-			var side = i < numLeft ? 0 : 1;
+			var side = 2*Math.random() | 0;//i < numLeft ? 0 : 1;
 
 			var particle = {
 				id: i,
@@ -189,7 +189,7 @@ GTE.createMouseForce = function(forceID,pIndex,x,y){
 	//console.log(Math.sqrt((p.x-x)*(p.x-x)+(p.y-y)*(p.y-y)));
 	var force = {
 		pID: p.id,
-		k: 35,
+		k: 150,
 		b: 0.5,
 		pX0: p.x,
 		pY0: p.y,
@@ -317,14 +317,24 @@ GTE.updateModel = function(deltaTime){
 			// 	dr *= dr/p.r;
 			// }
 
+			var tX =  cY;
+			var tY = -cX;
 			var force = f.k*dr;
 
+			var absM = Math.abs(p.m);
+
 			var vF = p.vX*cX+p.vY*cY;
-			var forceDamp = -0;//Math.sqrt(4 * f.k * p.m) * vF;
+			var forceDamp  = -Math.sqrt(4 * f.k * absM) * vF;
+
+			var vFT = p.vX*tX+p.vY*tY;
+			var forceDampT = -Math.sqrt(4 * f.k * absM) * vFT;
 
 			if(dr > 0){
-				p.vX += dT * (force+forceDamp) * cX / Math.abs(p.m);
-				p.vY += dT * (force+forceDamp) * cY / Math.abs(p.m);
+				p.vX += dT * (force+forceDamp) * cX / absM;
+				p.vY += dT * (force+forceDamp) * cY / absM;
+
+				p.vX += dT * forceDampT * tX / absM;
+				p.vY += dT * forceDampT * tY / absM;
 			}
 		}
 
