@@ -103,10 +103,9 @@ GTE.initModel = function(){
 	var maxItter = 10000;
 	var itter = 0;
 
-	var numLeft = GTE.randGaussian(N/2,0.2*N/2);
+	var numLeft = GTE.randGaussian(N/2,0.05*N/2);
 	numLeft = numLeft < 0 ? 0 : numLeft > N ? N : numLeft;
 	numLeft = numLeft + 0.5 | 0;
-
 	var numRight = N - numLeft;
 	//TODO: potential problem when hits iter limit, since filling one side first
 
@@ -127,7 +126,7 @@ GTE.initModel = function(){
 			var vX = v0 * Math.cos(angle);
 			var vY = v0 * Math.sin(angle);
 
-			var side = 2*Math.random() | 0;//i < numLeft ? 0 : 1;
+			var side = i < numLeft ? 0 : 1;
 
 			var particle = {
 				id: i,
@@ -145,7 +144,8 @@ GTE.initModel = function(){
 		GTE.levelState.particles.push(particle);
 	}
 
-	GTE.levelState.temperature = 0;
+	GTE.levelState.temperatureLeft = 0;
+	GTE.levelState.temperatureRight = 0;
 	GTE.levelState.aspect = 2;
 	GTE.scaleModel();
 };
@@ -294,7 +294,8 @@ GTE.updateModel = function(deltaTime){
 		//Set all particles unresolved
 		GTE.setParticlesUnresolved();
 
-		var temp = 0;
+		var tempLeft  = 0;
+		var tempRight = 0;
 
 		//Update forces
 		for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
@@ -532,7 +533,11 @@ GTE.updateModel = function(deltaTime){
 					}
 				}
 
-				temp += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
+				if(pXNew < 1){
+					tempLeft  += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
+				}else{
+					tempRight += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
+				}
 
 				GTE.updateParticlePos(p, pXNew, pYNew);
 				p.resolved = true;
@@ -541,5 +546,6 @@ GTE.updateModel = function(deltaTime){
 	}
 
 	// console.log(GTE.levelState.temperature)
-	GTE.levelState.temperature = GTE.levelState.temperature*0.9 + temp*0.1;
+	GTE.levelState.temperatureLeft  = GTE.levelState.temperatureLeft*0.9  + tempLeft*0.1;
+	GTE.levelState.temperatureRight = GTE.levelState.temperatureRight*0.9 + tempRight*0.1;
 };

@@ -148,154 +148,250 @@ GTE.gameLevels =
 	
 	'level7': 
 	{
+		'description' : 'Back to single particles, but introduce some negatives which can annihilate.',
 		'levelID' : 7,
 		'rounds'  : 6,
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 12,
-		'viscosity'       : 0.2,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.6,
-		'annihilate'      : false,
-		'combine'         : true,
+		'annihilate'      : true,
+		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 5,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 1,
-		'v0'              : 0.07
-	},
-	
-	'level7': 
-	{
-		'levelID' : 7,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
-
-		'numParticles'    : 12,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : false,
-		'combine'         : true,
-		'transfer'        : false,
-		'integerMass'     : true,
-		'massMax'         : 5,
-		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.07
+		'signBias'        : 0.8,
+		'v0'              : 0.07,
+		'r'               : 0.05
 	},
 	
 	'level8': 
 	{
-		'levelID' : 8,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'description' : 'Some more particles, but now they can\'t annihilate.',
 
-		'numParticles'    : 20,
+		'levelID' : 8,
+		'rounds'  : 10,
+		'starReqs': [7, 9, 10],
+
+		'numParticles'    : 30,
 		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
-		'annihilate'      : true,
-		'combine'         : true,
+		'annihilate'      : false,
+		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 5,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.07
+		'signBias'        : 0.75,
+		'v0'              : 0.07,
+		'r'               : 0.05
 	},
-	
+
 	'level9': 
 	{
+		'description' : 'Now make negatives just as likely as possitives',
+
 		'levelID' : 9,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'rounds'  : 10,
+		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 20,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : true,
-		'combine'         : true,
-		'transfer'        : true,
-		'integerMass'     : true,
-		'massMax'         : 5,
-		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.07
-	},
-	
-	'level10': 
-	{
-		'levelID' : 10,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
-
-		'numParticles'    : 20,
+		'numParticles'    : 30,
 		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
-		'annihilate'      : true,
-		'combine'         : true,
-		'transfer'        : true,
-		'integerMass'     : false,
-		'massMax'         : 5,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.1
+		'signBias'        : 0.0,
+		'v0'              : 0.07,
+		'r'               : 0.05
+	},
+
+	'level10': 
+	{
+		'description' : 'Fewer particles, but now particles can transfer boundry.  Faster and lower viscosity.',
+
+		'levelID' : 10,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 20,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0.0,
+		'v0'              : 0.1,
+		'r'               : 0.05
 	},
 	
 	'level11': 
 	{
-		'levelID' : 11,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'description' : 'Bias to positive, more, smaller, viscous, plus some gravity.',
 
-		'numParticles'    : 40,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : true,
-		'combine'         : true,
+		'levelID' : 11,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 50,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
+		'annihilate'      : false,
+		'combine'         : false,
 		'transfer'        : true,
-		'integerMass'     : false,
-		'massMax'         : 5,
+		'integerMass'     : true,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.07
+		'signBias'        : 0.8,
+		'v0'              : 0.2,
+		'r'               : 0.035,
+		'g'               : 0.01
 	},
 	
 	'level12': 
 	{
-		'levelID' : 12,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'description' : 'More, smaller, less viscosity, more gravity.',
 
-		'numParticles'    : 50,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
+		'levelID' : 12,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 65,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
-		'combine'         : true,
+		'combine'         : false,
 		'transfer'        : false,
-		'integerMass'     : false,
-		'massMax'         : 5,
+		'integerMass'     : true,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0,
-		'v0'              : 0.07
+		'signBias'        : 0.65,
+		'v0'              : 0.2,
+		'r'               : 0.03,
+		'g'               : 0.04
 	},
 	
 	'level13': 
 	{
-		'levelID' : 13,
-		'rounds'  : 6,
-		'starReqs': [4, 5, 6],
+		'description' : 'Tiny, very low friction, high bounce, and high g.',
 
-		'numParticles'    : 50,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
+		'levelID' : 13,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 75,
+		'viscosity'       : 0.001,
+		'CoeffRestitution': 0.95,
 		'annihilate'      : false,
-		'combine'         : true,
+		'combine'         : false,
 		'transfer'        : false,
-		'integerMass'     : false,
-		'massMax'         : 5,
-		'initMassMax'     : 3,
-		'signBias'        : 0,
-		'v0'              : 0.07
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.2,
+		'r'               : 0.02,
+		'g'               : 0.13
+	},
+	
+	'level14': 
+	{
+		'description' : 'Tons, now with no gravity.',
+
+		'levelID' : 14,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 200,
+		'viscosity'       : 0.001,
+		'CoeffRestitution': 0.95,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.2,
+		'r'               : 0.02,
+		'g'               : 0
+	},
+	
+	'level15': 
+	{
+		'description' : 'Now can transfer',
+
+		'levelID' : 15,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 200,
+		'viscosity'       : 0.001,
+		'CoeffRestitution': 0.95,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.2,
+		'r'               : 0.02,
+		'g'               : 0
+	},
+	
+	'level16': 
+	{
+		'description' : 'Now can annihilate',
+
+		'levelID' : 16,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 200,
+		'viscosity'       : 0.001,
+		'CoeffRestitution': 0.95,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.2,
+		'r'               : 0.02,
+		'g'               : 0
+	},
+	
+	'level17': 
+	{
+		'description' : 'Now can\t annihilate and are all negative',
+
+		'levelID' : 17,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 200,
+		'viscosity'       : 0.001,
+		'CoeffRestitution': 0.95,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : -1,
+		'v0'              : 0.2,
+		'r'               : 0.02,
+		'g'               : 0
 	}
 };
 

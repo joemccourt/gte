@@ -817,22 +817,22 @@ GTE.getRenderBoxWidth  = function(){return GTE.renderBox[2] - GTE.renderBox[0];}
 GTE.getRenderBoxHeight = function(){return GTE.renderBox[3] - GTE.renderBox[1];};
 
 // *** Fonts ***
-WebFontConfig = {
-	google: { families: [ 'Libre+Baskerville::latin' ] },
-	active: function() {
-		GTE.font = "Libre Baskerville";
-		GTE.dirtyCanvas = true;
-	}
-  };
-  (function() {
-    var wf = document.createElement('script');
-    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-    wf.type = 'text/javascript';
-    wf.async = 'true';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(wf, s);
-  })();
+// WebFontConfig = {
+// 	google: { families: [ 'Libre+Baskerville::latin' ] },
+// 	active: function() {
+// 		GTE.font = "Libre Baskerville";
+// 		GTE.dirtyCanvas = true;
+// 	}
+//   };
+//   (function() {
+//     var wf = document.createElement('script');
+//     wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+//       '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+//     wf.type = 'text/javascript';
+//     wf.async = 'true';
+//     var s = document.getElementsByTagName('script')[0];
+//     s.parentNode.insertBefore(wf, s);
+//   })();
 
 // *** LocalStorage Check ***
 function supports_html5_storage() {

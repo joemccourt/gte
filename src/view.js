@@ -351,18 +351,18 @@ GTE.drawBackground = function(){
 
 	var grd;
 
-	var red = (GTE.levelState.temperature * 10).toFixed(0);
+	var redLeft  = 128-(GTE.levelState.temperatureLeft  * 3).toFixed(0);
+	var redRight = 128-(GTE.levelState.temperatureRight * 3).toFixed(0);
 
-	if(isNaN(red)){
-		red = 0;
-	}
+	if(isNaN(redLeft)){redLeft = 0;}
+	if(isNaN(redRight)){redRight = 0;}
 
-	if(red < 0){red = 0;}
-	if(red > 255){red = 255;}
+	redLeft  = redLeft  < 0 ? 0 : redLeft  > 255 ? 255 : redLeft;
+	redRight = redRight < 0 ? 0 : redRight > 255 ? 255 : redRight;
 
 	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
-	grd.addColorStop(0,'rgb(' + red + ',215,236)');
-	grd.addColorStop(1,'rgb(' + red + ',141,178)');
+	grd.addColorStop(0,'rgb(' + redLeft + ',215,236)');
+	grd.addColorStop(1,'rgb(' + redRight + ',141,178)');
 
 	ctx.fillStyle = grd;
 	ctx.fillRect(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight());		
