@@ -11,6 +11,7 @@ GTE.drawGame = function(drawGameParams){
 	}else if(drawGameParams.phase === 'menu'){
 		GTE.drawGameMenu(drawGameParams);
 	}
+	GTE.drawAABBTree();
 };
 
 GTE.drawGameRun = function(drawGameParams){
@@ -67,6 +68,37 @@ GTE.drawStar = function(ctx, x,y,r){
 
 	// ctx.arc(x, y, r, 0, 2 * Math.PI, false);
 	ctx.closePath();
+};
+
+//Simple center weighted AABB tree
+//TODO: more effient minimum box and divide boxes based on median position
+//More efficent rebuild of AABBTree
+GTE.drawAABBTree = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var helper = function(n){
+		if(typeof n !== 'object'){return;}
+		if(typeof n.box !== 'object' || n.box.length != 4){return;}
+
+		var b = GTE.gameInternalToRenderSpace(n.box[0],n.box[1]);
+		var e = GTE.gameInternalToRenderSpace(n.box[2],n.box[3]);
+
+		ctx.moveTo(b[0],b[1]);
+		ctx.lineTo(e[0],b[1]);
+		ctx.lineTo(e[0],e[1]);
+		ctx.lineTo(b[0],e[1]);
+		ctx.lineTo(b[0],b[1]);
+
+		helper(n.nodeLeft);
+		helper(n.nodeRight);
+	};
+
+	helper(GTE.AABBTree);
+	ctx.strokeStyle = 'rgba(255,0,0,0.2)';
+	ctx.stroke();
+
+	ctx.restore();
 };
 
 GTE.drawBoardGame = function(){

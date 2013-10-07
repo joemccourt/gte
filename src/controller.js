@@ -58,6 +58,8 @@ GTE.userStats = {
 };
 
 GTE.levelState = {};
+GTE.AABBTree = {};
+
 GTE.lastWon = true;
 
 //Mouse state
