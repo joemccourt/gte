@@ -268,7 +268,90 @@ GTE.scaleModel = function(){
 	}
 };
 
+GTE.getMedian = function(array,total){
+	var sum = 0;
+	var last = 0;
+	for(var i = 0; i < array.length; i++){
+		sum += array[i];		
+
+		if(sum >= total/2){
+			break;
+		}
+	}
+
+	return i/(array.length-1);
+};
+
 GTE.buildAABBTree = function(){
+
+	function getMinBox(particles,box){
+		if(typeof particles !== 'object' || particles.length == 0){return box;}
+
+		var p = particles[0];
+		var minX = p.x-p.r;
+		var maxX = p.x+p.r;
+		var minY = p.y-p.r;
+		var maxY = p.y+p.r;
+
+		for(var i = 1; i < particles.length; i++){
+			p = particles[i];
+			if(p.x-p.r < minX){
+				minX = p.x-p.r;
+			}
+			if(p.x+p.r > maxX){
+				maxX = p.x+p.r;
+			}
+			if(p.y-p.r < minY){
+				minY = p.y-p.r;
+			}
+			if(p.y+p.r > maxY){
+				maxY = p.y+p.r;
+			}
+		}
+
+		// if(minX < box[0]){minX = box[0];}
+		// if(minY < box[1]){minY = box[1];}
+		// if(maxX > box[2]){maxX = box[2];}
+		// if(maxY > box[3]){maxY = box[3];}
+		// if(particles.length == 1){
+			return [minX,minY,maxX,maxY];
+		// }
+	};
+
+	function getDistro(particles,box){
+		var n = 32;
+		var distroX  = new Uint8Array(n);
+		var distroY  = new Uint8Array(n);
+		var density = new Uint8Array(n);
+		var dx = (box[2]-box[0])/(n-1);
+		var dy = (box[3]-box[1])/(n-1);
+		for(var i = 0; i < particles.length; i++){
+			var p = particles[i];
+
+			// if(axis == 0){
+				// var x = p.x-p.r;
+				// for(var j = 0; j < 2*p.r; j+=dx){
+				// 	if(x+j < box[0]){continue;}
+				// 	if(x+j > box[2]){break;}
+
+					distroX[(p.x-box[0])/dx+0.5|0]++;
+					// distro[(x+j-box[0])/dx+0.5|0]++;
+				// }
+			// }else{
+				// var y = p.x-p.r;
+				// for(var j = 0; j < 2*p.r; j+=dx){
+				// 	if(x+j < box[1]){continue;}
+				// 	if(x+j > box[3]){break;}
+
+					distroY[(p.y-box[1])/dy+0.5|0]++;
+					// distro[(x+j-box[1])/dx+0.5|0]++;
+				// }
+			// }
+		}
+		return [distroX,distroY];
+	};
+
+	// console.log(getDistro(GTE.levelState.particles,[0,0,2,1],0));
 
 	function buildHelper(node){
 		var numParticles = node.particles.length;
@@ -288,9 +371,13 @@ GTE.buildAABBTree = function(){
 			var max = box[2];
 
 			//get center of the box for longest axis
-			var center = (box[2]+box[0])/2;
+			var distros = getDistro(node.particles,box,iAxis);
+			var medianF = GTE.getMedian(distros[iAxis],numParticles);
+
+
+			var center = medianF*(box[2]-box[0])+box[0];
 			if(iAxis == 1){
-				center = (box[1]+box[3])/2;
+				center = medianF*(box[3]-box[1])+box[1];
 			}
 
 			var particlesLeft  = [];
@@ -332,10 +419,15 @@ GTE.buildAABBTree = function(){
 					}
 				}
 			}
+
+			nodeLeft.box  = getMinBox(nodeLeft.particles,nodeLeft.box);
+			nodeRight.box = getMinBox(nodeRight.particles,nodeRight.box);
 			node.nodeLeft = nodeLeft;
 			node.nodeRight = nodeRight;
 			buildHelper(nodeLeft);
 			buildHelper(nodeRight);
+
+			node.particles = [];
 		}
 	}
 
