@@ -281,7 +281,7 @@ GTE.getMedian = function(array,total){
 
 	return i/(array.length-1);
 };
-
+	
 GTE.buildAABBTree = function(){
 
 	function getMinBox(particles,box){
@@ -309,10 +309,10 @@ GTE.buildAABBTree = function(){
 			}
 		}
 
-		// if(minX < box[0]){minX = box[0];}
-		// if(minY < box[1]){minY = box[1];}
-		// if(maxX > box[2]){maxX = box[2];}
-		// if(maxY > box[3]){maxY = box[3];}
+		if(minX < box[0]){minX = box[0];}
+		if(minY < box[1]){minY = box[1];}
+		if(maxX > box[2]){maxX = box[2];}
+		if(maxY > box[3]){maxY = box[3];}
 		// if(particles.length == 1){
 			return [minX,minY,maxX,maxY];
 		// }
@@ -320,21 +320,29 @@ GTE.buildAABBTree = function(){
 
 	function getDistro(particles,box){
 		var n = 32;
-		var distroX  = new Uint8Array(n);
-		var distroY  = new Uint8Array(n);
+		var distroX  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];//new Uint8Array(n);
+		var distroY  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];//new Uint8Array(n);
 		var density = new Uint8Array(n);
 		var dx = (box[2]-box[0])/(n-1);
 		var dy = (box[3]-box[1])/(n-1);
+
 		for(var i = 0; i < particles.length; i++){
 			var p = particles[i];
 
+			var xI = (p.x-box[0])/dx+0.5|0;
+			var yI = (p.y-box[1])/dy+0.5|0;
+
+			xI = xI < 0 ? 0 : xI >= 32 ? 32 : xI;
+			yI = yI < 0 ? 0 : yI >= 32 ? 32 : yI;
 			// if(axis == 0){
 				// var x = p.x-p.r;
 				// for(var j = 0; j < 2*p.r; j+=dx){
 				// 	if(x+j < box[0]){continue;}
 				// 	if(x+j > box[2]){break;}
-
-					distroX[(p.x-box[0])/dx+0.5|0]++;
+					// if(((p.x-box[0])/dx|0) >= n){console.log((p.x-box[0])/dx|0)}
+					// if((p.x-box[0])/dx+0.5|0 < 0){console.log('woops')}
+					distroX[xI]++;
+					distroY[yI]++;
 					// distro[(x+j-box[0])/dx+0.5|0]++;
 				// }
 			// }else{
@@ -343,11 +351,11 @@ GTE.buildAABBTree = function(){
 				// 	if(x+j < box[1]){continue;}
 				// 	if(x+j > box[3]){break;}
 
-					distroY[(p.y-box[1])/dy+0.5|0]++;
 					// distro[(x+j-box[1])/dx+0.5|0]++;
 				// }
 			// }
 		}
+		// if(Math.random() < 0.01){console.log(distroX,distroY);}
 		return [distroX,distroY];
 	};
 
@@ -371,8 +379,8 @@ GTE.buildAABBTree = function(){
 			var max = box[2];
 
 			//get center of the box for longest axis
-			var distros = getDistro(node.particles,box,iAxis);
-			var medianF = GTE.getMedian(distros[iAxis],numParticles);
+			// var distros = getDistro(node.particles,box,iAxis);
+			var medianF = 0.5;//GTE.getMedian(distros[iAxis],numParticles);
 
 
 			var center = medianF*(box[2]-box[0])+box[0];
@@ -399,29 +407,64 @@ GTE.buildAABBTree = function(){
 				nodeRight.box = [box[0],center,box[2],box[3]];
 			}
 
+			var minXL = nodeLeft.box[2];
+			var maxXL = nodeLeft.box[0];
+			var minYL = nodeLeft.box[3];
+			var maxYL = nodeLeft.box[1];
+			var minXR = nodeRight.box[2];
+			var maxXR = nodeRight.box[0];
+			var minYR = nodeRight.box[3];
+			var maxYR = nodeRight.box[1];
+
 			for(var i = 0; i < numParticles; i++){
 				var p = node.particles[i];
 				if(iAxis == 0){
 					if(p.x - p.r <= center){
 						nodeLeft.particles.push(p);
+						if(p.x-p.r < minXL){minXL = p.x-p.r;}
+						if(p.x+p.r > maxXL){maxXL = p.x+p.r;}
+						if(p.y-p.r < minYL){minYL = p.y-p.r;}
+						if(p.y+p.r > maxYL){maxYL = p.y+p.r;}
 					}
 
 					if(p.x + p.r >= center){
 						nodeRight.particles.push(p);
+						if(p.x-p.r < minXR){minXR = p.x-p.r;}
+						if(p.x+p.r > maxXR){maxXR = p.x+p.r;}
+						if(p.y-p.r < minYR){minYR = p.y-p.r;}
+						if(p.y+p.r > maxYR){maxYR = p.y+p.r;}
 					}
 				}else{
 					if(p.y - p.r <= center){
 						nodeLeft.particles.push(p);
+						if(p.x-p.r < minXL){minXL = p.x-p.r;}
+						if(p.x+p.r > maxXL){maxXL = p.x+p.r;}
+						if(p.y-p.r < minYL){minYL = p.y-p.r;}
+						if(p.y+p.r > maxYL){maxYL = p.y+p.r;}
 					}
 
 					if(p.y + p.r >= center){
 						nodeRight.particles.push(p);
+						if(p.x-p.r < minXR){minXR = p.x-p.r;}
+						if(p.x+p.r > maxXR){maxXR = p.x+p.r;}
+						if(p.y-p.r < minYR){minYR = p.y-p.r;}
+						if(p.y+p.r > maxYR){maxYR = p.y+p.r;}
 					}
 				}
 			}
 
-			nodeLeft.box  = getMinBox(nodeLeft.particles,nodeLeft.box);
-			nodeRight.box = getMinBox(nodeRight.particles,nodeRight.box);
+			if(minXL < nodeLeft.box[0]){minXL = nodeLeft.box[0];}
+			if(minYL < nodeLeft.box[1]){minYL = nodeLeft.box[1];}
+			if(maxXL > nodeLeft.box[2]){maxXL = nodeLeft.box[2];}
+			if(maxYL > nodeLeft.box[3]){maxYL = nodeLeft.box[3];}
+			if(minXR < nodeRight.box[0]){minXR = nodeRight.box[0];}
+			if(minYR < nodeRight.box[1]){minYR = nodeRight.box[1];}
+			if(maxXR > nodeRight.box[2]){maxXR = nodeRight.box[2];}
+			if(maxYR > nodeRight.box[3]){maxYR = nodeRight.box[3];}
+
+			nodeLeft.box  = [minXL,minYL,maxXL,maxYL];
+			nodeRight.box = [minXR,minYR,maxXR,maxYR];
+			
 			node.nodeLeft = nodeLeft;
 			node.nodeRight = nodeRight;
 			buildHelper(nodeLeft);
@@ -432,7 +475,7 @@ GTE.buildAABBTree = function(){
 	}
 
 	var maxDepth = 13;
-	var minParticles = 5;
+	var minParticles = 15;
 
 	var yScale = GTE.getYScale();
 	var rootNode = 
@@ -458,13 +501,15 @@ GTE.buildAABBTree = function(){
 	GTE.AABBTree = rootNode;
 
 };
-
+var blabladontdothis = false;
 GTE.updateModel = function(deltaTime){
 
 	while(deltaTime > 0){
 
-		GTE.buildAABBTree();
-
+		// if(!blabladontdothis){
+		GTE.buildAABBTree();	
+		// }
+		blabladontdothis = true;
 		var w = GTE.getRenderBoxWidth();
 		var h = GTE.getRenderBoxHeight();
 
@@ -545,214 +590,234 @@ GTE.updateModel = function(deltaTime){
 		}
 
 		//Update positions
-		var unresolved = true;
-		while(unresolved){
-			unresolved = false;
-			for(var i = 0; i < GTE.levelState.particles.length; i++){
-				var p = GTE.levelState.particles[i];
-				if(p.resolved){continue;}
+		function helperStep(node){
+			if(typeof node !== 'object' || typeof node.particles !== 'object'){return;}
 
-				//Collision check
-				var pXNew = p.x + dT*p.vX;
-				var pYNew = p.y + dT*p.vY;
+			var leaf = true;
 
-				var pA  = p;
-				var vxA = pA.vX;
-				var vyA = pA.vY;
+			//Recurisve
+			if(typeof node.nodeLeft === 'object'){
+				helperStep(node.nodeLeft);
+				leaf = false;
+			}
 
-				var xA  = pA.x + dT*vxA;
-				var yA  = pA.y + dT*vyA;
+			if(typeof node.nodeRight === 'object'){
+				helperStep(node.nodeRight);
+				leaf = false;	
+			}
 
-				var mA  = pA.m;
-				var rA  = pA.r;
+			if(!leaf){return;}
+			var unresolved = true;
+			while(unresolved){
+				unresolved = false;
+				for(var i = 0; i < node.particles.length; i++){
+					var p = node.particles[i];
+					if(p.resolved){continue;}
 
-				var toRemove = false;
+					//Collision check
+					var pXNew = p.x + dT*p.vX;
+					var pYNew = p.y + dT*p.vY;
 
-				//Inefficient TODO: use AABB tree
-				var node = GTE.AABBTree;
-				var foundBox = false;
-				while(!foundBox){
+					var pA  = p;
+					var vxA = pA.vX;
+					var vyA = pA.vY;
 
-					if(typeof node.nodeLeft === 'object'){
-						if(pA.x >= node.nodeLeft.box[0] && pA.x <= node.nodeLeft.box[2] && pA.y >= node.nodeLeft.box[1] && pA.y <= node.nodeLeft.box[3]){
-							node = node.nodeLeft;
-						}else{
-							node = node.nodeRight;
-						}
-					}else{
-						foundBox = true;
-					}
+					var xA  = pA.x + dT*vxA;
+					var yA  = pA.y + dT*vyA;
 
-					var particlesToSearch = node.particles;
-					for(var j = 0; foundBox && j < particlesToSearch.length; j++){
-						var pB = particlesToSearch[j];
-						if(pB.x == pA.x && pB.y == pA.y){continue;} //same particle check
+					var mA  = pA.m;
+					var rA  = pA.r;
 
-						if(pA.x < 1 && pB.x > 1 || pA.x > 1 && pB.x < 1){continue;}
-						var vxB = pB.vX;
-						var vyB = pB.vY;
-						var mB  = pB.m;
-						var rB  = pB.r;
+					var toRemove = false;
 
-						var xB = pB.x + dT*vxB;
-						var yB = pB.y + dT*vyB;
+					//Inefficient TODO: use AABB tree
+					// var node = GTE.AABBTree;
+					// var foundBox = false;
+					// while(!foundBox){
 
-						var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
-						var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
+						// if(typeof node.nodeLeft === 'object'){
+						// 	//if(pA.x >= node.nodeLeft.box[0] && pA.x <= node.nodeLeft.box[2] && pA.y >= node.nodeLeft.box[1] && pA.y <= node.nodeLeft.box[3]){
+						// 		node = node.nodeLeft;
+						// 	//}else{
+						// 	//	node = node.nodeRight;
+						// 	//}
+						// }else{
+							// foundBox = true;
+						// }
 
-						if(dist < rA + rB){
-							if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
+						var particlesToSearch = node.particles;
+						for(var j = 0; j < particlesToSearch.length; j++){
+							var pB = particlesToSearch[j];
+							if(pB.x == pA.x && pB.y == pA.y){continue;} //same particle check
 
-								var massTransfer = pA.m;
-								if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
-									massTransfer = Math.abs(pA.m+pB.m) - GTE.levelSettings.massMax;
+							if(pA.x < 1 && pB.x > 1 || pA.x > 1 && pB.x < 1){continue;}
+							var vxB = pB.vX;
+							var vyB = pB.vY;
+							var mB  = pB.m;
+							var rB  = pB.r;
 
-									if(pB.m > 0){
-										massTransfer = pA.m - massTransfer;
+							var xB = pB.x + dT*vxB;
+							var yB = pB.y + dT*vyB;
+
+							var dist = Math.sqrt(Math.pow(xB-xA,2) + Math.pow(yB-yA,2));
+							var distNow = Math.sqrt(Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2));
+
+							if(dist < rA + rB){
+								if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
+
+									var massTransfer = pA.m;
+									if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
+										massTransfer = Math.abs(pA.m+pB.m) - GTE.levelSettings.massMax;
+
+										if(pB.m > 0){
+											massTransfer = pA.m - massTransfer;
+										}else{
+											massTransfer = pA.m + massTransfer;	
+										}
 									}else{
-										massTransfer = pA.m + massTransfer;	
+										toRemove = true;
 									}
-								}else{
-									toRemove = true;
-								}
 
-								if(Math.abs(pB.m + massTransfer) < GTE.levelSettings.massSigma){
-									GTE.levelState.particles.splice(j,1);
-								}else{
-									var absA = Math.abs(massTransfer);
-									var absB = Math.abs(pB.m);
-									var absMass = absA+absB;
-									pB.vX = (pB.vX*absB+pA.vX*absA)/absMass;
-									pB.vY = (pB.vY*absB+pA.vY*absA)/absMass;
+									if(Math.abs(pB.m + massTransfer) < GTE.levelSettings.massSigma){
+										GTE.levelState.particles.splice(j,1);
+									}else{
+										var absA = Math.abs(massTransfer);
+										var absB = Math.abs(pB.m);
+										var absMass = absA+absB;
+										pB.vX = (pB.vX*absB+pA.vX*absA)/absMass;
+										pB.vY = (pB.vY*absB+pA.vY*absA)/absMass;
 
-									pB.x = (pB.x*absB+pA.x*absA)/absMass;
-									pB.y = (pB.y*absB+pA.y*absA)/absMass;
+										pB.x = (pB.x*absB+pA.x*absA)/absMass;
+										pB.y = (pB.y*absB+pA.y*absA)/absMass;
 
-									pB.m += massTransfer;
-									pA.m -= massTransfer;
+										pB.m += massTransfer;
+										pA.m -= massTransfer;
 
-									if(toRemove){
-										for(var k = 0; k < GTE.levelState.mouseForces.length; k++){
-											var f = GTE.levelState.mouseForces[k];
-											if(typeof f === 'object' && f.pID == pA.id){
-												f.pID = pB.id;
+										if(toRemove){
+											for(var k = 0; k < GTE.levelState.mouseForces.length; k++){
+												var f = GTE.levelState.mouseForces[k];
+												if(typeof f === 'object' && f.pID == pA.id){
+													f.pID = pB.id;
+												}
 											}
 										}
 									}
-								}
 
-								break;
-							}else{
-								mA = Math.abs(mA);
-								mB = Math.abs(mB);
+									break;
+								}else{
+									mA = Math.abs(mA);
+									mB = Math.abs(mB);
+								}
+							}
+
+							if(distNow < rA + rB){
+								var xNorm = (xB-xA) / dist;
+								var yNorm = (yB-yA) / dist;
+
+								//Penalty forces
+								var k = 0.03;
+								var force = -(dist - (rA + rB)) / (dist + 0.0001) * mB * mA;
+								pA.vX -= k * force * xNorm / mA;
+								pA.vY -= k * force * yNorm / mA;
+								pB.vX += k * force * xNorm / mB;
+								pB.vY += k * force * yNorm / mB;
+							}else if(dist < rA + rB){
+
+								//Collision detected
+								var Cr = GTE.levelSettings.CoeffRestitution;
+
+								// Proper collision reolution
+								var xNorm = (xB-xA) / dist;
+								var yNorm = (yB-yA) / dist;
+
+								var xTan =  yNorm;
+								var yTan = -xNorm;
+
+								var vA = vxA * xNorm + vyA * yNorm;
+								var vB = vxB * xNorm + vyB * yNorm;
+
+								var vAT = vxA * xTan + vyA * yTan;
+								var vBT = vxB * xTan + vyB * yTan;
+
+								var vANew = (Cr * mB * (vB - vA) + mB * vB + mA * vA) / (mA + mB);
+								var vBNew = (Cr * mA * (vA - vB) + mB * vB + mA * vA) / (mA + mB);
+
+								pA.vX = vANew * xNorm + vAT * xTan;
+								pA.vY = vANew * yNorm + vAT * yTan;
+								pB.vX = vBNew * xNorm + vBT * xTan;
+								pB.vY = vBNew * yNorm + vBT * yTan;
 							}
 						}
+					// }
 
-						if(distNow < rA + rB){
-							var xNorm = (xB-xA) / dist;
-							var yNorm = (yB-yA) / dist;
+					if(toRemove){
+						GTE.levelState.particles.splice(i,1);
+						GTE.dirtyCanvas = true;
+						break;
+					}
 
-							//Penalty forces
-							var k = 0.03;
-							var force = -(dist - (rA + rB)) / (dist + 0.0001) * mB * mA;
-							pA.vX -= k * force * xNorm / mA;
-							pA.vY -= k * force * yNorm / mA;
-							pB.vX += k * force * xNorm / mB;
-							pB.vY += k * force * yNorm / mB;
-						}else if(dist < rA + rB){
+					//Left box collision
+					if(pXNew - p.r < 0){
+						pXNew = p.r - pXNew + p.r;
+						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
+					}
 
-							//Collision detected
-							var Cr = GTE.levelSettings.CoeffRestitution;
+					//Right box collision
+					if(pXNew + p.r > 2){
+						pXNew = 2-(p.r + pXNew - 2) - p.r;
+						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
+					}
 
-							// Proper collision reolution
-							var xNorm = (xB-xA) / dist;
-							var yNorm = (yB-yA) / dist;
+					//Top box collision
+					if(pYNew - p.r < 0){
+						pYNew = p.r - pYNew + p.r;
+						p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
+					}
 
-							var xTan =  yNorm;
-							var yTan = -xNorm;
+					//Bottom box collision
+					if(pYNew + p.r > yLimit){
+						pYNew = yLimit-(p.r + pYNew-yLimit) - p.r;
+						p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
+					}
 
-							var vA = vxA * xNorm + vyA * yNorm;
-							var vB = vxB * xNorm + vyB * yNorm;
+					if(GTE.levelSettings.transfer){
+						if(p.x < 1 && pXNew > 1){
+							p.m *= -1;
+						}else if(p.x > 1 && pXNew < 1){
+							p.m *= -1;
+						}
+					}else{
 
-							var vAT = vxA * xTan + vyA * yTan;
-							var vBT = vxB * xTan + vyB * yTan;
+						//Left to Right collision
+						if(p.x < 1 && pXNew+p.r > 1){
+							p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
-							var vANew = (Cr * mB * (vB - vA) + mB * vB + mA * vA) / (mA + mB);
-							var vBNew = (Cr * mA * (vA - vB) + mB * vB + mA * vA) / (mA + mB);
-
-							pA.vX = vANew * xNorm + vAT * xTan;
-							pA.vY = vANew * yNorm + vAT * yTan;
-							pB.vX = vBNew * xNorm + vBT * xTan;
-							pB.vY = vBNew * yNorm + vBT * yTan;
+							// newP.m = -p.m;
+							pXNew = 1-(p.r + pXNew - 1) - p.r;
+							// newP.vX = -p.vX;
+						} else 
+						
+						//Right to Left collision
+						if(p.x > 1 && pXNew-p.r < 1){
+							p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
+							// newP.m = -p.m;
+							pXNew = 1+(p.r - pXNew + 1) + p.r;
 						}
 					}
-				}
 
-				if(toRemove){
-					GTE.levelState.particles.splice(i,1);
-					GTE.dirtyCanvas = true;
-					break;
-				}
-
-				//Left box collision
-				if(pXNew - p.r < 0){
-					pXNew = p.r - pXNew + p.r;
-					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
-				}
-
-				//Right box collision
-				if(pXNew + p.r > 2){
-					pXNew = 2-(p.r + pXNew - 2) - p.r;
-					p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
-				}
-
-				//Top box collision
-				if(pYNew - p.r < 0){
-					pYNew = p.r - pYNew + p.r;
-					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
-				}
-
-				//Bottom box collision
-				if(pYNew + p.r > yLimit){
-					pYNew = yLimit-(p.r + pYNew-yLimit) - p.r;
-					p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
-				}
-
-				if(GTE.levelSettings.transfer){
-					if(p.x < 1 && pXNew > 1){
-						p.m *= -1;
-					}else if(p.x > 1 && pXNew < 1){
-						p.m *= -1;
+					if(pXNew < 1){
+						tempLeft  += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
+					}else{
+						tempRight += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
 					}
-				}else{
 
-					//Left to Right collision
-					if(p.x < 1 && pXNew+p.r > 1){
-						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
-
-						// newP.m = -p.m;
-						pXNew = 1-(p.r + pXNew - 1) - p.r;
-						// newP.vX = -p.vX;
-					} else 
-					
-					//Right to Left collision
-					if(p.x > 1 && pXNew-p.r < 1){
-						p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
-						// newP.m = -p.m;
-						pXNew = 1+(p.r - pXNew + 1) + p.r;
-					}
+					GTE.updateParticlePos(p, pXNew, pYNew);
+					p.resolved = true;
 				}
-
-				if(pXNew < 1){
-					tempLeft  += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
-				}else{
-					tempRight += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
-				}
-
-				GTE.updateParticlePos(p, pXNew, pYNew);
-				p.resolved = true;
 			}
 		}
+
+		helperStep(GTE.AABBTree);
 	}
 
 	// console.log(GTE.levelState.temperature)
