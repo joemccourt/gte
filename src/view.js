@@ -94,7 +94,7 @@ GTE.drawAABBTree = function(){
 		helper(n.nodeRight);
 	};
 
-	helper(GTE.AABBTree);
+	helper(GTE.AABBTree.root);
 	ctx.strokeStyle = 'rgba(255,0,0,0.2)';
 	ctx.stroke();
 
