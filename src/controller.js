@@ -276,11 +276,11 @@ GTE.startSession = function(){
 	GTE.setGameRenderBox();
 	
 	GTE.loadGameState();
+	GTE.initAABBTree();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 
 	GTE.resizeToFit();
 	
-	GTE.initAABBTree();
 
 	//GTE.startNewStage();	
 	// GTE.viewBoard();
