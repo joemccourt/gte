@@ -7,7 +7,7 @@ GTE.gameLevels =
 		'rounds'  : 6,
 		'starReqs': [4,5,6],
 
-		'numParticles'    : 100,
+		'numParticles'    : 1000,
 		'viscosity'       : 0.02,
 		'CoeffRestitution': 0.8,
 		'annihilate'      : false,
@@ -18,8 +18,8 @@ GTE.gameLevels =
 		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0,
-		'r'               : 0.03,
-		'g'               : 0.1
+		'r'               : 0.005,
+		'g'               : 0.01
 
 	},
 	
