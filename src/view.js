@@ -11,7 +11,6 @@ GTE.drawGame = function(drawGameParams){
 	}else if(drawGameParams.phase === 'menu'){
 		GTE.drawGameMenu(drawGameParams);
 	}
-	GTE.drawAABBTree();
 };
 
 GTE.drawGameRun = function(drawGameParams){
@@ -21,6 +20,10 @@ GTE.drawGameRun = function(drawGameParams){
 	GTE.drawMouseForces();
 	GTE.drawButtons();
 	GTE.drawProgress();
+
+	if(GTE.viewAABBTree){
+		GTE.drawAABBTree();
+	}
 };
 
 GTE.drawGameStart = function(drawGameParams){

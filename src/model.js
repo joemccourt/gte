@@ -657,12 +657,41 @@ GTE.trimAABBTree = function(root,node){
 	return sumL+sumR;
 };
 
+GTE.removeSetParticles = function(node){
+	for(var leafI = 0; leafI < GTE.AABBTree.leaves.length; leafI++){
+		var node = GTE.AABBTree.leaves[leafI];
+		if(typeof node !== 'object' || typeof node.particles !== 'object'){return;}
+
+		for(var i = 0; i < node.particles.length; i++){
+			var p = node.particles[i];
+			if(p.toRemove){
+				var index = node.particles.indexOf(p);
+				if(index >= 0){
+					node.particles.splice(index,1);
+					i--;
+				}
+			}
+		}
+	}
+};
+
 GTE.updateAABBTree = function(){
 	var root = GTE.AABBTree.root;
 	root.particles = GTE.levelState.particles;
 
+	GTE.removeSetParticles(root);
+
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
+		
+		if(p.toRemove){
+			index = GTE.levelState.particles.indexOf(p);
+			if(index >= 0){
+				GTE.levelState.particles.splice(index,1);
+				i--;
+			}
+		}
+
 		if(p.toUpdateTree){
 			GTE.updateAABBTreeParticle(GTE.AABBTree,root,p);
 			p.toUpdateTree = false;
@@ -760,12 +789,24 @@ GTE.updateModel = function(deltaTime){
 			var node = GTE.AABBTree.leaves[leafI];
 			if(typeof node !== 'object' || typeof node.particles !== 'object'){return;}
 
-
 			var unresolved = true;
 			while(unresolved){
 				unresolved = false;
 				for(var i = 0; i < node.particles.length; i++){
 					var p = node.particles[i];
+					if(p.toRemove){
+						var index = node.particles.indexOf(p);
+						if(index >= 0){
+							node.particles.splice(index,1);
+							i--;
+						}
+
+						index = GTE.levelState.particles.indexOf(p);
+						if(index >= 0){
+							GTE.levelState.particles.splice(index,1);
+						}
+						continue;
+					}
 
 					// if(p.resolved){GTE.updateMoveParticle(node,p);continue;}
 
@@ -792,7 +833,7 @@ GTE.updateModel = function(deltaTime){
 						yA += dT*vyA;
 					}
 
-					var toRemove = false;
+					p.toRemove = false;
 
 					// var node = GTE.AABBTree;
 					// var foundBox = false;
@@ -811,6 +852,7 @@ GTE.updateModel = function(deltaTime){
 						for(var j = 0; j < node.particles.length; j++){
 							var pB = node.particles[j];
 							if(pB === pA){continue;} //same particle check
+							if(pB.toRemove){continue;}
 
 							var rAB2 = (rA+rB)*(rA+rB);
 							var distNow2 = Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2);
@@ -832,7 +874,7 @@ GTE.updateModel = function(deltaTime){
 							var distNow = Math.sqrt(distNow2);
 
 							if(dist < rA + rB){
-								if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
+								if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
 
 									var massTransfer = pA.m;
 									if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
@@ -843,12 +885,15 @@ GTE.updateModel = function(deltaTime){
 										}else{
 											massTransfer = pA.m + massTransfer;	
 										}
+
+										p.toRemove = false;
 									}else{
-										toRemove = true;
+										p.toRemove = true;
 									}
 
 									if(Math.abs(pB.m + massTransfer) < GTE.levelSettings.massSigma){
-										GTE.levelState.particles.splice(j,1);
+										//GTE.levelState.particles.splice(j,1);
+										pB.toRemove = true;
 									}else{
 										var absA = Math.abs(massTransfer);
 										var absB = Math.abs(pB.m);
@@ -862,7 +907,7 @@ GTE.updateModel = function(deltaTime){
 										pB.m += massTransfer;
 										pA.m -= massTransfer;
 
-										if(toRemove){
+										if(p.toRemove){
 											for(var k = 0; k < GTE.levelState.mouseForces.length; k++){
 												var f = GTE.levelState.mouseForces[k];
 												if(typeof f === 'object' && f.pID == pA.id){
@@ -920,10 +965,10 @@ GTE.updateModel = function(deltaTime){
 						}
 					// }
 
-					if(toRemove){
-						GTE.levelState.particles.splice(i,1);
-						GTE.dirtyCanvas = true;
-						break;
+					if(p.toRemove){
+					// 	GTE.levelState.particles.splice(i,1);
+					// 	GTE.dirtyCanvas = true;
+						// break;
 					}
 
 					//Left box collision

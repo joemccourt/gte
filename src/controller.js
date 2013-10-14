@@ -32,6 +32,7 @@ GTE.boardGameView = true;
 GTE.levelCompleted = false;
 GTE.menuView = false;
 
+GTE.viewAABBTree = true;
 
 GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
 
@@ -261,6 +262,7 @@ GTE.resizeToFit = function(){
 	}else{
 		GTE.scaleModel();
 		GTE.setGameRenderBox();
+		GTE.initAABBTree();
 	}
 
 	GTE.dirtyCanvas = true;
