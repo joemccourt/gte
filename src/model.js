@@ -370,6 +370,8 @@ GTE.buildAABBTree = function(root,node){
 	// // console.log(getDistro(GTE.levelState.particles,[0,0,2,1],0));
 
 	// function buildHelper(node,maxDepth,minParticles){
+
+	if(typeof node.particles !== 'object'){return;}
 	var numParticles = node.particles.length;
 
 	var box = node.box;

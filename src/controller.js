@@ -32,7 +32,7 @@ GTE.boardGameView = true;
 GTE.levelCompleted = false;
 GTE.menuView = false;
 
-GTE.viewAABBTree = true;
+GTE.viewAABBTree = false;
 
 GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
 
@@ -278,15 +278,14 @@ GTE.startSession = function(){
 	GTE.setGameRenderBox();
 	
 	GTE.loadGameState();
+	
 	GTE.initAABBTree();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 
 	GTE.resizeToFit();
 	
-
 	//GTE.startNewStage();	
 	// GTE.viewBoard();
-
 
 	//Start new game
 	//if(!GTE.gameInProgress){

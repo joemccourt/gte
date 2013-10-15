@@ -323,7 +323,73 @@ GTE.drawMouseForces = function(){
 
 GTE.sign = function(x){return x < 0 ? -1 : x > 0 ? 1 : 0;};
 
+GTE.drawDensity = function(){
+
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var gameBoxTL = GTE.gameInternalToRenderSpace(0,0);
+	var gameBoxBR = GTE.gameInternalToRenderSpace(2,1*GTE.getYScale());
+
+	var w = Math.ceil(gameBoxBR[0] - gameBoxTL[0]);
+	var h = Math.ceil(gameBoxBR[1] - gameBoxTL[1]);
+	
+	var newData = ctx.createImageData(w,h);
+	var src = newData.data;
+
+	for(var y = 0; y < h; y++){
+		for(var x = 0; x < w; x++){
+			var index = 4*(w*y+x);
+			src[index  ] = 127;
+			src[index+1] = 127;
+			src[index+2] = 127;
+			src[index+3] = 255;
+		}
+	}
+
+	for(var i = 0; i < GTE.levelState.particles.length; i++){
+		var p = GTE.levelState.particles[i];
+		var pCoords = GTE.gameInternalToRenderSpace(p.x,p.y);
+		pCoords[0] -= gameBoxTL[0];
+		pCoords[1] -= gameBoxTL[1];
+
+		var r = 100;
+		var r2 = r*r;
+		var xMin = pCoords[0] - r | 0;
+		var xMax = pCoords[0] + r +1 | 0;
+		var yMin = pCoords[1] - r | 0;
+		var yMax = pCoords[1] + r +1 | 0;
+		xMin = xMin < 0 ? 0 : xMin > w-1 ? w-1 : xMin;
+		xMax = xMax < 0 ? 0 : xMax > w-1 ? w-1 : xMax;
+		yMin = yMin < 0 ? 0 : yMin > h-1 ? h-1 : yMin;
+		yMax = yMax < 0 ? 0 : yMax > h-1 ? h-1 : yMax;
+
+
+		var dR = 5*p.m;
+		var dG = 5*p.m;
+		var dB = 5*p.m;
+
+		for(var y = yMin; y <= yMax; y++){
+			for(var x = xMin; x <= xMax; x++){
+				if(Math.pow(x-pCoords[0],2)+Math.pow(y-pCoords[1],2) < r2){
+					var index = 4*(w*y+x);
+					src[index  ] += dR;
+					src[index+1] += dG;
+					src[index+2] += dB;
+					src[index+3] = 255;
+				}
+			}
+		}
+	}
+
+	ctx.putImageData(newData,gameBoxTL[0],gameBoxTL[1]);
+	ctx.restore();
+};
+
 GTE.drawLevel = function(){
+	//GTE.drawDensity();
+	//return;
+
 	var ctx = GTE.ctx;
 	ctx.save();
 
