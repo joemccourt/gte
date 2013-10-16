@@ -396,6 +396,7 @@ GTE.drawLevel = function(){
 	ctx.fillStyle =  'rgb(0,0,200)';
 	ctx.strokeStyle = 'rgb(0,0,0)';
 	ctx.lineWidth = 1;
+
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 		var canvasCoord = GTE.gameInternalToRenderSpace(p.x,p.y);
@@ -438,8 +439,53 @@ GTE.drawLevel = function(){
 
 			discLevel++;
 		}
-			
+
+		if(Math.abs(p.m) > 1){
+
+			ctx.fillStyle = 'rgb(255,255,255)';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+
+			var drawStr = p.m;
+			if(Math.abs(p.m - (p.m|0)) > 0){
+				drawStr = p.m.toPrecision(3);
+				radius *= 0.7;
+			}
+
+			var height = radius + 0.5 | 0;
+			ctx.font = height + "px Verdana";
+
+			ctx.strokeText(drawStr,discX,discY);
+			ctx.fillText(drawStr,discX,discY);
+		}
+		
 	}
+
+
+	//Test multiply view
+	var pA = GTE.levelState.particles[0];
+	var pB = GTE.levelState.particles[1];
+
+	var vecP = [];
+	vecP[0] = (pB.x - pA.x);
+	vecP[1] = (pB.y - pA.y);
+	var dist = Math.sqrt(vecP[0]*vecP[0] + vecP[1]+vecP[1]);
+
+	var vecN = [];
+	vecN[0] = -vecP[1];
+	vecN[1] =  vecP[0];
+
+	var coordsA = GTE.gameInternalToRenderSpace(pA.x,pA.y);
+	var coordsB = GTE.gameInternalToRenderSpace(pB.x,pB.y);
+	
+	var height = 50;
+	ctx.fillStyle = 'rgba(255,255,255,0.8)'
+	ctx.moveTo(coordsA[0]-height,coordsA[1]-height);
+	ctx.lineTo(coordsA[0],coordsA[1]);
+	ctx.lineTo(coordsB[0],coordsB[1]);
+	ctx.lineTo(coordsB[0]-height,coordsB[1]-height);
+
+	ctx.fill();
 
 	ctx.restore();
 };
