@@ -93,7 +93,8 @@ GTE.initModel = function(){
 		levelID: GTE.level,
 		particles: [],
 		forces: [],
-		mouseForces: []
+		mouseForces: [],
+		springForces: []
 	};
 
 	// x: [0,2] (x <= 1 => particle on left side)
@@ -183,6 +184,45 @@ GTE.getGTEGroup = function(){
 	if(sum == 0){return 0;}
 	if(sum > 0){return 1;}
 	return 2;
+};
+
+GTE.createSpringForce = function(forceID,p1Index,p2Index){
+	var p1 = GTE.levelState.particles[p1Index];
+	if(typeof p1 !== 'object'){return;}
+
+	var p2 = GTE.levelState.particles[p2Index];
+	if(typeof p2 !== 'object'){return;}
+
+	var r0 = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+	var cX = (p2.x-p1.x)/r0;
+	var cY = (p2.y-p1.y)/r0;
+
+	var angle;
+	if(Math.abs(cX) > Math.abs(cY)){
+		if(cX > 0){
+			angle = 180 * Math.PI/180;
+		}else{
+			angle =   0 * Math.PI/180;
+		}
+	}else{
+		if(cY > 0){
+			angle = 90 * Math.PI/180;
+		}else{
+			angle = 270 * Math.PI/180;
+		}
+	}
+
+	var force = {
+		p1: p1,
+		p2: p2,
+		k: 10,
+		b: 0.5,
+		fsa: Math.sin(angle),
+		fca: Math.cos(angle),
+		r0: r0
+	};
+
+	GTE.levelState.springForces.push(force);
 };
 
 GTE.createMouseForce = function(forceID,pIndex,x,y){
@@ -773,6 +813,54 @@ GTE.updateModel = function(deltaTime){
 				p.vY += dT * forceDampT * tY / absM;
 			}
 		}
+
+		for(var i = 0; i < GTE.levelState.springForces.length; i++){
+			var f = GTE.levelState.springForces[i];
+			if(typeof f === "undefined"){continue;}
+
+			var found = false;
+			var p1 = f.p1;
+			var p2 = f.p2;
+
+			var dr = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y)); 
+			var cX = (p2.x-p1.x) / dr;
+			var cY = (p2.y-p1.y) / dr;
+
+			// if(dr < p.r && p.r > 0){
+			// 	dr *= dr/p.r;
+			// }
+
+			var tX =  cY;
+			var tY = -cX;
+			var force = f.k*(dr-2.1*p1.r);
+
+			var absM = Math.abs(p1.m);
+
+			var vF = (p2.vX-p1.vX)*cX+(p2.vY-p1.vY)*cY;
+			var forceDamp  = Math.sqrt(4 * f.k * absM) * vF;
+
+			var vFT = p1.vX*tX+p1.vY*tY;
+			var forceDampT = f.fca*cY/dr;
+			forceDampT += f.fsa*cX/dr;
+
+			forceDampT -= Math.sqrt(4 * f.k * absM) * vFT;
+
+			if(dr > 0){
+				p1.vX += dT * (force+forceDamp) * cX / absM;
+				p1.vY += dT * (force+forceDamp) * cY / absM;
+
+				p1.vX += dT * forceDampT * tX / absM;
+				p1.vY += dT * forceDampT * tY / absM;
+
+
+				p2.vX -= dT * (force+forceDamp) * cX / absM;
+				p2.vY -= dT * (force+forceDamp) * cY / absM;
+
+				p2.vX -= dT * forceDampT * tX / absM;
+				p2.vY -= dT * forceDampT * tY / absM;
+			}
+		}
+
 
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];

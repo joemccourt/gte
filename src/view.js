@@ -16,8 +16,9 @@ GTE.drawGame = function(drawGameParams){
 GTE.drawGameRun = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline();
-	GTE.drawLevel();
 	GTE.drawMouseForces();
+	GTE.drawSpringForces();
+	GTE.drawLevel();
 	GTE.drawButtons();
 	GTE.drawProgress();
 
@@ -288,6 +289,36 @@ GTE.drawBoardGame = function(){
 	ctx.restore();
 };
 
+GTE.drawSpringForces = function(){
+
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var springs =  GTE.levelState.springForces;
+	for(var forceID = 0; forceID < springs.length; forceID++){
+		var f = springs[forceID];
+		if(typeof f !== 'object'){continue;}
+
+		var p1 = f.p1;
+		var p2 = f.p2;
+
+		if(typeof p1 !== 'object'){continue;}
+		if(typeof p2 !== 'object'){continue;}
+
+		var canvasCoordP1 = GTE.gameInternalToRenderSpace(p1.x,p1.y);
+		var canvasCoordP2 = GTE.gameInternalToRenderSpace(p2.x,p2.y);
+
+		ctx.beginPath();
+	    ctx.moveTo(canvasCoordP1[0], canvasCoordP1[1]);
+	    ctx.lineTo(canvasCoordP2[0], canvasCoordP2[1]);
+	    ctx.strokeStyle = '800';
+	    ctx.lineWidth = 3;
+	    ctx.stroke();
+	}
+	ctx.restore();
+};
+
+
 GTE.drawMouseForces = function(){
 
 	var ctx = GTE.ctx;
@@ -462,30 +493,30 @@ GTE.drawLevel = function(){
 	}
 
 
-	//Test multiply view
-	var pA = GTE.levelState.particles[0];
-	var pB = GTE.levelState.particles[1];
+	// //Test multiply view
+	// var pA = GTE.levelState.particles[0];
+	// var pB = GTE.levelState.particles[1];
 
-	var vecP = [];
-	vecP[0] = (pB.x - pA.x);
-	vecP[1] = (pB.y - pA.y);
-	var dist = Math.sqrt(vecP[0]*vecP[0] + vecP[1]+vecP[1]);
+	// var vecP = [];
+	// vecP[0] = (pB.x - pA.x);
+	// vecP[1] = (pB.y - pA.y);
+	// var dist = Math.sqrt(vecP[0]*vecP[0] + vecP[1]+vecP[1]);
 
-	var vecN = [];
-	vecN[0] = -vecP[1];
-	vecN[1] =  vecP[0];
+	// var vecN = [];
+	// vecN[0] = -vecP[1];
+	// vecN[1] =  vecP[0];
 
-	var coordsA = GTE.gameInternalToRenderSpace(pA.x,pA.y);
-	var coordsB = GTE.gameInternalToRenderSpace(pB.x,pB.y);
+	// var coordsA = GTE.gameInternalToRenderSpace(pA.x,pA.y);
+	// var coordsB = GTE.gameInternalToRenderSpace(pB.x,pB.y);
 	
-	var height = 50;
-	ctx.fillStyle = 'rgba(255,255,255,0.8)'
-	ctx.moveTo(coordsA[0]-height,coordsA[1]-height);
-	ctx.lineTo(coordsA[0],coordsA[1]);
-	ctx.lineTo(coordsB[0],coordsB[1]);
-	ctx.lineTo(coordsB[0]-height,coordsB[1]-height);
+	// var height = 50;
+	// ctx.fillStyle = 'rgba(255,255,255,0.8)'
+	// ctx.moveTo(coordsA[0]-height,coordsA[1]-height);
+	// ctx.lineTo(coordsA[0],coordsA[1]);
+	// ctx.lineTo(coordsB[0],coordsB[1]);
+	// ctx.lineTo(coordsB[0]-height,coordsB[1]-height);
 
-	ctx.fill();
+	// ctx.fill();
 
 	ctx.restore();
 };

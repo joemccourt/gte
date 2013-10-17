@@ -68,6 +68,8 @@ GTE.mouse = "up";
 GTE.mouseDownIndex = -1;
 GTE.mouseDownPos = {x:0,y:0};
 GTE.mouseDownLast = {x:0,y:0};
+GTE.toAddSpring = false;
+GTE.toAddSpringIndex = -1;
 
 
 var kongregate = parent.kongregate;
@@ -397,6 +399,17 @@ GTE.mousedown = function(x,y,touchIndex){
 		}
 	}
 	if(minI >= 0){
+
+		if(GTE.toAddSpring){
+			if(minI != GTE.toAddSpringIndex){
+				GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
+				GTE.toAddSpringIndex = -1;
+				GTE.toAddSpring = false;
+			}
+		}else{
+			GTE.toAddSpringIndex = minI;
+			GTE.toAddSpring = true;
+		}
 		GTE.createMouseForce(touchIndex,minI,x,y);
 	}
 };
