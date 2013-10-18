@@ -160,7 +160,7 @@ GTE.gameLoop = function(time){
 		GTE.animatingNewStage = false;
 	}
 
-	if(GTE.animatingEndStage || GTE.boardGameView){
+	if(GTE.boardGameView){
 	}else{
 		GTE.updateModel(time - GTE.lastFrameTime);
 	}

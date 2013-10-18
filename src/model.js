@@ -94,7 +94,8 @@ GTE.initModel = function(){
 		particles: [],
 		forces: [],
 		mouseForces: [],
-		springForces: []
+		springForces: [],
+		staticSpringForces: []
 	};
 
 	// x: [0,2] (x <= 1 => particle on left side)
@@ -219,7 +220,7 @@ GTE.createSpringForce = function(forceID,p1Index,p2Index){
 		b: 0.5,
 		fsa: Math.sin(angle),
 		fca: Math.cos(angle),
-		r0: r0
+		r0: p1.r+p2.r
 	};
 
 	GTE.levelState.springForces.push(force);
@@ -775,7 +776,7 @@ GTE.updateModel = function(deltaTime){
 		//Update forces
 		for(var i = 0; i < GTE.levelState.mouseForces.length; i++){
 			var f = GTE.levelState.mouseForces[i];
-			if(typeof f === "undefined"){continue;}
+			if(typeof f === "undefined" || f === null){continue;}
 
 			var found = false;
 			var p;
@@ -832,7 +833,7 @@ GTE.updateModel = function(deltaTime){
 
 			var tX =  cY;
 			var tY = -cX;
-			var force = f.k*(dr-2.1*p1.r);
+			var force = f.k*(dr-f.r0);
 
 			var absM = Math.abs(p1.m);
 
@@ -861,6 +862,41 @@ GTE.updateModel = function(deltaTime){
 			}
 		}
 
+
+		for(var i = 0; i < GTE.levelState.staticSpringForces.length; i++){
+			var f = GTE.levelState.staticSpringForces[i];
+			if(typeof f === "undefined"){continue;}
+
+			var p = f.p;
+			var x = f.x;
+			var y = f.y;
+
+			var dr = Math.sqrt((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y)); 
+			var cX = (x-p.x) / dr;
+			var cY = (y-p.y) / dr;
+
+			var tX =  cY;
+			var tY = -cX;
+			var force = f.k*(dr-f.r0);
+
+			var absM = Math.abs(p.m);
+
+			var vF = (0-p.vX)*cX+(0-p.vY)*cY;
+			var forceDamp  = Math.sqrt(4 * f.k * absM) * vF;
+
+			var vFT = p.vX*tX+p.vY*tY;
+			var forceDampT = 0;
+
+			forceDampT -= Math.sqrt(4 * f.k * absM) * vFT;
+
+			if(dr > 0){
+				p.vX += dT * (force+forceDamp) * cX / absM;
+				p.vY += dT * (force+forceDamp) * cY / absM;
+
+				p.vX += dT * forceDampT * tX / absM;
+				p.vY += dT * forceDampT * tY / absM;
+			}
+		}
 
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];

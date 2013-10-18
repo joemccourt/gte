@@ -326,7 +326,7 @@ GTE.drawMouseForces = function(){
 
 	for(var forceID = 0; forceID < 10; forceID++){
 		var f = GTE.levelState.mouseForces[forceID];
-		if(typeof f !== 'object'){continue;}
+		if(typeof f !== 'object' || f === null){continue;}
 
 		var found = false;
 		var p;
@@ -914,6 +914,57 @@ GTE.newLevelAnimation = function(time){
     ctx.restore();
 };
 
+GTE.drawEndGoals = function(goals){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	ctx.fillStyle = 'rgba(0,0,200,0.2)';
+	for(var i = 0; i < goals.length; i++){
+		ctx.beginPath();
+
+		var coords = GTE.gameInternalToRenderSpace(goals[i].x,goals[i].y);
+
+		ctx.arc(coords[0], coords[1], 10, 0, 2 * Math.PI, false);
+		ctx.fill();
+	}
+
+	ctx.restore();
+};
+
+
+GTE.getEndGoals = function(num,side){
+    
+    var yScale = GTE.getYScale();
+
+    //Special cases for 1 and 2 for now
+    var goals = [
+    				[{x:0.5,y:0.6}],
+    				[{x:0.5,y:0.65}], //
+    				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
+    			];
+
+	var cL,r;
+	r = 0.15 * Math.sqrt(num/3);
+	r = r > 0.45 ? r = 0.45 : r;
+    cL = [];
+    if(num > 0 && num <= 2){
+    	cL = goals[num];
+    }else{
+		for(var i = 0; i < num; i++){
+			var angle = i / num * 2 * Math.PI - Math.PI/2; //One always on top
+			cL[i] = {
+				x:0.5+r*Math.cos(angle),
+				y:0.5*yScale+r*Math.sin(angle)
+			};
+
+			if(side == 'right'){
+				cL[i].x+=1;
+			}
+		}
+    }
+    return cL;
+};
+
 GTE.endLevelAnimation = function(time){
 	
 	var timeWidth = GTE.endStageAnimationTime;
@@ -1023,98 +1074,60 @@ GTE.endLevelAnimation = function(time){
 
     var dT = time/timeWidth;
 
-    //Special cases for 1 and 2 for now
     var goals = [
-    				[{x:0.5,y:0.6}],
-    				[{x:0.5,y:0.65}], //
-    				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
-    			];
+				[{x:0.5,y:0.6}],
+				[{x:0.5,y:0.65}], //
+				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
+			];
 
-	var cL,cR,r;
-	r = 0.15 * Math.sqrt(sumLAbs/3);
-	r = r > 0.45 ? r = 0.45 : r;
-    cL = [];
-    if(sumLAbs > 0 && sumLAbs <= 2){
-    	cL = goals[sumLAbs];
-    }else{
-		for(var i = 0; i < sumLAbs; i++){
-			var angle = i / sumLAbs * 2 * Math.PI - Math.PI/2; //One always on top
-			cL[i] = {
-				x:0.5+r*Math.cos(angle),
-				y:0.5*yScale+r*Math.sin(angle)
-			};
-		}
-    }
-
-	r = 0.15 * Math.sqrt(sumRAbs/3);
-	r = r > 0.45 ? r = 0.45 : r;
-    cR = [];
-    if(sumRAbs > 0 && sumRAbs <= 2){
-    	cR = goals[sumRAbs];
-    }else{
-		for(var i = 0; i < sumRAbs; i++){
-			var angle = i / sumRAbs * 2 * Math.PI - Math.PI/2; //One always on top
-			cR[i] = {
-				x:0.5+r*Math.cos(angle),
-				y:0.5*yScale+r*Math.sin(angle)
-			};
-		}
-    }
-
+    var cL = GTE.getEndGoals(sumLAbs,'left');
+    var cR = GTE.getEndGoals(sumRAbs,'right');
+    
+	// GTE.drawEndGoals(cL);
+	// GTE.drawEndGoals(cR);
 
 	//Find closest particles
 	if(firstRender){
 	    var iL = 0;
 	    var iR = 0;
-	    for(var j = 0; j < cL.length; j++){
-	    	var c = cL[j];
-	    	var best = 100;
-	    	var bestI = 0;
-		  	for(var i = 0; i < GTE.levelState.particles.length; i++){
-				var p = GTE.levelState.particles[i];
-				if(p.x < 1){
-					var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
-					if(r < best && p.iE < 0){	
-						best = r;
-						bestI = i;
+	    var goals;
+	    for(var k = 0; k <= 1; k++){
+	    	if(k == 0){
+	    		goals = cL;
+	    	}else{
+	    		goals = cR;
+	    	}
+		    for(var j = 0; j < goals.length; j++){
+		    	var c = goals[j];
+		    	var best = 100;
+		    	var bestI = 0;
+			  	for(var i = 0; i < GTE.levelState.particles.length; i++){
+					var p = GTE.levelState.particles[i];
+					if(k == 0 && p.x < 1 || k == 1 && p.x >= 1){
+						var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
+						if(r < best && p.iE < 0){	
+							best = r;
+							bestI = i;
+						}
 					}
 				}
+
+				//Init spring force
+				var x = c.x;
+				var y = c.y;
+
+				var p = GTE.levelState.particles[bestI];
+				var force = {
+					p: p,
+					k: 15,
+					x: x,
+					y: y,
+					r0: 0
+				};
+
+				GTE.levelState.staticSpringForces.push(force);
+				GTE.levelState.particles[bestI].iE = j;
 			}
-
-			GTE.levelState.particles[bestI].iE = j;
-	    }
-
-	    for(var j = 0; j < cR.length; j++){
-	    	var c = cR[j];
-	    	var best = 100;
-	    	var bestI = 0;
-		  	for(var i = 0; i < GTE.levelState.particles.length; i++){
-				var p = GTE.levelState.particles[i];
-				if(p.x >= 1){
-					var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
-					if(r < best && p.iE < 0){
-						best = r;
-						bestI = i;
-					}
-				}
-			}
-			GTE.levelState.particles[bestI].iE = j;
-	    }
-	}
-
-    var v = 200 / timeWidth;
-    for(var i = 0; i < GTE.levelState.particles.length; i++){
-		var p = GTE.levelState.particles[i];
-		if(p.x < 1){
-			var c = cL[p.iE];
-			var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
-			p.x += v * (c.x - p.x);
-			p.y += v * (c.y - p.y);
-		}else{
-			var c = cR[p.iE];
-			var r = Math.sqrt(Math.pow(p.x-c.x-1,2)+Math.pow(p.y-c.y,2));
-			p.x += v * (c.x+1 - p.x);
-			p.y += v * (c.y - p.y);
 		}
 	}
 };
