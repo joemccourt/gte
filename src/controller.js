@@ -10,7 +10,7 @@ GTE.frameRenderTime = 0;
 GTE.startNewStageAnimationTime = 0;
 GTE.startEndStageAnimationTime = 0;
 GTE.newStageAnimationTime = 500;
-GTE.endStageAnimationTime = 2000;
+GTE.endStageAnimationTime = 3000;
 GTE.UIUpdateTime = 10;
 GTE.lastUIUpdateTime = 0;
 
@@ -402,7 +402,7 @@ GTE.mousedown = function(x,y,touchIndex){
 
 		if(GTE.toAddSpring){
 			if(minI != GTE.toAddSpringIndex){
-				GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
+				//GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
 				GTE.toAddSpringIndex = -1;
 				GTE.toAddSpring = false;
 			}

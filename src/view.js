@@ -933,36 +933,53 @@ GTE.drawEndGoals = function(goals){
 
 
 GTE.getEndGoals = function(num,side){
-    
     var yScale = GTE.getYScale();
+	
+	var r = 0.05;
+	var goals = [];
 
-    //Special cases for 1 and 2 for now
-    var goals = [
-    				[{x:0.5,y:0.6}],
-    				[{x:0.5,y:0.65}], //
-    				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
-    			];
+	var p0 = GTE.levelState.particles[0];
+	if(typeof p0 === 'object'){
+		r = p0.r*3;
+	}
 
-	var cL,r;
-	r = 0.15 * Math.sqrt(num/3);
-	r = r > 0.45 ? r = 0.45 : r;
-    cL = [];
-    if(num > 0 && num <= 2){
-    	cL = goals[num];
-    }else{
-		for(var i = 0; i < num; i++){
-			var angle = i / num * 2 * Math.PI - Math.PI/2; //One always on top
-			cL[i] = {
-				x:0.5+r*Math.cos(angle),
-				y:0.5*yScale+r*Math.sin(angle)
+	var center = 
+	{
+		x:0.5,
+		y:0.5
+	};
+
+	if(side == 'right'){
+		center.x += 1;
+	}
+
+	var w = 1;
+	if(num < 10){w = Math.ceil(num/2);}
+	if(num < 4){w = num;}
+	if(num >= 10){w = 5;}
+	if(num >= 50){w = 10;}
+
+	var h = Math.ceil(num / w);
+	var x,y;
+
+	for(y = 0; y < h; y++){
+		for(x = 0; x < w; x++){
+			if(y*w+x >= num){break;}
+			goals[y*w+x] = 
+			{
+				x:center.x+(x-(w-1)/2)*r,
+				y:center.y*yScale-(y-(h-1)/2)*r
 			};
-
-			if(side == 'right'){
-				cL[i].x+=1;
-			}
 		}
-    }
-    return cL;
+	}
+
+    return {
+				goals: goals,
+				w: w,
+				h: h,
+				r: r,
+				center: center
+			};
 };
 
 GTE.endLevelAnimation = function(time){
@@ -988,10 +1005,18 @@ GTE.endLevelAnimation = function(time){
 		}
 
 		if(p.x < 1){
-			sumLAbs++;
+			if(p.m > 0){
+				sumLAbs++;
+			}else{
+				sumRAbs++;
+			}
 			sumL+=p.m;
 		}else{
-			sumRAbs++;
+			if(p.m > 0){
+				sumRAbs++;	
+			}else{
+				sumLAbs++;
+			}
 			sumR+=p.m;
 		}
 	}
@@ -1001,11 +1026,6 @@ GTE.endLevelAnimation = function(time){
 	var y1 = GTE.renderBox[1] +   (GTE.renderBox[3] - GTE.renderBox[1])/2;
 	var y2 = GTE.renderBox[1] +   (GTE.renderBox[3] - GTE.renderBox[1])/2;
 
-	ctx.fillStyle = 'rgb(255,255,255)';
-	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
-
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
 
 	var leftFormat, rightFormat;
 
@@ -1030,9 +1050,6 @@ GTE.endLevelAnimation = function(time){
 		centerText = "=";
 	}
 
-	ctx.fillText(centerText,(x1+x2)/2,y1);
-	ctx.fillText(leftFormat,x1,y1);
-	ctx.fillText(rightFormat,x2,y2);
 
 	//Right side
 	var alpha = (Math.pow((time/timeWidth),4)).toFixed(2);
@@ -1074,15 +1091,33 @@ GTE.endLevelAnimation = function(time){
 
     var dT = time/timeWidth;
 
-    var goals = [
-				[{x:0.5,y:0.6}],
-				[{x:0.5,y:0.65}], //
-				[{x:0.4,y:0.5},{x:0.6,y:0.5}]
-			];
-
-    var cL = GTE.getEndGoals(sumLAbs,'left');
-    var cR = GTE.getEndGoals(sumRAbs,'right');
+    var cLInfo = GTE.getEndGoals(sumLAbs,'left');
+    var cRInfo = GTE.getEndGoals(sumRAbs,'right');
     
+    var cL = cLInfo.goals;
+    var cR = cRInfo.goals;
+
+	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
+
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+
+	ctx.fillText(centerText,(x1+x2)/2,y1);
+	ctx.fillText(leftFormat,x1,y1);
+	ctx.fillText(rightFormat,x2,y2);
+
+	ctx.fillStyle = 'rgba(255,255,255,0.7)';
+	ctx.font = 16*GTE.getRenderBoxWidth()/600 + "px Verdana";
+
+	var coordsCenter = GTE.gameInternalToRenderSpace(cLInfo.center.x,cLInfo.center.y);
+	var dr = GTE.getRenderBoxWidth()/2 * cLInfo.r;
+
+	ctx.fillText(cLInfo.w,coordsCenter[0],coordsCenter[1]+dr*cLInfo.h/2*yScale);
+	ctx.fillText(cLInfo.h,coordsCenter[0]-dr*cLInfo.w/2,coordsCenter[1]);
+
+	// ctx.moveTo()
+
 	// GTE.drawEndGoals(cL);
 	// GTE.drawEndGoals(cR);
 
@@ -1103,7 +1138,9 @@ GTE.endLevelAnimation = function(time){
 		    	var bestI = 0;
 			  	for(var i = 0; i < GTE.levelState.particles.length; i++){
 					var p = GTE.levelState.particles[i];
-					if(k == 0 && p.x < 1 || k == 1 && p.x >= 1){
+					var positiveLeft  = p.x < 1 && p.m > 0 || p.x >=1 && p.m < 0;
+					var positiveRight = p.x < 1 && p.m < 0 || p.x >=1 && p.m > 0;
+					if(k == 0 && positiveLeft || k == 1 && positiveRight){
 						var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
 						if(r < best && p.iE < 0){	
 							best = r;
