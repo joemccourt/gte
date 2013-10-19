@@ -30,8 +30,8 @@ GTE.drawGameRun = function(drawGameParams){
 GTE.drawGameStart = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline(Math.pow(drawGameParams.timeSinceStart/GTE.newStageAnimationTime,4));
-	GTE.drawLevel();
 	GTE.drawMouseForces();
+	GTE.drawLevel();
 	GTE.drawButtons();
 	GTE.drawProgress();
 	GTE.newLevelAnimation(drawGameParams.timeSinceStart);
@@ -40,18 +40,19 @@ GTE.drawGameStart = function(drawGameParams){
 GTE.drawGameEnd = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline(Math.pow(drawGameParams.timeUntilEnd/GTE.endStageAnimationTime,4));
-	GTE.drawLevel();
 	GTE.drawMouseForces();
 	GTE.drawButtons();
 	GTE.drawProgress();
+	GTE.drawLevel();
 	GTE.endLevelAnimation(drawGameParams.timeUntilEnd);
 };
 
 GTE.drawGameMenu = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline();
-	GTE.drawLevel();
 	GTE.drawMouseForces();
+	GTE.drawLevel();
+	GTE.endLevelAnimation(0);
 	GTE.drawButtons("menu");
 	GTE.drawProgress();
 };
@@ -935,18 +936,20 @@ GTE.drawEndGoals = function(goals){
 GTE.getEndGoals = function(num,side){
     var yScale = GTE.getYScale();
 	
-	var r = 0.05;
+	var pR = 0.05;
 	var goals = [];
 
 	var p0 = GTE.levelState.particles[0];
 	if(typeof p0 === 'object'){
-		r = p0.r*3;
+		pR = p0.r;
 	}
+
+	var r = 2.5*pR;
 
 	var center = 
 	{
 		x:0.5,
-		y:0.5
+		y:0.5 * yScale
 	};
 
 	if(side == 'right'){
@@ -968,7 +971,7 @@ GTE.getEndGoals = function(num,side){
 			goals[y*w+x] = 
 			{
 				x:center.x+(x-(w-1)/2)*r,
-				y:center.y*yScale-(y-(h-1)/2)*r
+				y:center.y-(y-(h-1)/2)*r
 			};
 		}
 	}
@@ -978,7 +981,8 @@ GTE.getEndGoals = function(num,side){
 				w: w,
 				h: h,
 				r: r,
-				center: center
+				center: center,
+				pR: pR
 			};
 };
 
@@ -1091,11 +1095,11 @@ GTE.endLevelAnimation = function(time){
 
     var dT = time/timeWidth;
 
-    var cLInfo = GTE.getEndGoals(sumLAbs,'left');
-    var cRInfo = GTE.getEndGoals(sumRAbs,'right');
-    
-    var cL = cLInfo.goals;
-    var cR = cRInfo.goals;
+	var cLInfo = GTE.getEndGoals(sumLAbs,'left');
+	var cRInfo = GTE.getEndGoals(sumRAbs,'right');
+
+	var cL = cLInfo.goals;
+	var cR = cRInfo.goals;
 
 	ctx.fillStyle = 'rgb(255,255,255)';
 	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
@@ -1108,15 +1112,52 @@ GTE.endLevelAnimation = function(time){
 	ctx.fillText(rightFormat,x2,y2);
 
 	ctx.fillStyle = 'rgba(255,255,255,0.7)';
-	ctx.font = 16*GTE.getRenderBoxWidth()/600 + "px Verdana";
+	var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
+	ctx.font = fontSize + "px Verdana";
+    
+    for(var k = 0; k <= 1; k++){
+    	var goalInfo;
+    	if(k == 0){
+    		goalInfo = cLInfo;
+    	}else{
+    		goalInfo = cRInfo;
+    	}
+    	
+		var coordsCenter = GTE.gameInternalToRenderSpace(goalInfo.center.x,goalInfo.center.y);
+		var dr = GTE.getRenderBoxWidth()/2 * goalInfo.r;
 
-	var coordsCenter = GTE.gameInternalToRenderSpace(cLInfo.center.x,cLInfo.center.y);
-	var dr = GTE.getRenderBoxWidth()/2 * cLInfo.r;
+		var w = goalInfo.w;
+		var h = goalInfo.h;
 
-	ctx.fillText(cLInfo.w,coordsCenter[0],coordsCenter[1]+dr*cLInfo.h/2*yScale);
-	ctx.fillText(cLInfo.h,coordsCenter[0]-dr*cLInfo.w/2,coordsCenter[1]);
+		var dh = h-Math.floor(sumLAbs/w);
 
-	// ctx.moveTo()
+		var dx = -dr*(w/2+0.25);
+		var dy =  dr*(h/2+0.25);
+
+		ctx.fillText(goalInfo.w,coordsCenter[0],coordsCenter[1]+dy+fontSize);
+		ctx.fillText(goalInfo.h,coordsCenter[0]+dx-fontSize,coordsCenter[1]);
+
+		ctx.beginPath();
+		ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+		ctx.lineWidth = 2;
+
+		var gridWidth  = dr*(w-0.25);
+		var gridHeight = dr*(h-0.25);
+
+		var ddx = dr*0.15;
+
+		ctx.moveTo(coordsCenter[0]+dx+ddx, coordsCenter[1]-gridHeight/2);
+		ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]-gridHeight/2);
+		ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]+gridHeight/2);
+		ctx.lineTo(coordsCenter[0]+dx+ddx, coordsCenter[1]+gridHeight/2);
+
+		ctx.moveTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy-ddx);
+		ctx.lineTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy);
+		ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy);
+		ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy-ddx);
+
+		ctx.stroke();
+    }
 
 	// GTE.drawEndGoals(cL);
 	// GTE.drawEndGoals(cR);
@@ -1156,7 +1197,7 @@ GTE.endLevelAnimation = function(time){
 				var p = GTE.levelState.particles[bestI];
 				var force = {
 					p: p,
-					k: 15,
+					k: 25,
 					x: x,
 					y: y,
 					r0: 0
@@ -1167,6 +1208,8 @@ GTE.endLevelAnimation = function(time){
 			}
 		}
 	}
+
+	ctx.restore();
 };
 
 GTE.updateUI = function(){
