@@ -71,7 +71,6 @@ GTE.mouseDownLast = {x:0,y:0};
 GTE.toAddSpring = false;
 GTE.toAddSpringIndex = -1;
 
-
 var kongregate = parent.kongregate;
 
 GTE.buttons = [
@@ -123,6 +122,9 @@ GTE.buttonsMenu = [
 
 GTE.main = function(){
 	GTE.startSession();
+
+	GTE.soundsEnabled = window.hasOwnProperty('AudioContext');
+	GTE.loadSounds();
 	requestNextAnimationFrame(GTE.gameLoop);
 };
 
@@ -659,6 +661,87 @@ GTE.transfromTranslate = function(t,x,y){
 	return newT;
 };
 
+GTE.loadSound = function(name){
+	var getBounce = new XMLHttpRequest();
+
+	getBounce.open("GET","snd/bounce.wav",true);
+	getBounce.responseType = "arraybuffer";
+	getBounce.onload = function(){
+		GTE.ac.decodeAudioData(getBounce.response,
+			function(buffer){
+				GTE.sounds[name].data = buffer;
+				GTE.sounds[name].loaded = true;
+			})
+	}
+	getBounce.send();
+};
+
+GTE.loadSounds = function(){
+	if(!GTE.soundsEnabled){return;}
+
+	GTE.sounds = {
+		bounce: {filename:"bounce.wav"}
+	};
+
+	GTE.ac = new AudioContext();
+
+	var name;
+	for(name in GTE.sounds){
+		if(GTE.sounds.hasOwnProperty(name)){
+			GTE.sounds[name].loaded = false;
+			GTE.sounds[name].playing = [];
+			GTE.loadSound(name);
+		}
+	}
+};
+
+
+//TODO: hash such that pA and pB are commutative
+GTE.playBounceSound = function(pAID,pBID,gain){
+	var hash = pAID*99991+pBID+1;
+	GTE.playSound("bounce",hash,0.2);
+};
+
+GTE.playSound = function(name,hash,gain){
+	if(!GTE.soundsEnabled){return;}
+
+	var removeHashFunction = function(name,hash){
+		return function(){
+			var sound = GTE.sounds[name];
+			console.log(sound.playing,hash);
+			var index = sound.playing.indexOf(hash);
+			if(index >= 0){
+				sound.playing[index] = 0;
+			}
+		};
+	};
+
+	if(typeof GTE.sounds[name] === 'object' && GTE.sounds[name].loaded){
+		if(GTE.sounds[name].playing.indexOf(hash) == -1){
+			var playSound = GTE.ac.createBufferSource();
+    		var gainNode  = GTE.ac.createGain();
+			playSound.buffer = GTE.sounds[name].data;
+			playSound.connect(gainNode);
+			gainNode.gain.value = gain;
+
+			gainNode.connect(GTE.ac.destination);
+			playSound.start(0);
+
+			playSound.onended = removeHashFunction(name,hash);
+			//debugger;
+
+			var sound = GTE.sounds[name];
+			var index = 0;
+			while(index < sound.playing.length){
+				if(sound.playing[index] == 0){
+					break;
+				}
+				index++;
+			}
+			GTE.sounds[name].playing[index] = hash;
+		}
+	}
+};
 
 // *** Event binding ***
 GTE.initEvents = function(){
@@ -778,6 +861,8 @@ GTE.initEvents = function(){
 		}
 	}, false);
 
+
+
 	$(document).keydown(function (e) {
 		console.log("keypress: ", e.which);
 		//112 = 'p'
@@ -787,6 +872,12 @@ GTE.initEvents = function(){
 		// 38 - up  87 - w
 		// 39 - right 68 - d
 		// 40 - down 83 - s
+
+
+		if(e.which == 32){
+			GTE.playSound("bounce");
+		}
+
 
 		if(GTE.boardGameView){
 			if(e.which == 37 || e.which == 65){
