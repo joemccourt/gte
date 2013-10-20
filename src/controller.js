@@ -690,16 +690,21 @@ GTE.loadSounds = function(){
 		if(GTE.sounds.hasOwnProperty(name)){
 			GTE.sounds[name].loaded = false;
 			GTE.sounds[name].playing = [];
+			GTE.sounds[name].numPlaying = 0;
 			GTE.loadSound(name);
 		}
 	}
 };
 
-
-//TODO: hash such that pA and pB are commutative
 GTE.playBounceSound = function(pAID,pBID,gain){
-	var hash = pAID*99991+pBID+1;
-	GTE.playSound("bounce",hash,0.2);
+	var maxID = Math.max(pAID,pBID);
+	var minID = Math.min(pAID,pBID);
+
+	var hash = minID*10000+maxID+1;
+	var maxGain = 0.1;
+	gain = gain < 0 ? 0 : gain > maxGain ? maxGain : gain;
+
+	GTE.playSound("bounce",hash,gain);
 };
 
 GTE.playSound = function(name,hash,gain){
@@ -707,9 +712,12 @@ GTE.playSound = function(name,hash,gain){
 
 	var removeHashFunction = function(name,hash){
 		return function(){
-			var sound = GTE.sounds[name];
-			console.log(sound.playing,hash);
-			var index = sound.playing.indexOf(hash);
+			GTE.sounds["bounce"].numPlaying--;
+			var name0 = name;
+			var hash0 = hash;
+			var sound = GTE.sounds[name0];
+			var index = sound.playing.indexOf(hash0);
+			// console.log(sound.playing,hash,index);
 			if(index >= 0){
 				sound.playing[index] = 0;
 			}
@@ -719,7 +727,7 @@ GTE.playSound = function(name,hash,gain){
 	if(typeof GTE.sounds[name] === 'object' && GTE.sounds[name].loaded){
 		if(GTE.sounds[name].playing.indexOf(hash) == -1){
 			var playSound = GTE.ac.createBufferSource();
-    		var gainNode  = GTE.ac.createGain();
+			var gainNode  = GTE.ac.createGain();
 			playSound.buffer = GTE.sounds[name].data;
 			playSound.connect(gainNode);
 			gainNode.gain.value = gain;
@@ -728,8 +736,7 @@ GTE.playSound = function(name,hash,gain){
 			playSound.start(0);
 
 			playSound.onended = removeHashFunction(name,hash);
-			//debugger;
-
+			
 			var sound = GTE.sounds[name];
 			var index = 0;
 			while(index < sound.playing.length){
@@ -739,6 +746,7 @@ GTE.playSound = function(name,hash,gain){
 				index++;
 			}
 			GTE.sounds[name].playing[index] = hash;
+			GTE.sounds[name].numPlaying++;
 		}
 	}
 };
@@ -872,12 +880,6 @@ GTE.initEvents = function(){
 		// 38 - up  87 - w
 		// 39 - right 68 - d
 		// 40 - down 83 - s
-
-
-		if(e.which == 32){
-			GTE.playSound("bounce");
-		}
-
 
 		if(GTE.boardGameView){
 			if(e.which == 37 || e.which == 65){
