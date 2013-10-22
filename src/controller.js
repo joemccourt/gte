@@ -78,13 +78,13 @@ GTE.buttons = [
 	{
 		'name':'group1',
 		'text':'',
-		'box': [0.05,1.015,0.4,1.1],
+		'box': [0.0,1.015,0.45,1.1],
 		'r':0.5
 	},
 	{
 		'name':'group2',
 		'text':'',
-		'box': [0.6,1.015,0.95,1.1],
+		'box': [0.55,1.015,1,1.1],
 		'r':0.5
 	},
 	{
@@ -243,7 +243,10 @@ GTE.saveGameState = function() {
 GTE.setGameRenderBox = function(){
 	var w = GTE.canvas.width;
 	var h = GTE.canvas.height;
-	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.9+0.5|0,h*0.9+0.5|0];
+	GTE.renderBoxGap = 100;
+	GTE.renderBox = [w*0.02+0.5|0,h*0.3+0.5|0,w*0.9+0.5|0,h*0.9+0.5|0];
+	GTE.leftWall  = 1 - GTE.renderBoxGap/GTE.getRenderBoxWidth();
+	GTE.rightWall = 1 + GTE.renderBoxGap/GTE.getRenderBoxWidth();
 };
 
 GTE.setBoardRenderBox = function(){

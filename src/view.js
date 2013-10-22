@@ -544,19 +544,34 @@ GTE.drawBackground = function(){
 	grd.addColorStop(1,'rgb(' + redRight + ',141,178)');
 
 	ctx.fillStyle = grd;
-	ctx.fillRect(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight());		
 
 	//Box border
+	var x1 =  GTE.renderBox[0];
+	var x2 = (GTE.renderBox[0]+GTE.renderBox[2])/2 - GTE.renderBoxGap/2;
 	ctx.beginPath();
-    ctx.moveTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
-    ctx.closePath();
+    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+    ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
+    ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
+    ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
+    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
     ctx.strokeStyle = '000';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 5;
     ctx.stroke();
+	ctx.fill();
+
+
+	var x1 = (GTE.renderBox[0]+GTE.renderBox[2])/2 + GTE.renderBoxGap/2;
+	var x2 = GTE.renderBox[2];
+	ctx.beginPath();
+    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+    ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
+    ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
+    ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
+    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+    ctx.strokeStyle = '000';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+	ctx.fill();
 
     ctx.restore();
 };
@@ -881,6 +896,8 @@ GTE.drawMidline = function(alpha){
 		ctx.closePath();
 		ctx.stroke();
 	}else{
+
+		return; //tmp disable solid line
 		ctx.beginPath();
 		ctx.moveTo(x,y1);
 		ctx.lineTo(x,y2);
@@ -1122,7 +1139,7 @@ GTE.endLevelAnimation = function(time){
     	}else{
     		goalInfo = cRInfo;
     	}
-    	
+
 		var coordsCenter = GTE.gameInternalToRenderSpace(goalInfo.center.x,goalInfo.center.y);
 		var dr = GTE.getRenderBoxWidth()/2 * goalInfo.r;
 

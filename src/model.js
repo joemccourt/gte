@@ -758,6 +758,9 @@ GTE.updateAABBTree = function(){
 
 GTE.updateModel = function(deltaTime){
 
+	var leftWall  = GTE.leftWall;
+	var rightWall = GTE.rightWall;
+
 	while(deltaTime > 0){
 		var w = GTE.getRenderBoxWidth();
 		var h = GTE.getRenderBoxHeight();
@@ -1110,9 +1113,12 @@ GTE.updateModel = function(deltaTime){
 					}
 
 					//Top box collision
+					var teleport = false
 					if(pYNew - p.r < 0){
 						pYNew = p.r - pYNew + p.r;
 						p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
+
+						teleport = true;
 					}
 
 					//Bottom box collision
@@ -1130,19 +1136,19 @@ GTE.updateModel = function(deltaTime){
 					}else{
 
 						//Left to Right collision
-						if(p.x < 1 && pXNew+p.r > 1){
+						if(p.x < leftWall && pXNew+p.r > leftWall){
 							p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 
 							// newP.m = -p.m;
-							pXNew = 1-(p.r + pXNew - 1) - p.r;
+							pXNew = leftWall-(p.r + pXNew - leftWall) - p.r;
 							// newP.vX = -p.vX;
-						} else 
+						}
 						
 						//Right to Left collision
-						if(p.x > 1 && pXNew-p.r < 1){
+						if(p.x > rightWall && pXNew-p.r < rightWall){
 							p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
 							// newP.m = -p.m;
-							pXNew = 1+(p.r - pXNew + 1) + p.r;
+							pXNew = rightWall+(p.r - pXNew + rightWall) + p.r;
 						}
 					}
 
@@ -1151,7 +1157,9 @@ GTE.updateModel = function(deltaTime){
 					// }else{
 					// 	tempRight += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
 					// }
-
+					if(teleport){
+						pXNew = 2 - pXNew;
+					}
 					p.x = pXNew;
 					p.y = pYNew;
 					//GTE.updateParticlePos(p, pXNew, pYNew);
