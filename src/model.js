@@ -1065,6 +1065,9 @@ GTE.updateModel = function(deltaTime){
 								pA.vY -= k * force * yNorm / mA;
 								pB.vX += k * force * xNorm / mB;
 								pB.vY += k * force * yNorm / mB;
+
+								var dV = Math.abs(mA*mB)*Math.sqrt(Math.pow(pA.vX-pB.vX,2)+Math.pow(pA.vY-pB.vY,2));
+								GTE.playBounceSound(pA.id,pB.id,dV);
 							}else if(dist < rA + rB){
 
 								//Collision detected
@@ -1090,6 +1093,7 @@ GTE.updateModel = function(deltaTime){
 								pA.vY = vANew * yNorm + vAT * yTan;
 								pB.vX = vBNew * xNorm + vBT * xTan;
 								pB.vY = vBNew * yNorm + vBT * yTan;
+
 							}
 						}
 					// }

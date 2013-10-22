@@ -52,8 +52,11 @@ GTE.drawGameMenu = function(drawGameParams){
 	GTE.drawMidline();
 	GTE.drawMouseForces();
 	GTE.drawLevel();
-	GTE.endLevelAnimation(0);
-	GTE.drawButtons("menu");
+
+	//TODO: only do this if end of game menu
+		GTE.endLevelAnimation(0);
+		GTE.drawButtons("menu");
+		
 	GTE.drawProgress();
 };
 
