@@ -542,11 +542,13 @@ GTE.drawBackground = function(){
 	redLeft  = redLeft  < 0 ? 0 : redLeft  > 255 ? 255 : redLeft;
 	redRight = redRight < 0 ? 0 : redRight > 255 ? 255 : redRight;
 
-	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
-	grd.addColorStop(0,'rgb(' + redLeft + ',215,236)');
-	grd.addColorStop(1,'rgb(' + redRight + ',141,178)');
+	GTE.bgTriGrid();
 
-	ctx.fillStyle = grd;
+	// grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
+	// grd.addColorStop(0,'rgb(' + redLeft + ',215,236)');
+	// grd.addColorStop(1,'rgb(' + redRight + ',141,178)');
+
+	// ctx.fillStyle = grd;
 
 	//Box border
 	var x1 =  GTE.renderBox[0];
@@ -556,11 +558,11 @@ GTE.drawBackground = function(){
     ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
     ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
     ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
-    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+    ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
     ctx.strokeStyle = '000';
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
     ctx.stroke();
-	ctx.fill();
+	// ctx.fill();
 
 
 	var x1 = (GTE.renderBox[0]+GTE.renderBox[2])/2 + GTE.renderBoxGap/2;
@@ -570,11 +572,11 @@ GTE.drawBackground = function(){
     ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
     ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
     ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
-    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+    ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
     ctx.strokeStyle = '000';
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
     ctx.stroke();
-	ctx.fill();
+	// ctx.fill();
 
     ctx.restore();
 };

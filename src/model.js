@@ -1161,9 +1161,9 @@ GTE.updateModel = function(deltaTime){
 					// }else{
 					// 	tempRight += p.m * Math.sqrt(Math.pow(p.vX,2)+Math.pow(p.vY,2));
 					// }
-					if(teleport){
-						pXNew = 2 - pXNew;
-					}
+					// if(teleport){
+					// 	pXNew = 2 - pXNew;
+					// }
 					p.x = pXNew;
 					p.y = pYNew;
 					//GTE.updateParticlePos(p, pXNew, pYNew);
