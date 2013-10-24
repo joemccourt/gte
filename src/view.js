@@ -542,7 +542,18 @@ GTE.drawBackground = function(){
 	redLeft  = redLeft  < 0 ? 0 : redLeft  > 255 ? 255 : redLeft;
 	redRight = redRight < 0 ? 0 : redRight > 255 ? 255 : redRight;
 
-	GTE.bgTriGrid();
+	if(GTE.dirtyBG){
+		GTE.dirtyBG = false;
+		GTE.bgCanvas = document.createElement('canvas');
+		GTE.bgCanvas.width  = GTE.getRenderBoxWidth();
+		GTE.bgCanvas.height = GTE.getRenderBoxHeight();
+		GTE.drawBackgroundBasedOnLevel(GTE.bgCanvas);
+	}
+
+	ctx.drawImage(GTE.bgCanvas,GTE.renderBox[0],GTE.renderBox[1]);
+
+	// GTE.canvas = bgCanvas;
+	// }
 
 	// grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],GTE.getRenderBoxWidth(),GTE.getRenderBoxHeight()/2);
 	// grd.addColorStop(0,'rgb(' + redLeft + ',215,236)');

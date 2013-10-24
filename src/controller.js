@@ -19,6 +19,7 @@ GTE.font = 'Verdana';
 GTE.renderBox = [0,0,0,0];
 
 //Game state bools
+GTE.dirtyBG = true;
 GTE.dirtyCanvas = true;
 GTE.gameInProgress = false;
 GTE.wonGame = false;
@@ -261,7 +262,7 @@ GTE.resizeToFit = function(){
 	var w = $(window).width();
 	var h = $(window).height();
 
-	GTE.canvas.width = w;
+	GTE.canvas.width  = w;
 	GTE.canvas.height = h;
 
 	if(GTE.boardGameView){
@@ -272,6 +273,7 @@ GTE.resizeToFit = function(){
 		GTE.initAABBTree();
 	}
 
+	GTE.dirtyBG = true;
 	GTE.dirtyCanvas = true;
 };
 
@@ -546,6 +548,8 @@ GTE.winGame = function(){
 GTE.selectLevel = function(i){
 	GTE.level = i;
 	GTE.lastWon = true;
+	GTE.dirtyBG = true;
+
 
 	GTE.stage      = 0;
 	GTE.stagesLost = 0;
