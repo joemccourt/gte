@@ -9,6 +9,18 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],30,0.3,40);
 	}else if(GTE.level == 3){
 		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],50,1,40);
+	}else if(GTE.level == 4){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"diamonds");
+	}else if(GTE.level == 5){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],31,1,10,"split");
+	}else if(GTE.level == 5){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],40,1,10,"3d");
+	}else if(GTE.level == 6){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,1,10,"hex");
+	}else if(GTE.level == 7){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,1,10,"stripes");
+	}else if(GTE.level == 8){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"halfstripes");
 	}
 
 };
@@ -51,7 +63,7 @@ GTE.rng = {
 	getFloat: function(){this.nextInt();return this.state/(2 << 24);}
 };
 
-GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed){
+GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed,type){
 	var ctx = canvas.getContext('2d');
 	ctx.save();
 
@@ -69,6 +81,29 @@ GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed){
 	for(var y = 0; y < h; y++){
 		for(var x = 0; x < w; x++){
 			map[w*y+x] = rng.getFloat()*colors.length|0;
+			if(type == "diamonds"){
+				if((x+y)%2==0&&x!=0){
+					map[w*y+x] = map[w*y+x-1]
+				}
+			
+			}else if(type == "split"){
+				if(x >= w/2){
+					map[w*y+x] = Math.floor(x/2+y/2+1)%2;
+				}else{
+					map[w*y+x] = (Math.floor(x/2+h-y/2)+h%2)%2;
+				}
+			}else if(type == "halfstripes"){
+				map[w*y+x] = (x+y)%colors.length;
+			}else if(type == "stripes"){
+				map[w*y+x] = Math.floor((x+y+1)/2)%colors.length;
+			}else if(type == "spiky"){
+				map[w*y+x] = Math.floor((x+y)/4)%colors.length;
+			}else if(type == "3d"){
+				map[w*y+x] = Math.floor((x+y)/4+y)%2;
+			}else if(type == "hex"){
+				var yOff = Math.floor(y/3);
+				map[w*y+x] = Math.floor((x+yOff+1)/2+yOff)%colors.length;
+			}
 		}
 	}
     
