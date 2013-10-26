@@ -426,73 +426,84 @@ GTE.drawLevel = function(){
 	//return;
 
 	var ctx = GTE.ctx;
-	ctx.save();
+	// ctx.save();
 
-	ctx.fillStyle =  'rgb(0,0,200)';
-	ctx.strokeStyle = 'rgb(0,0,0)';
-	ctx.lineWidth = 1;
+	// ctx.fillStyle =  'rgb(0,0,200)';
+	// ctx.strokeStyle = 'rgb(0,0,0)';
+	// ctx.lineWidth = 1;
 
 	for(var i = 0; i < GTE.levelState.particles.length; i++){
 		var p = GTE.levelState.particles[i];
 		var canvasCoord = GTE.gameInternalToRenderSpace(p.x,p.y);
 
 		var radius = p.r * GTE.getRenderBoxWidth() / 2;
+
+		if(typeof p.canvas !== 'number'){
+			// GTE.dirtyBG = false;
+			p.canvas = 1;
+			GTE.pCanvases[p.id] = document.createElement('canvas');
+			GTE.pCanvases[p.id].width  = Math.ceil(2*radius);
+			GTE.pCanvases[p.id].height = Math.ceil(2*radius);
+			GTE.drawParticle(GTE.pCanvases[p.id],p,radius);
+		}
+
+		ctx.drawImage(GTE.pCanvases[p.id],canvasCoord[0]-radius,canvasCoord[1]-radius);
 		
-		var color = [0,0,200];
-		if(p.m < 0){
-			color = [200,0,0];
-		}
+		// var color = [0,0,200];
+		// if(p.m < 0){
+		// 	color = [200,0,0];
+		// }
 
-		var colorStr = GTE.arrayColorToString(color);
-		ctx.fillStyle = colorStr;
+		// var colorStr = GTE.arrayColorToString(color);
+		// ctx.fillStyle = colorStr;
 
-		var absMass = Math.abs(p.m);
-		var discLevel = 0;
+		// var absMass = Math.abs(p.m);
+		// var discLevel = 0;
 
-		while(absMass > 0){
-			var drawMass = absMass >= 1 ? 1 : absMass;
-			absMass -= drawMass;
+		// while(absMass > 0){
+		// 	var drawMass = absMass >= 1 ? 1 : absMass;
+		// 	absMass -= drawMass;
 
-			var discX = canvasCoord[0]-(Math.log(Math.E*(discLevel+1))-1)*5;
-			var discY = canvasCoord[1]-(Math.log(Math.E*(discLevel+1))-1)*5;
+		// 	var discX = canvasCoord[0]-(Math.log(Math.E*(discLevel+1))-1)*5;
+		// 	var discY = canvasCoord[1]-(Math.log(Math.E*(discLevel+1))-1)*5;
 
-			//Fill arc
-			ctx.beginPath();
-			if(discLevel == 0){
-				ctx.arc(discX, discY, radius, 0, 2 * Math.PI, false);
-			}else{
-				ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
-			}
-			ctx.closePath();
-			ctx.stroke();
+		// 	//Fill arc
+		// 	ctx.beginPath();
+		// 	if(discLevel == 0){
+		// 		ctx.arc(discX, discY, radius, 0, 2 * Math.PI, false);
+		// 	}else{
+		// 		ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
+		// 	}
+		// 	ctx.closePath();
+		// 	ctx.stroke();
 
-			//Storke arc
-			ctx.beginPath();
-				ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
-			ctx.closePath();
-			ctx.fill();
+		// 	//Storke arc
+		// 	ctx.beginPath();
+		// 		ctx.arc(discX, discY, radius * Math.sqrt(drawMass), 0, 2 * Math.PI, false);
+		// 	ctx.closePath();
+		// 	ctx.fill();
 
-			discLevel++;
-		}
+		// 	discLevel++;
+		// }
 
-		if(Math.abs(p.m) > 1){
+		// if(Math.abs(p.m) > 1){
 
-			ctx.fillStyle = 'rgb(255,255,255)';
-			ctx.textAlign = 'center';
-			ctx.textBaseline = 'middle';
+		// 	ctx.fillStyle = 'rgb(255,255,255)';
+		// 	ctx.textAlign = 'center';
+		// 	ctx.textBaseline = 'middle';
 
-			var drawStr = p.m;
-			if(Math.abs(p.m - (p.m|0)) > 0){
-				drawStr = p.m.toPrecision(3);
-				radius *= 0.7;
-			}
+		// 	var drawStr = p.m;
+		// 	if(Math.abs(p.m - (p.m|0)) > 0){
+		// 		drawStr = p.m.toPrecision(3);
+		// 		radius *= 0.7;
+		// 	}
 
-			var height = radius + 0.5 | 0;
-			ctx.font = height + "px Verdana";
+		// 	var height = radius + 0.5 | 0;
+		// 	ctx.font = height + "px Verdana";
 
-			ctx.strokeText(drawStr,discX,discY);
-			ctx.fillText(drawStr,discX,discY);
-		}
+		// 	ctx.strokeText(drawStr,discX,discY);
+		// 	ctx.fillText(drawStr,discX,discY);
+		// }
 		
 	}
 
@@ -522,7 +533,7 @@ GTE.drawLevel = function(){
 
 	// ctx.fill();
 
-	ctx.restore();
+	// ctx.restore();
 };
 
 GTE.drawBackground = function(){
@@ -745,14 +756,16 @@ GTE.drawButtons = function(mode){
 	    ctx.fill();
 	    ctx.stroke();
 
-		ctx.fillStyle = 'rgb(255,255,255)';
-		var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
-		ctx.font = height + "px Verdana";
+	    if(button.text.length > 0){
+			ctx.fillStyle = 'rgb(255,255,255)';
+			var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
+			ctx.font = height + "px Verdana";
 
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'baseline';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'baseline';
 
-	    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
+		    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
+	    }
 
 		if(button.name === "background"){
 			var stars = 0;

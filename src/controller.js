@@ -715,7 +715,7 @@ GTE.playBounceSound = function(pAID,pBID,gain){
 };
 
 GTE.playSound = function(name,hash,gain){
-	if(!GTE.soundsEnabled){return;}
+	if(true||!GTE.soundsEnabled){return;}
 
 	var removeHashFunction = function(name,hash){
 		return function(){

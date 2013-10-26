@@ -6,7 +6,11 @@ GTE.colors = {
 	'cyan'   : {r:  0,g:255,b:255},
 	'purple' : {r:255,g:  0,b:255},
 	'white'  : {r:255,g:255,b:255},
-	'black'  : {r:  0,g:  0,b:  0}
+	'black'  : {r:  0,g:  0,b:  0},
+	'particleBlue'  : {r: 85,g:123,b:204},
+	'particleDarkBlue': {r: 35,g:46,b:125},
+	'particleRed'   : {r:200,g: 25,b: 54},
+	'particleWhite' : {r:191,g:201,b:213}
 };
 
 GTE.colorSets = {
