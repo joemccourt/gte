@@ -438,7 +438,7 @@ GTE.drawLevel = function(){
 
 		var radius = p.r * GTE.getRenderBoxWidth() / 2;
 
-		if(typeof p.canvas !== 'number'){
+		if(typeof GTE.pCanvases[p.id] !== 'object'){
 			// GTE.dirtyBG = false;
 			p.canvas = 1;
 			GTE.pCanvases[p.id] = document.createElement('canvas');
@@ -795,6 +795,7 @@ GTE.drawButtons = function(mode){
 	
 			ctx.font = 1.6*height + "px Verdana";
 			ctx.fillStyle = 'rgba(0,0,0,1)';
+
 	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1) + height*1.5);
 		}else if(button.name === "menu" || button.name === "quit" ){
 
@@ -978,8 +979,94 @@ GTE.drawEndGoals = function(goals){
 	ctx.restore();
 };
 
+GTE.getPrimeFactors = function(number){
+	var factors = {};
+	var d = 2;
+	while(d <= number){
+		if(!(number%d)){
+			if(!factors[d]){
+				factors[d] = 1;
+			}else{
+				factors[d]++; 
+			}
+			number/=d;
+		}else{
+			d++;
+		}
+	}
+	return factors;
+};
 
-GTE.getEndGoals = function(num,side){
+
+GTE.getEndGoalsFactors = function(num,side){
+    var yScale = GTE.getYScale();
+	
+	var pR = 0.05;
+	var goals = [];
+
+	var p0 = GTE.levelState.particles[0];
+	if(typeof p0 === 'object'){
+		pR = p0.r;
+	}
+
+	var r = 0.33;
+
+	var center = 
+	{
+		x:0.5,
+		y:0.5 * yScale
+	};
+
+	if(side == 'right'){
+		center.x += 1;
+	}
+
+	function setGoals(goals,center,num,r,a0){
+
+		if(num == 1){
+			goals.push(center);
+			return;
+		}
+
+		var factors = GTE.getPrimeFactors(num);
+
+		var maxFactor = 1;
+		for(var k in factors){
+			if(factors.hasOwnProperty(k)){
+				if(k > maxFactor){
+					maxFactor = k;
+				}
+			}
+		}
+
+		if(maxFactor == 1){return;}
+
+		for(var i = 0; i < maxFactor; i++){
+			var a = 2*Math.PI*(i+(1-maxFactor%2)/2)/maxFactor+a0;
+
+			var newCenter = 
+			{
+				x:center.x+r*Math.cos(a),
+				y:center.y+yScale*r*Math.sin(a)
+			};
+
+			setGoals(goals,newCenter,num/maxFactor,r/maxFactor,a+Math.PI/2);
+		}
+	}
+
+	setGoals(goals,center,num,r,-Math.PI/2);
+
+    return {
+				goals: goals,
+				w: 1,
+				h: 1,
+				r: r,
+				center: center,
+				pR: pR
+			};
+};
+
+GTE.getEndGoalsBox = function(num,side){
     var yScale = GTE.getYScale();
 	
 	var pR = 0.05;
@@ -1055,14 +1142,14 @@ GTE.endLevelAnimation = function(time){
 		}
 
 		if(p.x < 1){
-			if(p.m > 0){
+			if(true || p.m > 0){
 				sumLAbs++;
 			}else{
 				sumRAbs++;
 			}
 			sumL+=p.m;
 		}else{
-			if(p.m > 0){
+			if(true || p.m > 0){
 				sumRAbs++;	
 			}else{
 				sumLAbs++;
@@ -1141,13 +1228,9 @@ GTE.endLevelAnimation = function(time){
 
     var dT = time/timeWidth;
 
-	var cLInfo = GTE.getEndGoals(sumLAbs,'left');
-	var cRInfo = GTE.getEndGoals(sumRAbs,'right');
 
-	var cL = cLInfo.goals;
-	var cR = cRInfo.goals;
-
-	ctx.fillStyle = 'rgb(255,255,255)';
+	ctx.fillStyle   = 'rgb(255,255,255)';
+	ctx.strokeStyle = 'rgb(0,0,0)';
 	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
 
 	ctx.textAlign = 'center';
@@ -1157,59 +1240,69 @@ GTE.endLevelAnimation = function(time){
 	ctx.fillText(leftFormat,x1,y1);
 	ctx.fillText(rightFormat,x2,y2);
 
-	ctx.fillStyle = 'rgba(255,255,255,0.7)';
-	var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
-	ctx.font = fontSize + "px Verdana";
+	ctx.strokeText(centerText,(x1+x2)/2,y1);
+	ctx.strokeText(leftFormat,x1,y1);
+	ctx.strokeText(rightFormat,x2,y2);
+
+	// ctx.fillStyle = 'rgba(255,255,255,0.7)';
+	// var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
+	// ctx.font = fontSize + "px Verdana";
     
-    for(var k = 0; k <= 1; k++){
-    	var goalInfo;
-    	if(k == 0){
-    		goalInfo = cLInfo;
-    	}else{
-    		goalInfo = cRInfo;
-    	}
+  //   for(var k = 0; k <= 1; k++){
+  //   	var goalInfo;
+  //   	if(k == 0){
+  //   		goalInfo = cLInfo;
+  //   	}else{
+  //   		goalInfo = cRInfo;
+  //   	}
 
-		var coordsCenter = GTE.gameInternalToRenderSpace(goalInfo.center.x,goalInfo.center.y);
-		var dr = GTE.getRenderBoxWidth()/2 * goalInfo.r;
+		// var coordsCenter = GTE.gameInternalToRenderSpace(goalInfo.center.x,goalInfo.center.y);
+		// var dr = GTE.getRenderBoxWidth()/2 * goalInfo.r;
 
-		var w = goalInfo.w;
-		var h = goalInfo.h;
+		// var w = goalInfo.w;
+		// var h = goalInfo.h;
 
-		var dh = h-Math.floor(sumLAbs/w);
+		// var dh = h-Math.floor(sumLAbs/w);
 
-		var dx = -dr*(w/2+0.25);
-		var dy =  dr*(h/2+0.25);
+		// var dx = -dr*(w/2+0.25);
+		// var dy =  dr*(h/2+0.25);
 
-		ctx.fillText(goalInfo.w,coordsCenter[0],coordsCenter[1]+dy+fontSize);
-		ctx.fillText(goalInfo.h,coordsCenter[0]+dx-fontSize,coordsCenter[1]);
+		// ctx.fillText(goalInfo.w,coordsCenter[0],coordsCenter[1]+dy+fontSize);
+		// ctx.fillText(goalInfo.h,coordsCenter[0]+dx-fontSize,coordsCenter[1]);
 
-		ctx.beginPath();
-		ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-		ctx.lineWidth = 2;
+		// ctx.beginPath();
+		// ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+		// ctx.lineWidth = 2;
 
-		var gridWidth  = dr*(w-0.25);
-		var gridHeight = dr*(h-0.25);
+		// var gridWidth  = dr*(w-0.25);
+		// var gridHeight = dr*(h-0.25);
 
-		var ddx = dr*0.15;
+		// var ddx = dr*0.15;
 
-		ctx.moveTo(coordsCenter[0]+dx+ddx, coordsCenter[1]-gridHeight/2);
-		ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]-gridHeight/2);
-		ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]+gridHeight/2);
-		ctx.lineTo(coordsCenter[0]+dx+ddx, coordsCenter[1]+gridHeight/2);
+		// ctx.moveTo(coordsCenter[0]+dx+ddx, coordsCenter[1]-gridHeight/2);
+		// ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]-gridHeight/2);
+		// ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]+gridHeight/2);
+		// ctx.lineTo(coordsCenter[0]+dx+ddx, coordsCenter[1]+gridHeight/2);
 
-		ctx.moveTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy-ddx);
-		ctx.lineTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy);
-		ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy);
-		ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy-ddx);
+		// ctx.moveTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy-ddx);
+		// ctx.lineTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy);
+		// ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy);
+		// ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy-ddx);
 
-		ctx.stroke();
-    }
+		// ctx.stroke();
+  //   }
 
 	// GTE.drawEndGoals(cL);
 	// GTE.drawEndGoals(cR);
 
 	//Find closest particles
 	if(firstRender){
+		var cLInfo = GTE.getEndGoalsFactors(sumLAbs,'left');
+		var cRInfo = GTE.getEndGoalsFactors(sumRAbs,'right');
+
+		var cL = cLInfo.goals;
+		var cR = cRInfo.goals;
+
 	    var iL = 0;
 	    var iR = 0;
 	    var goals;
@@ -1225,8 +1318,8 @@ GTE.endLevelAnimation = function(time){
 		    	var bestI = 0;
 			  	for(var i = 0; i < GTE.levelState.particles.length; i++){
 					var p = GTE.levelState.particles[i];
-					var positiveLeft  = p.x < 1 && p.m > 0 || p.x >=1 && p.m < 0;
-					var positiveRight = p.x < 1 && p.m < 0 || p.x >=1 && p.m > 0;
+					var positiveLeft  = p.x < 1;//p.x < 1 && p.m > 0 || p.x >=1 && p.m < 0;
+					var positiveRight = p.x >= 1;//p.x < 1 && p.m < 0 || p.x >=1 && p.m > 0;
 					if(k == 0 && positiveLeft || k == 1 && positiveRight){
 						var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
 						if(r < best && p.iE < 0){	

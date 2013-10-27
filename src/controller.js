@@ -525,6 +525,7 @@ GTE.startNewStage = function(){
 	GTE.boardGameView = false;
 	GTE.menuView = false;
 	GTE.dirtyCanvas = true;
+	GTE.pCanvases = [];
 	GTE.startNewStageAnimation = true;
 	GTE.setGameRenderBox();
 	GTE.saveGameState();

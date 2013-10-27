@@ -8,17 +8,17 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 2){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],30,0.3,40);
 	}else if(GTE.level == 3){
-		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],50,1,40);
+		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],50,0.1,40);
 	}else if(GTE.level == 4){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"diamonds");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,0.5,10,"diamonds");
 	}else if(GTE.level == 5){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],31,1,10,"split");
+		GTE.bgTriGrid(canvas,[GTE.colors['black'],GTE.colors['white']],31,0.1,10,"split");
 	}else if(GTE.level == 5){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],40,1,10,"3d");
 	}else if(GTE.level == 6){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,1,10,"hex");
 	}else if(GTE.level == 7){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,1,10,"stripes");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"stripes");
 	}else if(GTE.level == 8){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"halfstripes");
 	}
