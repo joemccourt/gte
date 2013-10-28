@@ -574,7 +574,7 @@ GTE.drawBackground = function(){
 
 	//Box border
 	var x1 =  GTE.renderBox[0];
-	var x2 = (GTE.renderBox[0]+GTE.renderBox[2])/2 - GTE.renderBoxGap/2;
+	var x2 =  GTE.renderBox[2];//(GTE.renderBox[0]+GTE.renderBox[2])/2 - GTE.renderBoxGap/2;
 	ctx.beginPath();
     ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
     ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
@@ -587,18 +587,18 @@ GTE.drawBackground = function(){
 	// ctx.fill();
 
 
-	var x1 = (GTE.renderBox[0]+GTE.renderBox[2])/2 + GTE.renderBoxGap/2;
-	var x2 = GTE.renderBox[2];
-	ctx.beginPath();
-    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
-    ctx.strokeStyle = '000';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-	// ctx.fill();
+	// var x1 = (GTE.renderBox[0]+GTE.renderBox[2])/2 + GTE.renderBoxGap/2;
+	// var x2 = GTE.renderBox[2];
+	// ctx.beginPath();
+ //    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+ //    ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
+ //    ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
+ //    ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
+ //    ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
+ //    ctx.strokeStyle = '000';
+ //    ctx.lineWidth = 3;
+ //    ctx.stroke();
+	// // ctx.fill();
 
     ctx.restore();
 };
@@ -927,7 +927,7 @@ GTE.drawMidline = function(alpha){
 		ctx.stroke();
 	}else{
 
-		return; //tmp disable solid line
+		// return; //tmp disable solid line
 		ctx.beginPath();
 		ctx.moveTo(x,y1);
 		ctx.lineTo(x,y2);

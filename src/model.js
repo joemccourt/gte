@@ -1036,6 +1036,9 @@ GTE.updateModel = function(deltaTime){
 										pB.m += massTransfer;
 										pA.m -= massTransfer;
 
+										GTE.pCanvases[pA.id] = undefined;
+										GTE.pCanvases[pB.id] = undefined;
+
 										if(p.toRemove){
 											for(var k = 0; k < GTE.levelState.mouseForces.length; k++){
 												var f = GTE.levelState.mouseForces[k];
@@ -1134,8 +1137,10 @@ GTE.updateModel = function(deltaTime){
 					if(GTE.levelSettings.transfer){
 						if(p.x < 1 && pXNew > 1){
 							p.m *= -1;
+							GTE.pCanvases[p.id] = undefined;
 						}else if(p.x > 1 && pXNew < 1){
 							p.m *= -1;
+							GTE.pCanvases[p.id] = undefined;
 						}
 					}else{
 
