@@ -16,11 +16,19 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 5){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],40,1,10,"3d");
 	}else if(GTE.level == 6){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,1,10,"hex");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,0.3,10,"hex");
 	}else if(GTE.level == 7){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"stripes");
 	}else if(GTE.level == 8){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"halfstripes");
+	}else if(GTE.level == 9){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['pastels'],30,0.5,10);
+	}else if(GTE.level == 10){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['primaries'],60,0.3,10);
+	}else if(GTE.level == 11){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['pastels'],5,0.2,10);
+	}else if(GTE.level == 12){
+		GTE.bgCircles(canvas,GTE.colorSets['pastels'],5,1,10);
 	}
 
 };
@@ -55,12 +63,12 @@ GTE.drawTriAtCoord = function(ctx, x, y, scale){
 	ctx.lineTo(v3x,v3y);
 	ctx.lineTo(v1x,v1y);
 };
-
+	
 GTE.rng = {
 	state: 0,
 	setSeed:  function(seed){this.state = seed;},
-	nextInt:  function(){this.state = (1140671485*this.state+12820163) % (2 << 24);},
-	getFloat: function(){this.nextInt();return this.state/(2 << 24);}
+	nextInt:  function(){this.state = (22695477*this.state+1) % 4294967296;},
+	getFloat: function(){this.nextInt();return this.state / 4294967296;}
 };
 
 GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed,type){
@@ -73,7 +81,6 @@ GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed,type){
 	var h = Math.ceil(Math.sqrt(3)*w*canvas.height/canvas.width)+1;
 
 	var rng = GTE.rng;
-	console.log(colors);
 	rng.setSeed(seed);
 
 	var map = [];
@@ -114,6 +121,107 @@ GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed,type){
 				for(var x = 0; x < w; x++){
 				if(map[w*y+x] == k){
 					GTE.drawTriAtCoord(ctx,x,y,scale);
+				}
+			}
+		}
+		ctx.fill();
+    }
+
+	ctx.restore();
+};
+
+
+//TODO: use space filling tree
+GTE.bgCircles = function(canvas,colors,nWidth,alpha,seed,type){
+	var ctx = canvas.getContext('2d');
+	ctx.save();
+
+	var w = canvas.width;
+	var h = canvas.height;
+
+	var rng = GTE.rng;
+	rng.setSeed(seed);
+
+	var circles = [];
+
+	for(var i = 0; i < 1500; i++){
+		var k = rng.getFloat()*colors.length|0;
+		var r = 0;//rng.getFloat()*w/5;
+		if(i == 0){r = w/10;}
+
+		var x = w*Math.random();
+		var y = h*Math.random();
+
+		var p = 0;
+		while(r <= 0){
+			x = w*Math.random();
+			y = h*Math.random();
+			
+			var minR = w/10;
+
+			//Box boundries
+			if(x < minR){minR = x;}
+			if(w-x < minR){minR = w-x;}
+			if(x < w/2 && w/2-x < minR){minR = w/2-x;}
+			if(x > w/2 && x-w/2 < minR){minR = x-w/2;}
+			if(y < minR){minR = y;}
+			if(h-y < minR){minR = h-y;}
+
+			//Other circle boundries
+			for(var j = 0; j < circles.length && minR > 0; j++){
+				var circle = circles[j];
+				var dist = Math.pow(x-circle.x,2)+Math.pow(y-circle.y,2) - Math.pow(circle.r+minR,2);
+				if(dist < 0){
+					dist = Math.sqrt(Math.pow(x-circle.x,2)+Math.pow(y-circle.y,2)) - circle.r;
+					minR = dist;
+				}
+			}
+			r = minR;
+			p++;
+		}
+
+		circles.push({x:x,y:y,r:r});
+
+		ctx.fillStyle = 'rgba('+colors[k].r+','+colors[k].g+','+colors[k].b+','+alpha+')';
+		ctx.beginPath();
+		ctx.arc(x,y,r, 0, 2 * Math.PI, false);
+		ctx.closePath();
+		ctx.fill();
+    }
+
+	ctx.restore();
+};
+
+GTE.bgSquareGrid = function(canvas,colors,nWidth,alpha,seed,type){
+	var ctx = canvas.getContext('2d');
+	ctx.save();
+
+	var scale = canvas.width/nWidth/2;
+	var w = nWidth*2;
+	var h = Math.ceil(w*canvas.height/canvas.width);
+
+	var rng = GTE.rng;
+	rng.setSeed(seed);
+
+	var map = [];
+
+	for(var y = 0; y < h; y++){
+		for(var x = 0; x < w; x++){
+			map[w*y+x] = rng.getFloat()*colors.length|0;
+		}
+	}
+    
+    for(var k = 0; k < colors.length; k++){
+		ctx.beginPath();
+		ctx.fillStyle = 'rgba('+colors[k].r+','+colors[k].g+','+colors[k].b+','+alpha+')';
+		for(var y = 0; y < h; y++){
+			for(var x = 0; x < w; x++){
+				if(map[w*y+x] == k){
+					ctx.moveTo(scale*x,scale*y);
+					ctx.lineTo(scale*(x+1),scale*y);
+					ctx.lineTo(scale*(x+1),scale*(y+1));
+					ctx.lineTo(scale*x,scale*(y+1));
+					ctx.lineTo(scale*x,scale*y);
 				}
 			}
 		}
