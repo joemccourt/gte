@@ -583,7 +583,7 @@ GTE.drawBackground = function(){
     ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
     ctx.strokeStyle = '000';
     ctx.lineWidth = 3;
-    ctx.stroke();
+    // ctx.stroke();
 	// ctx.fill();
 
 
@@ -751,7 +751,15 @@ GTE.drawButtons = function(mode){
 	    ctx.closePath();
 
 	    ctx.strokeStyle = button.strokeStyle;
-	    ctx.fillStyle   = button.fillStyle;
+	    // ctx.fillStyle   = button.fillStyle;
+
+		var grd = ctx.createLinearGradient(x1,y1,x1,y2);
+		grd.addColorStop(0, 'rgb(200,200,200)');
+		grd.addColorStop(0.7, 'rgb(170,170,170)');
+		grd.addColorStop(1, 'rgb(130,130,130)');
+
+		ctx.fillStyle = grd;
+
 	    ctx.lineWidth   = 2;
 	    ctx.fill();
 	    ctx.stroke();
@@ -892,6 +900,8 @@ GTE.drawMidline = function(alpha){
 	if(typeof alpha !== 'number'){alpha = 1;}
 	var ctx = GTE.ctx;
 	ctx.save();
+
+	alpha *= 0.3;
 
 	var midX = (GTE.renderBox[0] + GTE.renderBox[2])/2+0.5|0;
 	var x = midX+0.5;

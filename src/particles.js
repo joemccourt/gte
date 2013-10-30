@@ -1,5 +1,16 @@
 GTE.pCanvases = {};
 
+GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
+
+	// create radial gradient
+	var grd = ctx.createRadialGradient((r+offX)*0.7,(r+offY)*0.7,r*0.1,r+offX,r+offY,r);
+      
+	grd.addColorStop(0, 'rgb('+(color.r+30)+','+(color.g+30)+','+(color.b+30)+')'); // center
+	grd.addColorStop(1, 'rgb('+(color.r)+','+(color.g)+','+(color.b)+')');
+
+	return grd;
+};
+
 GTE.drawParticle = function(canvas,p,r){
 	var ctx = canvas.getContext('2d');
 	ctx.save();
@@ -16,11 +27,15 @@ GTE.drawParticle = function(canvas,p,r){
 	var white = GTE.colors.particleWhite;
 	var darkBlue = GTE.colors.particleDarkBlue;
 	
+	var grd;
 	if(p.m > 0){
-		ctx.fillStyle = "rgba("+white.r+","+white.g+","+white.b+",0.8)";
+		grd = GTE.getFillGrad(ctx,white,offX,offY,r,w,h);
 	}else{
-		ctx.fillStyle = "rgba("+darkBlue.r+","+darkBlue.g+","+darkBlue.b+",0.8)";
+		grd = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h);
 	}
+
+	ctx.fillStyle = grd;
+
 	ctx.beginPath();
 		ctx.arc(r+offX,r+offY,r, 0, 2 * Math.PI, false);
 	ctx.closePath();

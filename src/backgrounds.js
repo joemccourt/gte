@@ -20,7 +20,7 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 7){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"stripes");
 	}else if(GTE.level == 8){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,1,10,"halfstripes");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,0.5,10,"halfstripes");
 	}else if(GTE.level == 9){
 		GTE.bgSquareGrid(canvas,GTE.colorSets['pastels'],30,0.5,10);
 	}else if(GTE.level == 10){
@@ -28,7 +28,26 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 11){
 		GTE.bgSquareGrid(canvas,GTE.colorSets['pastels'],5,0.2,10);
 	}else if(GTE.level == 12){
-		GTE.bgCircles(canvas,GTE.colorSets['pastels'],5,1,10);
+		GTE.bgCircles(canvas,GTE.colorSets['aKissToAwake'],5,0.3,10);
+		GTE.bgCircles(canvas,GTE.colorSets['oceanFive'],5,0.3,10);
+	}else if(GTE.level == 13){
+		GTE.bgTriGrid(canvas,GTE.colorSets['melonBallSurprise'].slice(0,3),30,0.6,10,"hex");
+	}else if(GTE.level == 14){
+		GTE.bgTriGrid(canvas,GTE.colorSets['loveFlowers'],30,0.35,10,"diamonds");
+	}else if(GTE.level == 15){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['popIsEverything'],75,0.2,10);
+	}else if(GTE.level == 16){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],50,0.3,10,"halfstripes");
+	}else if(GTE.level == 17){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['aKissToAwake'],7,0.7,10);
+	}else if(GTE.level == 18){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],15,0.6,10,"hex");
+	}else if(GTE.level == 19){
+		GTE.bgTriGrid(canvas,GTE.colorSets['iridescentSunset'],3,1,40);
+	}else if(GTE.level == 20){
+		GTE.bgTriGrid(canvas,GTE.colorSets['aKissToAwake'],80,1,41);
+	}else if(GTE.level == 21){
+		GTE.bgTriGrid(canvas,GTE.colorSets['melonBallSurprise'],5,1,41,"stripes");
 	}
 
 };
@@ -144,20 +163,19 @@ GTE.bgCircles = function(canvas,colors,nWidth,alpha,seed,type){
 
 	var circles = [];
 
-	for(var i = 0; i < 1500; i++){
+	var r0 = w/20;
+	for(var i = 0; i < 1000; i++){
 		var k = rng.getFloat()*colors.length|0;
-		var r = 0;//rng.getFloat()*w/5;
-		if(i == 0){r = w/10;}
+		var r = 0;//rng.getFloat()*w/5;\
 
-		var x = w*Math.random();
-		var y = h*Math.random();
+		var x,y;
 
 		var p = 0;
 		while(r <= 0){
 			x = w*Math.random();
 			y = h*Math.random();
 			
-			var minR = w/10;
+			var minR = r0;
 
 			//Box boundries
 			if(x < minR){minR = x;}
