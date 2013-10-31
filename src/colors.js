@@ -10,7 +10,9 @@ GTE.colors = {
 	'particleBlue'  : {r: 85,g:123,b:204},
 	'particleDarkBlue': {r: 35,g:46,b:125},
 	'particleRed'   : {r:200,g: 25,b: 54},
-	'particleWhite' : {r:191,g:201,b:213}
+	'particleWhite' : {r:191,g:201,b:213},
+	'winColor'      : {r:100,g:200,b:100},
+	'loseColor'      : {r:200,g:40,b:40}
 };
 
 GTE.colorSets = {

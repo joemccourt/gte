@@ -275,6 +275,7 @@ GTE.resizeToFit = function(){
 
 	GTE.dirtyBG = true;
 	GTE.dirtyCanvas = true;
+	GTE.pCanvases = [];
 };
 
 GTE.startSession = function(){

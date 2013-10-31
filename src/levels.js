@@ -17,7 +17,8 @@ GTE.gameLevels =
 		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
-		'v0'              : 0
+		'v0'              : 0,
+		'r'               : 0.1
 
 	},
 	

@@ -625,6 +625,29 @@ GTE.drawProgress = function(){
 	var n = GTE.levelSettings['rounds'];
 	var l = GTE.stagesLost;
 	var w = GTE.stagesWon;
+	    
+	ctx.beginPath();
+	ctx.moveTo(x1,y1+r);
+	ctx.arc(x2-r,y1+r,r,-Math.PI,0,false);
+
+	ctx.lineTo(x2,y2-r);
+	ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+	ctx.lineTo(x1+r,y2);
+	ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+	ctx.lineTo(x1,y+0.5);
+	ctx.closePath();
+
+	var color = {r:245,g:245,b:245};
+	var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
+	var grd = ctx.createLinearGradient(x1,y1,x2,y1);
+
+	grd.addColorStop(0.15,   'rgb('+color.r+','+color.g+','+color.b+')');
+	grd.addColorStop(0.7, 'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+	grd.addColorStop(0.9,'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+	grd.addColorStop(1, 'rgb('+color.r+','+color.g+','+color.b+')');
+	ctx.fillStyle = grd;
+
+	ctx.fill();
 
 	//Lost portion
 	if(l > 0 && l < n){
@@ -641,6 +664,16 @@ GTE.drawProgress = function(){
     
 		ctx.closePath();
     	ctx.fillStyle = loseColorStr;
+
+		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
+		var color = GTE.colors.loseColor;
+		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
+		grd.addColorStop(0,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		grd.addColorStop(0.15,'rgb('+color.r+','+color.g+','+color.b+')');
+		grd.addColorStop(0.65,'rgb('+color.r+','+color.g+','+color.b+')');
+		grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		ctx.fillStyle = grd;
+
     	ctx.fill();
 	}
 
@@ -657,6 +690,16 @@ GTE.drawProgress = function(){
 		ctx.closePath();
 
     	ctx.fillStyle = winColorStr;
+
+		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
+		var color = GTE.colors.winColor;
+		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
+		grd.addColorStop(0,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		grd.addColorStop(0.15,'rgb('+color.r+','+color.g+','+color.b+')');
+		grd.addColorStop(0.65,'rgb('+color.r+','+color.g+','+color.b+')');
+		grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		ctx.fillStyle = grd;
+
     	ctx.fill();
 	}
 
@@ -746,29 +789,33 @@ GTE.drawButtons = function(mode){
 	    ctx.lineTo(x1+r,y2);
 	    ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
 	    ctx.lineTo(x1,y1+r);
-	    ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+		ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
 
-	    ctx.closePath();
+		ctx.closePath();
 
-	    ctx.strokeStyle = button.strokeStyle;
-	    // ctx.fillStyle   = button.fillStyle;
+		ctx.strokeStyle = button.strokeStyle;
+		// ctx.fillStyle   = button.fillStyle;
 
-		var grd = ctx.createLinearGradient(x1,y1,x1,y2);
-		grd.addColorStop(0, 'rgb(200,200,200)');
-		grd.addColorStop(0.7, 'rgb(170,170,170)');
-		grd.addColorStop(1, 'rgb(130,130,130)');
+		if(button.name === "background"){
+			ctx.fillStyle = 'rgba(255,255,255,0.7)';
+		}else{
+			var grd = ctx.createLinearGradient(x1,y1,x1,y2);
+			grd.addColorStop(0, 'rgb(230,230,230)');
+			grd.addColorStop(0.8, 'rgb(170,170,170)');
+			grd.addColorStop(1, 'rgb(130,130,130)');
 
-		ctx.fillStyle = grd;
+			ctx.fillStyle = grd;
+	    }
 
-	    ctx.lineWidth   = 2;
-	    ctx.fill();
-	    ctx.stroke();
+		ctx.lineWidth   = 2;
+		ctx.fill();
+		ctx.stroke();
 
-	    if(button.text.length > 0){
+		if(button.text.length > 0){
 			ctx.fillStyle = 'rgb(255,255,255)';
-			var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
 			ctx.font = height + "px Verdana";
 
+			var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'baseline';
 
@@ -790,7 +837,7 @@ GTE.drawButtons = function(mode){
 			}
 
 			for(var j = 0; j < 3; j++){
-				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), y1+0.3*(y2-y1), (x2-x1)*0.1);
+				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), y1+0.2*(y2-y1), Math.min(x2-x1,y2-y1)*0.17);
 				ctx.stroke();
 
 				if(stars > j){
@@ -801,10 +848,15 @@ GTE.drawButtons = function(mode){
 				ctx.fill();
 			}
 	
+			var height = 48*(GTE.getRenderBoxHeight())/1000;
+
+			ctx.textAlign = "middle";
 			ctx.font = 1.6*height + "px Verdana";
 			ctx.fillStyle = 'rgba(0,0,0,1)';
-
-	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1) + height*1.5);
+			ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+			ctx.lineWidth = 1;
+	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1));
+	    	ctx.strokeText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1));
 		}else if(button.name === "menu" || button.name === "quit" ){
 
 			var w = x2-x1;

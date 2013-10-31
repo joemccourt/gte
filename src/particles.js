@@ -3,10 +3,29 @@ GTE.pCanvases = {};
 GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
 
 	// create radial gradient
-	var grd = ctx.createRadialGradient((r+offX)*0.7,(r+offY)*0.7,r*0.1,r+offX,r+offY,r);
-      
-	grd.addColorStop(0, 'rgb('+(color.r+30)+','+(color.g+30)+','+(color.b+30)+')'); // center
-	grd.addColorStop(1, 'rgb('+(color.r)+','+(color.g)+','+(color.b)+')');
+	var grd = ctx.createRadialGradient((r+offX)*0.85,(r+offY)*0.7,r*0.1,r+offX,r+offY,r);
+    
+    var colorShine = {r:color.r,g:color.g,b:color.b};
+    var colorShadow = {r:color.r,g:color.g,b:color.b};
+    colorShine.r += 30;
+    colorShine.g += 30;
+    colorShine.b += 30;
+
+    if(colorShine.r > 255){colorShine.r = 255;}
+    if(colorShine.g > 255){colorShine.g = 255;}
+    if(colorShine.b > 255){colorShine.b = 255;}
+
+    colorShadow.r = colorShadow.r * 0.7 | 0;
+    colorShadow.g = colorShadow.g * 0.7 | 0;
+    colorShadow.b = colorShadow.b * 0.7 | 0;
+
+    if(colorShadow.r < 0){colorShadow.r = 0;}
+    if(colorShadow.g < 0){colorShadow.g = 0;}
+    if(colorShadow.b < 0){colorShadow.b = 0;}
+
+	grd.addColorStop(0,   'rgb('+colorShine.r+','+colorShine.g+','+colorShine.b+')'); // center
+	grd.addColorStop(0.98, 'rgb('+color.r+','+color.g+','+color.b+')');
+	grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
 
 	return grd;
 };
@@ -27,14 +46,11 @@ GTE.drawParticle = function(canvas,p,r){
 	var white = GTE.colors.particleWhite;
 	var darkBlue = GTE.colors.particleDarkBlue;
 	
-	var grd;
 	if(p.m > 0){
-		grd = GTE.getFillGrad(ctx,white,offX,offY,r,w,h);
+		ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h);
 	}else{
-		grd = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h);
+		ctx.fillStyle = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h);
 	}
-
-	ctx.fillStyle = grd;
 
 	ctx.beginPath();
 		ctx.arc(r+offX,r+offY,r, 0, 2 * Math.PI, false);
@@ -43,12 +59,12 @@ GTE.drawParticle = function(canvas,p,r){
 	
 	ctx.globalCompositeOperation = "source-atop";
 	if(p.m > 0){
-		ctx.fillStyle = "rgba("+blue.r+","+blue.g+","+blue.b+",1)";
+		ctx.fillStyle = ctx.fillStyle = GTE.getFillGrad(ctx,blue,offX,offY,r,w,h);
 	}else{
-		ctx.fillStyle = "rgba("+red.r+","+red.g+","+red.b+",1)";
+		ctx.fillStyle = ctx.fillStyle = GTE.getFillGrad(ctx,red,offX,offY,r,w,h);
 	}
 
-	drawStripe = function(center,angleDelta){
+	drawStripe = function(center,angleDelta,seed){
 		var a1  = Math.PI/180 * (45-angleDelta);
 		var a2  = Math.PI/180 * (45+angleDelta);
 		var sa1 = Math.sin(a1);
@@ -66,12 +82,14 @@ GTE.drawParticle = function(canvas,p,r){
 		var y12 = center.y+fR*sa2;
 		var y22 = center.y-fR*sa2;
 
-		var rControl = fR * (0.5*Math.random()+0.5);
+		var rng = GTE.rng;
+		rng.setSeed(seed);
+		var rControl = fR * (0.5*rng.getFloat()+0.5);
 
-		var ac1 = a1 + Math.PI/180*angleDelta*2*(Math.random()-0.5);
+		var ac1 = a1 + Math.PI/180*angleDelta*2*(rng.getFloat()-0.5);
 		var ac4 = a1 + (a1-ac1);
 
-		var ac2 = Math.PI+a2 + Math.PI/180*angleDelta*2*(Math.random()-0.5);
+		var ac2 = Math.PI+a2 + Math.PI/180*angleDelta*2*(rng.getFloat()-0.5);
 		var ac3 = Math.PI+a2 + (Math.PI+a2-ac2);
 
 		var c1x = x11+rControl*Math.cos(ac1);
@@ -113,12 +131,12 @@ GTE.drawParticle = function(canvas,p,r){
 	for(var i = 0; i < mass; i++){
 		var dx = 0.5*Math.ceil(i/2) * (2*(i%2)-1) / mass;
 		var angleDelta = 10 / mass;
-		center = {x:0.5+dx,y:0.5+dx};
+		center = {x:0.5+dx,y:0.5+dx};	
 
 		if(mass - i < 1){
 			angleDelta*=mass*(mass-i);
 		}
-		drawStripe(center,angleDelta);
+		drawStripe(center,angleDelta,p.id+i*9991);
 	}
 
 	ctx.restore();
