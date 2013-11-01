@@ -45,7 +45,7 @@ GTE.drawBoardGameTransform = [1,0,0,0,
 GTE.drawBoardGameTransformTmp = [1,0,0,0,
 								 0,1,0,0,
 								 0,0,1,0];
-GTE.boardLevelRadius = 0.03; //*(w+h)/2
+GTE.boardLevelRadius = 0.036; //*(w+h)/2
 
 GTE.maxLevel = 100;
 GTE.level = 0;

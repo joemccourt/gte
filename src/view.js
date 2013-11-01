@@ -130,18 +130,37 @@ GTE.drawBoardGame = function(){
 
 	ctx.transform(1,0,0,1,offX,offY);
 
-	var grd;
-	grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],w,h/2);
-	grd.addColorStop(0, 'rgb(255,198,198)');
-	grd.addColorStop(0.5, 'rgb(255,226,222)');
-	grd.addColorStop(1, 'rgb(109,216,230)');
+	var paraX = 1;
+	var paraY = 1;
 
-	ctx.fillStyle = grd;
 	var boardWidth  = w*(gameBox[2]-gameBox[0]);
 	var boardHeight = h*(gameBox[3]-gameBox[1]);
 	var boardStartX = GTE.renderBox[0]+gameBox[0]*w;
 	var boardStartY = GTE.renderBox[1]+gameBox[1]*h;
-	ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
+
+	//Rather hacky, but it works :/
+	var drawOffX = boardWidth * 0.1; //TODO: perfect
+	var drawOffY = boardHeight * 0.7; //TODO: perfect
+
+	if(!GTE.boardGameCanvas){
+		GTE.boardGameCanvas = true;
+		GTE.boardGameCanvas = document.createElement('canvas');
+		GTE.boardGameCanvas.width  = boardWidth  + 2*drawOffX;
+		GTE.boardGameCanvas.height = boardHeight + 2*boardWidth;
+
+		GTE.bgTriGrid(GTE.boardGameCanvas,GTE.colorSets['pastels'],50,0.5,10,"diamonds");
+	}
+
+	ctx.drawImage(GTE.boardGameCanvas,boardStartX+offX*paraX-drawOffX,boardStartY+offY*paraY-drawOffY);
+
+	// var grd;
+	// grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],w,h/2);
+	// grd.addColorStop(0, 'rgb(255,198,198)');
+	// grd.addColorStop(0.5, 'rgb(255,226,222)');
+	// grd.addColorStop(1, 'rgb(109,216,230)');
+
+	// ctx.fillStyle = grd;
+	// ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
 
 	// *** Draw Levels *** //
 	var r = GTE.boardLevelRadius * (w+h)/2;
@@ -196,33 +215,69 @@ GTE.drawBoardGame = function(){
 			}
 		}
 
-	
-		if(stars > 0){
-			ctx.fillStyle = '#4e8';
-		}else if(stars == 0){
-			ctx.fillStyle = '#44e';
-		}else{
-			ctx.fillStyle = '#ddd';
-		}
 
 		var x = x1+coords[i][0]*w;
 		var y = y1+coords[i][1]*h;
+	
+		for(var k = 0; k <= 1; k++){
+			var color;
+			if(stars > 0){
+				color = {r:0x44,g:0xEE,b:0x88};
+			}else if(stars == 0){
+				color = {r:0x44,g:0x44,b:0xEE};
+			}else{
+				color = {r:0xDD,g:0xDD,b:0xDD};
+			}
 
-		ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-		ctx.lineWidth = 1;
-		ctx.beginPath();
-		ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-		ctx.closePath();
-		ctx.fill();
-		ctx.stroke();
+			if(k == 1){
+				color = {r:0,g:0,b:0};
+			}
+			
+			// create radial gradient
+			grd = ctx.createRadialGradient(x-r*0.1,y-r*0.3,r*0.1,x,y,r);
 
+			var colorShine  = {r:color.r,g:color.g,b:color.b};
+			var colorShadow = {r:color.r,g:color.g,b:color.b};
+			colorShine.r += 20;
+			colorShine.g += 20;
+			colorShine.b += 20;
 
-		ctx.font = "" + (r) + "px Verdana";
+			if(colorShine.r > 255){colorShine.r = 255;}
+			if(colorShine.g > 255){colorShine.g = 255;}
+			if(colorShine.b > 255){colorShine.b = 255;}
 
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'baseline';
-		ctx.fillStyle = 'rgb(255,255,255)';
-		ctx.fillText(""+i,x+1.3*r,y+1.3*r);
+			colorShadow.r = colorShadow.r * 0.5 | 0;
+			colorShadow.g = colorShadow.g * 0.5 | 0;
+			colorShadow.b = colorShadow.b * 0.5 | 0;
+
+			if(colorShadow.r < 0){colorShadow.r = 0;}
+			if(colorShadow.g < 0){colorShadow.g = 0;}
+			if(colorShadow.b < 0){colorShadow.b = 0;}
+
+			grd.addColorStop(0,   'rgb('+colorShine.r+','+colorShine.g+','+colorShine.b+')'); // center
+			grd.addColorStop(0.9, 'rgb('+color.r+','+color.g+','+color.b+')');
+			grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+
+			ctx.fillStyle = grd;
+
+			if(k == 0){
+				ctx.beginPath();
+				ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fill();
+				// ctx.stroke();
+			}else{	
+				ctx.font = "" + (r) + "px Verdana";
+				
+				ctx.lineWidth = 1;
+				ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'middle';
+				ctx.fillText(""+i,x,y);
+				ctx.strokeText(""+i,x,y);
+				// ctx.fillText(""+i,x+1.3*r,y+1.3*r);
+			}
+		}
 
 	}
 	
