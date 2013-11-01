@@ -21,6 +21,8 @@ GTE.renderBox = [0,0,0,0];
 //Game state bools
 GTE.dirtyBG = true;
 GTE.dirtyCanvas = true;
+GTE.dirtyBoardGameBackground = true;
+
 GTE.gameInProgress = false;
 GTE.wonGame = false;
 GTE.toSaveGame = true;
@@ -275,6 +277,8 @@ GTE.resizeToFit = function(){
 
 	GTE.dirtyBG = true;
 	GTE.dirtyCanvas = true;
+	GTE.dirtyBoardGameBackground = true;
+	
 	GTE.pCanvases = [];
 };
 

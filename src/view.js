@@ -130,8 +130,8 @@ GTE.drawBoardGame = function(){
 
 	ctx.transform(1,0,0,1,offX,offY);
 
-	var paraX = 1;
-	var paraY = 1;
+	var paraX = -0.25;
+	var paraY = -0.25;
 
 	var boardWidth  = w*(gameBox[2]-gameBox[0]);
 	var boardHeight = h*(gameBox[3]-gameBox[1]);
@@ -139,16 +139,16 @@ GTE.drawBoardGame = function(){
 	var boardStartY = GTE.renderBox[1]+gameBox[1]*h;
 
 	//Rather hacky, but it works :/
-	var drawOffX = boardWidth * 0.1; //TODO: perfect
-	var drawOffY = boardHeight * 0.7; //TODO: perfect
+	var drawOffX = w * 0; //TODO: perfect
+	var drawOffY = h * 0; //TODO: perfect
 
-	if(!GTE.boardGameCanvas){
-		GTE.boardGameCanvas = true;
+	if(!GTE.boardGameCanvas || GTE.dirtyBoardGameBackground){
+		GTE.dirtyBoardGameBackground = false
 		GTE.boardGameCanvas = document.createElement('canvas');
-		GTE.boardGameCanvas.width  = boardWidth  + 2*drawOffX;
-		GTE.boardGameCanvas.height = boardHeight + 2*boardWidth;
+		GTE.boardGameCanvas.width  = boardWidth;
+		GTE.boardGameCanvas.height = boardHeight;
 
-		GTE.bgTriGrid(GTE.boardGameCanvas,GTE.colorSets['pastels'],50,0.5,10,"diamonds");
+		GTE.bgTriGrid(GTE.boardGameCanvas,GTE.colorSets['pastels'],15,0.5,40);
 	}
 
 	ctx.drawImage(GTE.boardGameCanvas,boardStartX+offX*paraX-drawOffX,boardStartY+offY*paraY-drawOffY);
