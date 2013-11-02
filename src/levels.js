@@ -7,7 +7,7 @@ GTE.gameLevels =
 		'rounds'  : 6,
 		'starReqs': [4,5,6],
 
-		'numParticles'    : 5,
+		'numParticles'    : 6,
 		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
@@ -39,18 +39,18 @@ GTE.gameLevels =
 		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
-		'v0'              : 0
-
+		'v0'              : 0,
+		'r'               : 0.085
 	},
 	
 	'level2': 
 	{
-		'description' : 'Even more particles.  With some initial velocity to show particles can move.',
+		'description' : 'More particles.  With some initial velocity to show particles can move.',
 		'levelID' : 2,
 		'rounds'  : 8,
 		'starReqs': [6, 7, 8],
 
-		'numParticles'    : 30,
+		'numParticles'    : 25,
 		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
@@ -60,19 +60,20 @@ GTE.gameLevels =
 		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
-		'v0'              : 0.1
+		'v0'              : 0.1,
+		'r'               : 0.075
 	},
 	
 	'level3': 
 	{
-		'description' : 'More, smaller particles and faster. Plus lower viscosity',
+		'description' : 'More, smaller particles and faster.',
 		'levelID' : 3,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 70,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.8,
+		'numParticles'    : 40,
+		'viscosity'       : 0.2,
+		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
@@ -81,24 +82,24 @@ GTE.gameLevels =
 		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0.15,
-		'r'               : 0.03
+		'r'               : 0.055
 	},
 	
 	'level4': 
 	{
-		'description' : 'Fewer and larger, but now they stack to 2.',
-		'levelID' : 3,
+		'description' : 'More and smaller',
+		'levelID' : 4,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 20,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.8,
+		'numParticles'    : 50,
+		'viscosity'       : 0.2,
+		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
-		'combine'         : true,
+		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 2,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0.15,
@@ -107,57 +108,57 @@ GTE.gameLevels =
 	
 	'level5': 
 	{
-		'description' : 'Some more and stack up to 5.',
-		'levelID' : 3,
+		'description' : 'More and smaller with more friction.',
+		'levelID' : 5,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 30,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.8,
+		'numParticles'    : 60,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
-		'combine'         : true,
+		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 5,
+		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0.10,
-		'r'               : 0.04
+		'r'               : 0.047
 	},
 	
 	'level6': 
 	{
-		'description' : 'Start up to 5, stack up to 10',
-		'levelID' : 3,
+		'description' : 'More and smaller.',
+		'levelID' : 6,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 40,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.8,
+		'numParticles'    : 75,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
-		'combine'         : true,
+		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
-		'massMax'         : 10,
-		'initMassMax'     : 5,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0.10,
-		'r'               : 0.035
+		'r'               : 0.042
 	},
 	
 	'level7': 
 	{
-		'description' : 'Back to single particles, but introduce some negatives which can annihilate.',
+		'description' : 'Fewer, but introduce some negative particles.',
 		'levelID' : 7,
 		'rounds'  : 6,
 		'starReqs': [4, 5, 6],
 
 		'numParticles'    : 12,
-		'viscosity'       : 0.1,
-		'CoeffRestitution': 0.6,
-		'annihilate'      : true,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
+		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
@@ -165,63 +166,63 @@ GTE.gameLevels =
 		'initMassMax'     : 1,
 		'signBias'        : 0.8,
 		'v0'              : 0.07,
-		'r'               : 0.05
+		'r'               : 0.06
 	},
 	
 	'level8': 
 	{
-		'description' : 'Some more particles, but now they can\'t annihilate.',
+		'description' : 'Some more particles., more likely to be negative',
 
 		'levelID' : 8,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
 		'numParticles'    : 30,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0.75,
+		'signBias'        : 0.7,
 		'v0'              : 0.07,
-		'r'               : 0.05
+		'r'               : 0.055
 	},
 
 	'level9': 
 	{
-		'description' : 'Now make negatives just as likely as possitives',
+		'description' : 'More, smaller, more negative.',
 
 		'levelID' : 9,
 		'rounds'  : 10,
 		'starReqs': [7, 9, 10],
 
-		'numParticles'    : 30,
-		'viscosity'       : 0.2,
-		'CoeffRestitution': 0.6,
+		'numParticles'    : 40,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0.0,
+		'signBias'        : 0.5,
 		'v0'              : 0.07,
 		'r'               : 0.05
 	},
 
 	'level10': 
 	{
-		'description' : 'Fewer particles, but now particles can transfer boundry.  Faster and lower viscosity.',
+		'description' : 'Fewer particles, but now particles can transfer boundry.',
 
 		'levelID' : 10,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.08,
+		'viscosity'       : 0.15,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -229,9 +230,9 @@ GTE.gameLevels =
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0.0,
+		'signBias'        : 0.5,
 		'v0'              : 0.1,
-		'r'               : 0.05
+		'r'               : 0.07
 	},
 	
 	'level11': 
@@ -311,7 +312,7 @@ GTE.gameLevels =
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 200,
+		'numParticles'    : 175,
 		'viscosity'       : 0.01,
 		'CoeffRestitution': 0.95,
 		'annihilate'      : false,
@@ -334,7 +335,7 @@ GTE.gameLevels =
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 200,
+		'numParticles'    : 175,
 		'viscosity'       : 0.01,
 		'CoeffRestitution': 0.95,
 		'annihilate'      : false,
@@ -357,7 +358,7 @@ GTE.gameLevels =
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 200,
+		'numParticles'    : 175,
 		'viscosity'       : 0.01,
 		'CoeffRestitution': 0.95,
 		'annihilate'      : true,
@@ -380,7 +381,7 @@ GTE.gameLevels =
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 200,
+		'numParticles'    : 175,
 		'viscosity'       : 0.01,
 		'CoeffRestitution': 0.95,
 		'annihilate'      : false,

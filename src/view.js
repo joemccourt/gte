@@ -53,10 +53,11 @@ GTE.drawGameMenu = function(drawGameParams){
 	GTE.drawMouseForces();
 	GTE.drawLevel();
 
-	//TODO: only do this if end of game menu
+	if(GTE.levelCompleted){	
 		GTE.endLevelAnimation(0);
-		GTE.drawButtons("menu");
-		
+	}
+
+	GTE.drawButtons("menu");		
 	GTE.drawProgress();
 };
 
@@ -913,9 +914,10 @@ GTE.drawButtons = function(mode){
 	    	ctx.fillText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1));
 	    	ctx.strokeText("Level "+GTE.level,(x1+x2)/2,y1 + 0.45*(y2-y1));
 		}else if(button.name === "menu" || button.name === "quit" ){
-
 			var w = x2-x1;
 			var h = y2-y1;
+	
+			ctx.strokeStyle = 'rgba(0,0,0,1)';
 
 			// ctx.lineWidth = 3;
 			var left   = x1+w*0.33;
@@ -943,7 +945,14 @@ GTE.drawButtons = function(mode){
 
 			ctx.fill();
 		}else if(button.name === "next"){
-
+			if(GTE.canPlayLevel(GTE.level+1)){
+				ctx.strokeStyle = 'rgba(0,0,0,1)';
+				ctx.fillStyle   = 'rgba(0,0,0,1)';
+			}else{
+				ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+				ctx.fillStyle   = 'rgba(0,0,0,0.3)';
+			}
+	
 			var w = x2-x1;
 			var h = y2-y1;
 
@@ -960,14 +969,11 @@ GTE.drawButtons = function(mode){
 			ctx.moveTo(right-w/10,top);
 			ctx.lineTo(right-w/10,bottom);
 			ctx.lineTo(right,y1+h/2);
-			ctx.closePath();
-			ctx.fillStyle = 'rgba(0,0,0,1)';
-
+			ctx.closePath();	
 			ctx.fill();
 		}else if(button.name === "replay"){
-
+			ctx.strokeStyle = 'rgba(0,0,0,1)';
 			if(GTE.levelCompleted){
-
 				var w = x2-x1;
 				var h = y2-y1;
 
@@ -1074,7 +1080,7 @@ GTE.newLevelAnimation = function(time){
     ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
     ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
     ctx.closePath();
-    ctx.fill();
+    // ctx.fill();
 
     ctx.restore();
 };
@@ -1189,13 +1195,14 @@ GTE.getEndGoalsFactors = function(num,side){
 			var newCenter = 
 			{
 				x:center.x+r*Math.cos(a),
-				y:center.y+yScale*r*Math.sin(a)
+				y:center.y+r*Math.sin(a)
 			};
 
 			setGoals(goals,newCenter,num/maxFactor,r/maxFactor,a);
 		}
 	}
 
+	if(yScale < 1){r = r*yScale;}
 	setGoals(goals,center,num,r,-Math.PI/2);
 
     return {
@@ -1346,7 +1353,7 @@ GTE.endLevelAnimation = function(time){
     ctx.lineTo(xMid,GTE.renderBox[1]-0.5);
     ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
     ctx.closePath();
-    ctx.fill();
+    //ctx.fill();
 
     var yScale = GTE.getYScale();
 
@@ -1365,7 +1372,7 @@ GTE.endLevelAnimation = function(time){
     ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
     ctx.lineTo(xMid,GTE.renderBox[1]-0.5);
     ctx.closePath();
-    ctx.fill();
+    //ctx.fill();
     ctx.restore();
 
     var dT = time/timeWidth;

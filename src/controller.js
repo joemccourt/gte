@@ -34,6 +34,7 @@ GTE.playingLevel = true;
 GTE.boardGameView = true;
 GTE.levelCompleted = false;
 GTE.menuView = false;
+GTE.toStartNewStage = false;
 
 GTE.viewAABBTree = false;
 
@@ -149,9 +150,10 @@ GTE.gameLoop = function(time){
 	if(GTE.animatingEndStage && time - GTE.startEndStageAnimationTime > GTE.endStageAnimationTime){
 		GTE.animatingEndStage = false;
 
+		GTE.toStartNewStage = true;
 		if(GTE.levelCompleted){
 			GTE.openMenu();
-		}else{
+		}else if(!GTE.menuView){
 			GTE.startNewStage();
 		}
 	}
@@ -186,7 +188,9 @@ GTE.gameLoop = function(time){
 		}else if(GTE.animatingEndStage){
 			drawGameParams.phase = 'end';
 			GTE.dirtyCanvas = true;
-		}else if(GTE.menuView){
+		}
+
+		if(GTE.menuView){
 			drawGameParams.phase = 'menu';
 		}
 
@@ -224,6 +228,7 @@ GTE.loadGameState = function(){
 		if(GTE.boardGameView === 0){
 			GTE.levelSettings = JSON.parse(localStorage["GTE.levelSettings"]);
 			GTE.playingLevel = parseInt(localStorage["GTE.playingLevel"]);	
+			GTE.levelCompleted = parseInt(localStorage["GTE.levelCompleted"]);	
 		}
 	}
 	
@@ -244,6 +249,7 @@ GTE.saveGameState = function() {
 	localStorage["GTE.stage"]         = GTE.stage;
 	localStorage["GTE.boardGameView"] = GTE.boardGameView == true ? 1 : 0;
 	localStorage["GTE.playingLevel"]  = GTE.playingLevel  == true ? 1 : 0;
+	localStorage["GTE.levelCompleted"]  = GTE.levelCompleted  == true ? 1 : 0;
 };
 
 GTE.setGameRenderBox = function(){
@@ -294,6 +300,8 @@ GTE.startSession = function(){
 	
 	GTE.loadGameState();
 	
+	if(GTE.levelCompleted){GTE.openMenu();}
+	
 	GTE.initAABBTree();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 
@@ -321,7 +329,7 @@ GTE.sanitizeButtons = function(){
 		'box': [0,0,0,0],
 		'r':0,
 		'fillStyle': 'rgba(200,200,200,1)',
-		'strokeStyle': 'rgba(0,0,0,1)'
+		'strokeStyle': 'rgba(0,0,0,0.5)'
 	}
 
 	var i;
@@ -352,6 +360,13 @@ GTE.mousemove = function(x,y,touchIndex){
 			GTE.updateMouseForce(touchIndex,x,y);
 		//}
 	//}
+};
+
+GTE.canPlayLevel = function(level){
+	if(level == 0){return true;}
+	var prevLevel = GTE.userStats['level'+(level-1)];
+	if(!prevLevel || prevLevel == null){return false}
+	return prevLevel.stars > 0;
 };
 
 GTE.mousedown = function(x,y,touchIndex){
@@ -389,7 +404,7 @@ GTE.mousedown = function(x,y,touchIndex){
 				}else{
 					GTE.closeMenu();
 				}
-			}else if(button.name === "next" && GTE.userStats['level'+GTE.level] && GTE.userStats['level'+GTE.level].stars > 0){
+			}else if(button.name === "next" && GTE.canPlayLevel(GTE.level+1)){
 				GTE.selectLevel(GTE.level+1);	
 			}
 
@@ -438,7 +453,7 @@ GTE.mouseup = function(x,y,touchIndex){
 
 GTE.clickGroup = function(groupID){
 
-	if(GTE.playingLevel){
+	if(GTE.playingLevel && !GTE.levelCompleted){
 		var winningGroup = GTE.getGTEGroup();
 
 		if(winningGroup == groupID || winningGroup == 0){
@@ -504,12 +519,14 @@ GTE.endStage = function(){
 	}
 
 	GTE.saveGameState();
+
 	GTE.updateHUD();
 
 	GTE.playingLevel = false;
 	GTE.animatingNewStage = false;
 	GTE.startEndStageAnimation = true;
 	GTE.dirtyCanvas = true;
+	
 };
 
 GTE.viewBoard = function(){
@@ -525,6 +542,7 @@ GTE.viewBoard = function(){
 };
 
 GTE.startNewStage = function(){			
+	GTE.toStartNewStage = false;
 	GTE.playingLevel = true;
 	GTE.initModel();
 	GTE.updateHUD();
@@ -535,6 +553,7 @@ GTE.startNewStage = function(){
 	GTE.startNewStageAnimation = true;
 	GTE.setGameRenderBox();
 	GTE.saveGameState();
+
 };
 
 GTE.winGame = function(){
@@ -569,11 +588,19 @@ GTE.selectLevel = function(i){
 GTE.openMenu = function(){
 	GTE.menuView = true;
 	GTE.dirtyCanvas = true;
+	// GTE.animatingEndStage = false;
+	// if(!GTE.levelCompleted){
+	// 	GTE.startNewStage();
+	// }
 };
 
 GTE.closeMenu = function(){
 	GTE.menuView = false;
 	GTE.dirtyCanvas = true;
+
+	if(GTE.toStartNewStage){
+		GTE.startNewStage();
+	}
 };
 
 // *** Board View Events ***

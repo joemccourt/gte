@@ -109,6 +109,17 @@ GTE.initModel = function(){
 	numLeft = numLeft < 0 ? 0 : numLeft > N ? N : numLeft;
 	numLeft = numLeft + 0.5 | 0;
 	var numRight = N - numLeft;
+
+	//Disable equality
+	if(numRight == numLeft){
+		if(Math.random() < 0.5){
+			numRight++;
+		}else{
+			numLeft++;
+		}
+		N++;
+	}
+
 	//TODO: potential problem when hits iter limit, since filling one side first
 
 	for(var i = 0; i < N; i++){
@@ -766,7 +777,7 @@ GTE.updateModel = function(deltaTime){
 	var combine    = GTE.levelSettings.combine;
 	var annihilate = GTE.levelSettings.annihilate;
 
-	if(GTE.animatingEndStage){
+	if(GTE.animatingEndStage || GTE.levelCompleted){
 		transfer = true;
 		combine = false;
 		annihilate = false;

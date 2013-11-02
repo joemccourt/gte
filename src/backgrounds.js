@@ -2,7 +2,7 @@
 GTE.drawBackgroundBasedOnLevel = function(canvas){
 
 	if(GTE.level == 0){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],20,0.7,0);
+		GTE.bgSquareGrid(canvas,GTE.colorSets['aKissToAwake'],37,0.7,10);
 	}else if(GTE.level == 1){
 		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],7,0.2,0);
 	}else if(GTE.level == 2){
@@ -16,7 +16,7 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 5){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],40,1,10,"3d");
 	}else if(GTE.level == 6){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,0.3,10,"hex");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,0.45,10,"hex");
 	}else if(GTE.level == 7){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"stripes");
 	}else if(GTE.level == 8){
@@ -38,8 +38,8 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 		GTE.bgSquareGrid(canvas,GTE.colorSets['popIsEverything'],75,0.2,10);
 	}else if(GTE.level == 16){
 		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],50,0.3,10,"halfstripes");
-	}else if(GTE.level == 17){
-		GTE.bgSquareGrid(canvas,GTE.colorSets['aKissToAwake'],7,0.7,10);
+	}else if(GTE.level == 17){		
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],20,0.7,0);
 	}else if(GTE.level == 18){
 		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],15,0.6,10,"hex");
 	}else if(GTE.level == 19){
