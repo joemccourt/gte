@@ -249,7 +249,7 @@ GTE.createMouseForce = function(forceID,pIndex,x,y){
 
 GTE.updateMouseForce = function(forceID,x,y){
 	var f = GTE.levelState.mouseForces[forceID];
-	if(typeof f !== 'object'){return;}
+	if(typeof f !== 'object' || f == null){return;}
 
 	f.fX = x;
 	f.fY = y;
@@ -756,10 +756,21 @@ GTE.updateAABBTree = function(){
 	// GTE.initAABBTree();
 };
 
+//TODO: bug for annilihation at midline
 GTE.updateModel = function(deltaTime){
 
 	var leftWall  = GTE.leftWall;
 	var rightWall = GTE.rightWall;
+
+	var transfer   = GTE.levelSettings.transfer;
+	var combine    = GTE.levelSettings.combine;
+	var annihilate = GTE.levelSettings.annihilate;
+
+	if(GTE.animatingEndStage){
+		transfer = true;
+		combine = false;
+		annihilate = false;
+	}	
 
 	while(deltaTime > 0){
 		var w = GTE.getRenderBoxWidth();
@@ -1003,7 +1014,7 @@ GTE.updateModel = function(deltaTime){
 							var distNow = Math.sqrt(distNow2);
 
 							if(dist < rA + rB){
-								if((GTE.levelSettings.annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && GTE.levelSettings.combine && pA.m*pB.m > 0)){
+								if((annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && combine && pA.m*pB.m > 0)){
 
 									var massTransfer = pA.m;
 									if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
@@ -1134,7 +1145,7 @@ GTE.updateModel = function(deltaTime){
 						p.vY = -p.vY*GTE.levelSettings.CoeffRestitution;
 					}
 
-					if(GTE.levelSettings.transfer){
+					if(transfer){
 						if(p.x < 1 && pXNew > 1){
 							p.m *= -1;
 							GTE.pCanvases[p.id] = undefined;

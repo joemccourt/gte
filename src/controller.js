@@ -143,6 +143,7 @@ GTE.gameLoop = function(time){
 		GTE.animatingEndStage = true;
 		GTE.startEndStageAnimationTime = time;
 		GTE.dirtyCanvas = true;
+
 	}
 
 	if(GTE.animatingEndStage && time - GTE.startEndStageAnimationTime > GTE.endStageAnimationTime){
@@ -278,7 +279,7 @@ GTE.resizeToFit = function(){
 	GTE.dirtyBG = true;
 	GTE.dirtyCanvas = true;
 	GTE.dirtyBoardGameBackground = true;
-	
+
 	GTE.pCanvases = [];
 };
 

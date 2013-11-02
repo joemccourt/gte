@@ -1114,6 +1114,27 @@ GTE.getPrimeFactors = function(number){
 	return factors;
 };
 
+GTE.formatPrimeFactors = function(factors){
+	var str = "";
+	var count = 0;
+	for(var f in factors){
+		if(factors.hasOwnProperty(f)){
+			for(var i = 0; i < factors[f]; i++){
+				if(count == 0){
+					str = f+str;
+				}else{
+					str = f+"x"+str;
+				}
+				count++;
+			}
+		}
+	}
+
+	if(count == 1){
+		str += " (prime)";
+	}
+	return str;
+}
 
 GTE.getEndGoalsFactors = function(num,side){
     var yScale = GTE.getYScale();
@@ -1157,9 +1178,13 @@ GTE.getEndGoalsFactors = function(num,side){
 		}
 
 		if(maxFactor == 1){return;}
+		if(maxFactor == 2 && factors[2] >= 2){maxFactor = 4;}
 
 		for(var i = 0; i < maxFactor; i++){
-			var a = 2*Math.PI*(i+(1-maxFactor%2)/2)/maxFactor+a0;
+			var a = 2*Math.PI*(i)/maxFactor+a0;
+			if(maxFactor % 2 == 0 && maxFactor != 2){
+				a += 2*Math.PI*0.5/maxFactor;
+			}
 
 			var newCenter = 
 			{
@@ -1167,7 +1192,7 @@ GTE.getEndGoalsFactors = function(num,side){
 				y:center.y+yScale*r*Math.sin(a)
 			};
 
-			setGoals(goals,newCenter,num/maxFactor,r/maxFactor,a+Math.PI/2);
+			setGoals(goals,newCenter,num/maxFactor,r/maxFactor,a);
 		}
 	}
 
@@ -1259,14 +1284,14 @@ GTE.endLevelAnimation = function(time){
 		}
 
 		if(p.x < 1){
-			if(true || p.m > 0){
+			if(p.m > 0){
 				sumLAbs++;
 			}else{
 				sumRAbs++;
 			}
 			sumL+=p.m;
 		}else{
-			if(true || p.m > 0){
+			if(p.m > 0){
 				sumRAbs++;	
 			}else{
 				sumLAbs++;
@@ -1353,6 +1378,8 @@ GTE.endLevelAnimation = function(time){
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
+	var leftFactorsFormat  = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumLAbs));
+	var rightFactorsFormat = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumRAbs));
 	ctx.fillText(centerText,(x1+x2)/2,y1);
 	ctx.fillText(leftFormat,x1,y1);
 	ctx.fillText(rightFormat,x2,y2);
@@ -1360,6 +1387,11 @@ GTE.endLevelAnimation = function(time){
 	ctx.strokeText(centerText,(x1+x2)/2,y1);
 	ctx.strokeText(leftFormat,x1,y1);
 	ctx.strokeText(rightFormat,x2,y2);
+
+	ctx.fillStyle   = 'rgb(0,0,0)';
+	ctx.font = 12*GTE.getRenderBoxWidth()/600 + "px Verdana";
+	ctx.fillText(leftFactorsFormat,x1,y1+50*GTE.getRenderBoxWidth()/600);
+	ctx.fillText(rightFactorsFormat,x2,y2+50*GTE.getRenderBoxWidth()/600);
 
 	// ctx.fillStyle = 'rgba(255,255,255,0.7)';
 	// var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
@@ -1435,8 +1467,8 @@ GTE.endLevelAnimation = function(time){
 		    	var bestI = 0;
 			  	for(var i = 0; i < GTE.levelState.particles.length; i++){
 					var p = GTE.levelState.particles[i];
-					var positiveLeft  = p.x < 1;//p.x < 1 && p.m > 0 || p.x >=1 && p.m < 0;
-					var positiveRight = p.x >= 1;//p.x < 1 && p.m < 0 || p.x >=1 && p.m > 0;
+					var positiveLeft  = p.x < 1 && p.m > 0 || p.x >=1 && p.m < 0;
+					var positiveRight = p.x < 1 && p.m < 0 || p.x >=1 && p.m > 0;
 					if(k == 0 && positiveLeft || k == 1 && positiveRight){
 						var r = Math.sqrt(Math.pow(p.x-c.x,2)+Math.pow(p.y-c.y,2));
 						if(r < best && p.iE < 0){	
