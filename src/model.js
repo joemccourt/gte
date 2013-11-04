@@ -1005,15 +1005,15 @@ GTE.updateModel = function(deltaTime){
 							if(pB === pA){continue;} //same particle check
 							if(pB.toRemove){continue;}
 
+							var rB  = pB.r;
 							var rAB2 = (rA+rB)*(rA+rB);
 							var distNow2 = Math.pow(pB.x-pA.x,2)+Math.pow(pB.y-pA.y,2);
-							if(distNow2 > rAB2){continue;}
+							// if(distNow2 > rAB2){continue;}
 
 							// if(pA.x < 1 && pB.x > 1 || pA.x > 1 && pB.x < 1){continue;}
 							var vxB = pB.vX;
 							var vyB = pB.vY;
 							var mB  = pB.m;
-							var rB  = pB.r;
 
 							var xB = pB.x + dT*vxB;
 							var yB = pB.y + dT*vyB;
@@ -1025,7 +1025,9 @@ GTE.updateModel = function(deltaTime){
 							var distNow = Math.sqrt(distNow2);
 
 							if(dist < rA + rB){
-								if((annihilate && pA.m*pB.m < 0) || (Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && combine && pA.m*pB.m > 0)){
+								var annihilates = annihilate && mA*mB*(pA.x-1)*(pB.x-1) < 0;
+								var combines = Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && combine && pA.m*pB.m > 0;
+								if(annihilates || combines){
 
 									var massTransfer = pA.m;
 									if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){

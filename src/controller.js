@@ -36,7 +36,7 @@ GTE.levelCompleted = false;
 GTE.menuView = false;
 GTE.toStartNewStage = false;
 
-GTE.viewAABBTree = false;
+GTE.viewAABBTree = true;
 
 GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
 

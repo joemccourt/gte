@@ -136,7 +136,7 @@ GTE.drawParticle = function(canvas,p,r){
 		if(mass - i < 1){
 			angleDelta*=mass*(mass-i);
 		}
-		drawStripe(center,angleDelta,p.id+i*9991);
+		drawStripe(center,angleDelta,p.id);
 	}
 
 	ctx.restore();

@@ -222,8 +222,8 @@ GTE.gameLevels =
 		'starReqs': [7, 9, 11],
 
 		'numParticles'    : 20,
-		'viscosity'       : 0.15,
-		'CoeffRestitution': 0.6,
+		'viscosity'       : 0.3,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : true,
@@ -237,14 +237,14 @@ GTE.gameLevels =
 	
 	'level11': 
 	{
-		'description' : 'Bias to positive, more, smaller, viscous, plus some gravity.',
+		'description' : 'Even Bias, faster and lower viscosity.',
 
 		'levelID' : 11,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 50,
-		'viscosity'       : 0.3,
+		'numParticles'    : 40,
+		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
 		'combine'         : false,
@@ -252,56 +252,53 @@ GTE.gameLevels =
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0.8,
+		'signBias'        : 0,
 		'v0'              : 0.2,
-		'r'               : 0.035,
-		'g'               : 0.01
+		'r'               : 0.045
 	},
 	
 	'level12': 
 	{
-		'description' : 'More, smaller, less viscosity, more gravity.',
+		'description' : 'Fewer, no transfer, but now all negative.',
 
 		'levelID' : 12,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 65,
-		'viscosity'       : 0.03,
-		'CoeffRestitution': 0.8,
+		'numParticles'    : 22,
+		'viscosity'       : 0.2,
+		'CoeffRestitution': 0.5,
 		'annihilate'      : false,
 		'combine'         : false,
 		'transfer'        : false,
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
-		'signBias'        : 0.65,
+		'signBias'        : -1,
 		'v0'              : 0.2,
-		'r'               : 0.03,
-		'g'               : 0.04
+		'r'               : 0.05
 	},
 	
 	'level13': 
 	{
-		'description' : 'Tiny, very low friction, high bounce, and high g.',
+		'description' : 'A lot more, but now transfer and annihilate.',
 
 		'levelID' : 13,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 75,
-		'viscosity'       : 0.01,
-		'CoeffRestitution': 0.95,
-		'annihilate'      : false,
+		'numParticles'    : 50,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.65,
+		'annihilate'      : true,
 		'combine'         : false,
-		'transfer'        : false,
+		'transfer'        : true,
 		'integerMass'     : true,
 		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 1,
 		'v0'              : 0.2,
-		'r'               : 0.02,
-		'g'               : 0.13
+		'r'               : 0.04
 	},
 	
 	'level14': 

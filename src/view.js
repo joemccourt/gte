@@ -906,7 +906,8 @@ GTE.drawButtons = function(mode){
 	
 			var height = 48*(GTE.getRenderBoxHeight())/1000;
 
-			ctx.textAlign = "middle";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
 			ctx.font = 1.6*height + "px Verdana";
 			ctx.fillStyle = 'rgba(0,0,0,1)';
 			ctx.strokeStyle = 'rgba(255,255,255,0.5)';
