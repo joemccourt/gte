@@ -1027,10 +1027,11 @@ GTE.updateModel = function(deltaTime){
 							if(dist < rA + rB){
 								var annihilates = annihilate && mA*mB*(pA.x-1)*(pB.x-1) < 0;
 								var combines = Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && combine && pA.m*pB.m > 0;
+								//TODO: fix combine
 								if(annihilates || combines){
 
 									var massTransfer = pA.m;
-									if(Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
+									if(combines && Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
 										massTransfer = Math.abs(pA.m+pB.m) - GTE.levelSettings.massMax;
 
 										if(pB.m > 0){
@@ -1044,7 +1045,7 @@ GTE.updateModel = function(deltaTime){
 										p.toRemove = true;
 									}
 
-									if(Math.abs(pB.m + massTransfer) < GTE.levelSettings.massSigma){
+									if(Math.abs(pB.m*(pB.x<1?1:-1) + massTransfer*(pA.x<1?1:-1)) < GTE.levelSettings.massSigma){
 										//GTE.levelState.particles.splice(j,1);
 										pB.toRemove = true;
 									}else{

@@ -25,7 +25,7 @@ GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
 
 	grd.addColorStop(0,   'rgb('+colorShine.r+','+colorShine.g+','+colorShine.b+')'); // center
 	grd.addColorStop(0.98, 'rgb('+color.r+','+color.g+','+color.b+')');
-	grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+	grd.addColorStop(1,   'rgba('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+',0.5)');
 
 	return grd;
 };
@@ -65,8 +65,12 @@ GTE.drawParticle = function(canvas,p,r){
 	}
 
 	drawStripe = function(center,angleDelta,seed){
-		var a1  = Math.PI/180 * (45-angleDelta);
-		var a2  = Math.PI/180 * (45+angleDelta);
+		var rng = GTE.rng;
+		rng.setSeed(seed);
+		rng.getFloat();
+		
+		var a1  = Math.PI/180 * (45-angleDelta+rng.getFloat()*20-10);
+		var a2  = a1 + Math.PI/180 * 2*angleDelta;
 		var sa1 = Math.sin(a1);
 		var ca1 = Math.cos(a1);
 		var sa2 = Math.sin(a2);
@@ -82,8 +86,6 @@ GTE.drawParticle = function(canvas,p,r){
 		var y12 = center.y+fR*sa2;
 		var y22 = center.y-fR*sa2;
 
-		var rng = GTE.rng;
-		rng.setSeed(seed);
 		var rControl = fR * (0.5*rng.getFloat()+0.5);
 
 		var ac1 = a1 + Math.PI/180*angleDelta*2*(rng.getFloat()-0.5);
