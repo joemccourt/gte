@@ -135,7 +135,7 @@ GTE.bgTriGrid = function(canvas,colors,nWidth,alpha,seed,type){
     
     for(var k = 0; k < colors.length; k++){
 		ctx.beginPath();
-		ctx.fillStyle = 'rgba('+colors[k].r+','+colors[k].g+','+colors[k].b+','+alpha+')';
+		ctx.fillStyle = GTE.colorToStr(colors[k],alpha);
 		for(var y = 0; y < h; y++){
 				for(var x = 0; x < w; x++){
 				if(map[w*y+x] == k){
@@ -200,7 +200,7 @@ GTE.bgCircles = function(canvas,colors,nWidth,alpha,seed,type){
 
 		circles.push({x:x,y:y,r:r});
 
-		ctx.fillStyle = 'rgba('+colors[k].r+','+colors[k].g+','+colors[k].b+','+alpha+')';
+		ctx.fillStyle = GTE.colorToStr(colors[k],alpha);
 		ctx.beginPath();
 		ctx.arc(x,y,r, 0, 2 * Math.PI, false);
 		ctx.closePath();
@@ -231,7 +231,7 @@ GTE.bgSquareGrid = function(canvas,colors,nWidth,alpha,seed,type){
     
     for(var k = 0; k < colors.length; k++){
 		ctx.beginPath();
-		ctx.fillStyle = 'rgba('+colors[k].r+','+colors[k].g+','+colors[k].b+','+alpha+')';
+		ctx.fillStyle = GTE.colorToStr(colors[k],alpha);
 		for(var y = 0; y < h; y++){
 			for(var x = 0; x < w; x++){
 				if(map[w*y+x] == k){

@@ -12,8 +12,31 @@ GTE.colors = {
 	'particleRed'   : {r:200,g: 25,b: 54},
 	'particleWhite' : {r:191,g:201,b:213},
 	'winColor'      : {r:100,g:200,b:100},
-	'loseColor'      : {r:200,g:40,b:40}
+	'loseColor'      : {r:200,g:40,b:40},
+	'starBronze': {r:150,g:90,b:56},
+	'starSilver': {r:204,g:194,b:194},
+	'starGold': {r:217,g:164,b:65}
 };
+
+GTE.colorToStr = function(color,alpha){
+	if(typeof color !== 'object'){return 'red';}
+
+	color.r = Math.round(color.r);
+	color.g = Math.round(color.g);
+	color.b = Math.round(color.b);
+	color.r = color.r < 0 ? 0 : color.r > 255 ? 255 : color.r;
+	color.g = color.g < 0 ? 0 : color.g > 255 ? 255 : color.g;
+	color.b = color.b < 0 ? 0 : color.b > 255 ? 255 : color.b;
+
+	if(typeof alpha === 'number'){
+		return 'rgba('+color.r+','+color.g+','+color.b+','+alpha+')';
+	}else{
+		return 'rgb('+color.r+','+color.g+','+color.b+')';
+	}
+}
+
+
+GTE.starColorStr = [GTE.colorToStr(GTE.colors['starBronze']),GTE.colorToStr(GTE.colors['starSilver']),GTE.colorToStr(GTE.colors['starGold'])];
 
 GTE.colorSets = {
 	'pastels' : 

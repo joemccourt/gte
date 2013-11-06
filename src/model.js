@@ -789,8 +789,10 @@ GTE.updateModel = function(deltaTime){
 
 		var yLimit = 2*h/w;
 
-		var dT = Math.min(5,deltaTime) / 500;
-		deltaTime -= 5;
+		var dT = Math.min(20,deltaTime);
+		deltaTime -= dT;
+
+		dT /= 500;
 
 		//Set all particles unresolved
 		GTE.setParticlesUnresolved();

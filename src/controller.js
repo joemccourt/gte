@@ -38,8 +38,6 @@ GTE.toStartNewStage = false;
 
 GTE.viewAABBTree = false;
 
-GTE.starColorStr = ['rgb(150,90,56)','rgb(204,194,194)','rgb(217,164,65)'];
-
 GTE.drawBoardGameBox = [-0.1,-2,1.1,1.1];
 
 GTE.drawBoardGameTransform = [1,0,0,0,
@@ -960,31 +958,8 @@ GTE.initEvents = function(){
 };
 
 // *** Helper functions *** //
-
-GTE.arrayColorToString = function(color){
-	return "rgb("+Math.round(color[0])+","+Math.round(color[1])+","+Math.round(color[2])+")";
-};
-
 GTE.getRenderBoxWidth  = function(){return GTE.renderBox[2] - GTE.renderBox[0];};
 GTE.getRenderBoxHeight = function(){return GTE.renderBox[3] - GTE.renderBox[1];};
-
-// *** Fonts ***
-// WebFontConfig = {
-// 	google: { families: [ 'Libre+Baskerville::latin' ] },
-// 	active: function() {
-// 		GTE.font = "Libre Baskerville";
-// 		GTE.dirtyCanvas = true;
-// 	}
-//   };
-//   (function() {
-//     var wf = document.createElement('script');
-//     wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-//       '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-//     wf.type = 'text/javascript';
-//     wf.async = 'true';
-//     var s = document.getElementsByTagName('script')[0];
-//     s.parentNode.insertBefore(wf, s);
-//   })();
 
 // *** LocalStorage Check ***
 function supports_html5_storage() {
@@ -994,8 +969,6 @@ function supports_html5_storage() {
 		return false;
 	}
 }
-
-
 
 // Reprinted from Core HTML5 Canvas
 // By David Geary

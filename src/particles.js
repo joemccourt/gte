@@ -23,9 +23,9 @@ GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
     if(colorShadow.g < 0){colorShadow.g = 0;}
     if(colorShadow.b < 0){colorShadow.b = 0;}
 
-	grd.addColorStop(0,   'rgb('+colorShine.r+','+colorShine.g+','+colorShine.b+')'); // center
-	grd.addColorStop(0.98, 'rgb('+color.r+','+color.g+','+color.b+')');
-	grd.addColorStop(1,   'rgba('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+',0.5)');
+	grd.addColorStop(0, GTE.colorToStr(colorShine)); // center
+	grd.addColorStop(0.98, GTE.colorToStr(color));
+	grd.addColorStop(1, GTE.colorToStr(colorShadow));
 
 	return grd;
 };

@@ -255,9 +255,9 @@ GTE.drawBoardGame = function(){
 			if(colorShadow.g < 0){colorShadow.g = 0;}
 			if(colorShadow.b < 0){colorShadow.b = 0;}
 
-			grd.addColorStop(0,   'rgb('+colorShine.r+','+colorShine.g+','+colorShine.b+')'); // center
-			grd.addColorStop(0.9, 'rgb('+color.r+','+color.g+','+color.b+')');
-			grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+			grd.addColorStop(0, GTE.colorToStr(colorShine)); // center
+			grd.addColorStop(0.9, GTE.colorToStr(color));
+			grd.addColorStop(1, GTE.colorToStr(colorShadow));
 
 			ctx.fillStyle = grd;
 
@@ -697,10 +697,10 @@ GTE.drawProgress = function(){
 	var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
 	var grd = ctx.createLinearGradient(x1,y1,x2,y1);
 
-	grd.addColorStop(0.15,   'rgb('+color.r+','+color.g+','+color.b+')');
-	grd.addColorStop(0.7, 'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
-	grd.addColorStop(0.9,'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
-	grd.addColorStop(1, 'rgb('+color.r+','+color.g+','+color.b+')');
+	grd.addColorStop(0.15, GTE.colorToStr(color));
+	grd.addColorStop(0.70, GTE.colorToStr(colorShadow));
+	grd.addColorStop(0.90, GTE.colorToStr(colorShadow));
+	grd.addColorStop(1.00, GTE.colorToStr(color));
 	ctx.fillStyle = grd;
 
 	ctx.fill();
@@ -724,10 +724,10 @@ GTE.drawProgress = function(){
 		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
 		var color = GTE.colors.loseColor;
 		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
-		grd.addColorStop(0,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
-		grd.addColorStop(0.15,'rgb('+color.r+','+color.g+','+color.b+')');
-		grd.addColorStop(0.65,'rgb('+color.r+','+color.g+','+color.b+')');
-		grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		grd.addColorStop(0.00,GTE.colorToStr(colorShadow));
+		grd.addColorStop(0.15,GTE.colorToStr(color));
+		grd.addColorStop(0.65,GTE.colorToStr(color));
+		grd.addColorStop(1.00,GTE.colorToStr(colorShadow));
 		ctx.fillStyle = grd;
 
     	ctx.fill();
@@ -750,10 +750,10 @@ GTE.drawProgress = function(){
 		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
 		var color = GTE.colors.winColor;
 		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
-		grd.addColorStop(0,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
-		grd.addColorStop(0.15,'rgb('+color.r+','+color.g+','+color.b+')');
-		grd.addColorStop(0.65,'rgb('+color.r+','+color.g+','+color.b+')');
-		grd.addColorStop(1,   'rgb('+colorShadow.r+','+colorShadow.g+','+colorShadow.b+')');
+		grd.addColorStop(0.00, GTE.colorToStr(colorShadow));
+		grd.addColorStop(0.15, GTE.colorToStr(color));
+		grd.addColorStop(0.65, GTE.colorToStr(color));
+		grd.addColorStop(1.00, GTE.colorToStr(colorShadow));
 		ctx.fillStyle = grd;
 
     	ctx.fill();
@@ -863,7 +863,7 @@ GTE.drawButtons = function(mode){
 			ctx.fillStyle = grd;
 	    }
 
-		ctx.lineWidth   = 2;
+		ctx.lineWidth = 2;
 		ctx.fill();
 		ctx.stroke();
 
@@ -893,7 +893,9 @@ GTE.drawButtons = function(mode){
 			}
 
 			for(var j = 0; j < 3; j++){
-				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), y1+0.2*(y2-y1), Math.min(x2-x1,y2-y1)*0.17);
+				var yStar = y1+0.2*(y2-y1);
+
+				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), yStar, Math.min(x2-x1,y2-y1)*0.17);
 				ctx.stroke();
 
 				if(stars > j){
