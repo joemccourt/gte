@@ -206,7 +206,7 @@ GTE.drawBoardGame = function(){
 		}else{
 			if(i > 0){
 				var lastStars = GTE.userStats['level'+(i-1)];
-				if(lastStars != null){
+				if(lastStars > 0){
 					stars = 0;
 				}else{
 					stars = -1;
@@ -666,6 +666,8 @@ GTE.drawProgress = function(){
 	var winColorStr  = 'rgba(0,150,0,1)';
 	var loseColorStr = 'rgba(150,0,0,1)';
 
+	var winStyle, loseStyle;
+
 	var box = [1.02,0.1,1.06,1.08];
 	
 	var canvasCoordTL = GTE.internalToRenderSpace(box[0],box[1]);
@@ -705,6 +707,22 @@ GTE.drawProgress = function(){
 
 	ctx.fill();
 
+	loseStyle = ctx.createLinearGradient(x1,y1,x2,y1);
+	var color = GTE.colors.loseColor;
+	var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
+	loseStyle.addColorStop(0.00,GTE.colorToStr(colorShadow));
+	loseStyle.addColorStop(0.15,GTE.colorToStr(color));
+	loseStyle.addColorStop(0.65,GTE.colorToStr(color));
+	loseStyle.addColorStop(1.00,GTE.colorToStr(colorShadow));
+
+	winStyle = ctx.createLinearGradient(x1,y1,x2,y1);
+	var color = GTE.colors.winColor;
+	var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
+	winStyle.addColorStop(0.00, GTE.colorToStr(colorShadow));
+	winStyle.addColorStop(0.15, GTE.colorToStr(color));
+	winStyle.addColorStop(0.65, GTE.colorToStr(color));
+	winStyle.addColorStop(1.00, GTE.colorToStr(colorShadow));
+
 	//Lost portion
 	if(l > 0 && l < n){
 		var y = y1+(y2-y1)*l/n+0.5|0;
@@ -720,15 +738,7 @@ GTE.drawProgress = function(){
     
 		ctx.closePath();
     	ctx.fillStyle = loseColorStr;
-
-		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
-		var color = GTE.colors.loseColor;
-		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
-		grd.addColorStop(0.00,GTE.colorToStr(colorShadow));
-		grd.addColorStop(0.15,GTE.colorToStr(color));
-		grd.addColorStop(0.65,GTE.colorToStr(color));
-		grd.addColorStop(1.00,GTE.colorToStr(colorShadow));
-		ctx.fillStyle = grd;
+		ctx.fillStyle = loseStyle;
 
     	ctx.fill();
 	}
@@ -745,17 +755,7 @@ GTE.drawProgress = function(){
 		ctx.lineTo(x1,y+0.5);
 		ctx.closePath();
 
-    	ctx.fillStyle = winColorStr;
-
-		var grd = ctx.createLinearGradient(x1,y1,x2,y1);
-		var color = GTE.colors.winColor;
-		var colorShadow = {r:color.r-30,g:color.g-30,b:color.b-30};
-		grd.addColorStop(0.00, GTE.colorToStr(colorShadow));
-		grd.addColorStop(0.15, GTE.colorToStr(color));
-		grd.addColorStop(0.65, GTE.colorToStr(color));
-		grd.addColorStop(1.00, GTE.colorToStr(colorShadow));
-		ctx.fillStyle = grd;
-
+    	ctx.fillStyle = winStyle;
     	ctx.fill();
 	}
 
@@ -776,10 +776,10 @@ GTE.drawProgress = function(){
     ctx.stroke();
 
     if(w == n){
-    	ctx.fillStyle = winColorStr;
+    	ctx.fillStyle = winStyle;
     	ctx.fill();
     }else if(l == n){
-    	ctx.fillStyle = loseColorStr;
+    	ctx.fillStyle = loseStyle;
     	ctx.fill();
     }
 
