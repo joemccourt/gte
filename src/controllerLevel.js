@@ -1,3 +1,5 @@
+"use strict";
+
 GTE.maxLevel = 100;
 GTE.level = 0;
 GTE.stage = 0;
@@ -5,6 +7,12 @@ GTE.stagesWon = 0;
 GTE.stagesLost = 0;
 
 GTE.viewAABBTree = false;
+
+//Timing (ms)
+GTE.startNewStageAnimationTime = 0;
+GTE.startEndStageAnimationTime = 0;
+GTE.newStageAnimationTime = 500;
+GTE.endStageAnimationTime = 3000;
 
 GTE.levelState = {};
 GTE.AABBTree = {};
@@ -23,16 +31,7 @@ GTE.lastWon = true;
 
 GTE.levelCompleted = false;
 GTE.toStartNewStage = false;
-
-GTE.setLevelRenderBox = function(){
-	var w = GTE.canvas.width;
-	var h = GTE.canvas.height;
-	GTE.renderBoxGap = 0;
-	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.9+0.5|0,h*0.9+0.5|0];
-	GTE.leftWall  = 1 - GTE.renderBoxGap/GTE.getRenderBoxWidth();
-	GTE.rightWall = 1 + GTE.renderBoxGap/GTE.getRenderBoxWidth();
-};
-
+GTE.dirtyBG = true;
 
 GTE.buttons = [
 	{
@@ -93,37 +92,44 @@ GTE.sanitizeButtons = function(){
 		'strokeStyle': 'rgba(0,0,0,0.5)'
 	}
 
-	var i;
+	var i,b,key;
 	for(i = 0; i < GTE.buttons.length; i++){
-		var b = GTE.buttons[i];
+		b = GTE.buttons[i];
 		for(key in defaultButton){
-			if(b[key] == null){
+			if(defaultButton.hasOwnProperty(key) && b[key] == null){
 				b[key] = defaultButton[key];
 			}
 		}
 	}
 
 	for(i = 0; i < GTE.buttonsMenu.length; i++){
-		var b = GTE.buttonsMenu[i];
+		b = GTE.buttonsMenu[i];
 		for(key in defaultButton){
-			if(b[key] == null){
+			if(defaultButton.hasOwnProperty(key) && b[key] == null){
 				b[key] = defaultButton[key];
 			}
 		}
 	}
 };
 
+GTE.setLevelRenderBox = function(){
+	var w = GTE.canvas.width;
+	var h = GTE.canvas.height;
+	GTE.renderBoxGap = 0;
+	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.9+0.5|0,h*0.9+0.5|0];
+	GTE.leftWall  = 1 - GTE.renderBoxGap/GTE.getRenderBoxWidth();
+	GTE.rightWall = 1 + GTE.renderBoxGap/GTE.getRenderBoxWidth();
+};
+
 GTE.startNewStage = function(){			
 	GTE.toStartNewStage = false;
 	GTE.playingLevel = true;
 	GTE.initModel();
-	GTE.updateHUD();
 	GTE.boardView = false;
 	GTE.menuView = false;
 	GTE.dirtyCanvas = true;
 	GTE.pCanvases = [];
 	GTE.startNewStageAnimation = true;
-	GTE.setLevelRenderBox();
 	GTE.saveGameState();
 };
 
@@ -140,7 +146,6 @@ GTE.clickGroup = function(groupID){
 };
 
 GTE.winStage = function(){
-	console.log("Win!");
 	GTE.lastWon = true;
 
 	GTE.stagesWon++;
@@ -150,7 +155,6 @@ GTE.winStage = function(){
 };
 
 GTE.loseStage = function(){
-	console.log("Lose!");
 	GTE.lastWon = false;
 
 	GTE.stagesLost++;
@@ -194,8 +198,6 @@ GTE.endStage = function(){
 
 	GTE.saveGameState();
 
-	GTE.updateHUD();
-
 	GTE.playingLevel = false;
 	GTE.animatingNewStage = false;
 	GTE.startEndStageAnimation = true;
@@ -205,10 +207,6 @@ GTE.endStage = function(){
 GTE.openMenu = function(){
 	GTE.menuView = true;
 	GTE.dirtyCanvas = true;
-	// GTE.animatingEndStage = false;
-	// if(!GTE.levelCompleted){
-	// 	GTE.startNewStage();
-	// }
 };
 
 GTE.closeMenu = function(){
@@ -223,18 +221,14 @@ GTE.closeMenu = function(){
 // **** Level Events **** //
 GTE.mousemove = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
-	//if(GTE.mouse === "down"){
-		//if(GTE.mouseDownIndex >= 0){
-			GTE.updateMouseForce(touchIndex,x,y);
-		//}
-	//}
+	if(GTE.mouse === "down"){
+		GTE.updateMouseForce(touchIndex,x,y);
+	}
 };
 
 GTE.mousedown = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "down";
-	GTE.mouseDownPos = {x:x,y:y};
-	//GTE.mouseDownIndex = -1;
 
 	var buttons;
 	if(GTE.menuView){
@@ -289,16 +283,17 @@ GTE.mousedown = function(x,y,touchIndex){
 	}
 	if(minI >= 0){
 
-		if(GTE.toAddSpring){
-			if(minI != GTE.toAddSpringIndex){
-				//GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
-				GTE.toAddSpringIndex = -1;
-				GTE.toAddSpring = false;
-			}
-		}else{
-			GTE.toAddSpringIndex = minI;
-			GTE.toAddSpring = true;
-		}
+		// if(GTE.toAddSpring){
+		// 	if(minI != GTE.toAddSpringIndex){
+		// 		//GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
+		// 		GTE.toAddSpringIndex = -1;
+		// 		GTE.toAddSpring = false;
+		// 	}
+		// }else{
+		// 	GTE.toAddSpringIndex = minI;
+		// 	GTE.toAddSpring = true;
+		// }
+
 		GTE.createMouseForce(touchIndex,minI,x,y);
 	}
 };

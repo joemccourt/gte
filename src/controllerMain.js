@@ -1,3 +1,5 @@
+"use strict";
+
 //GTE namespace
 var GTE = {};
 
@@ -20,13 +22,17 @@ GTE.dirtyCanvas = true;
 GTE.font = 'Verdana';
 GTE.renderBox = [0,0,0,0];
 
+//Timing
+GTE.startTime = (new Date()).getTime();
+GTE.lastFrameTime = 0;
+GTE.frameRenderTime = 0;
+
 //Mouse state
 GTE.mouse = "up";
-GTE.mouseDownIndex = -1;
 GTE.mouseDownPos = {x:0,y:0};
 GTE.mouseDownLast = {x:0,y:0};
-GTE.toAddSpring = false;
-GTE.toAddSpringIndex = -1;
+// GTE.toAddSpring = false;
+// GTE.toAddSpringIndex = -1;
 
 GTE.kongregate = parent.kongregate;
 
@@ -44,23 +50,19 @@ window.onload = GTE.main;
 GTE.startSession = function(){
 	GTE.canvas = $(GTE.canvasID)[0];
 	GTE.ctx = GTE.canvas.getContext("2d");
-	
-	var w = GTE.canvas.width;
-	var h = GTE.canvas.height;
 
 	GTE.setLevelRenderBox();
 	
 	GTE.loadGameState();
 	
-	if(GTE.levelCompleted){GTE.openMenu();}
+	if(GTE.levelCompleted){
+		GTE.openMenu();
+	}
 	
 	GTE.initAABBTree();
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 
 	GTE.resizeToFit();
-	
-	//GTE.startNewStage();	
-	// GTE.viewBoard();
 
 	GTE.dirtyCanvas = true;
 	GTE.sanitizeButtons();
@@ -133,10 +135,6 @@ GTE.gameLoop = function(time){
 		GTE.drawGame(drawGameParams);
 	}
 
-	if(time - GTE.lastUIUpdateTime > GTE.UIUpdateTime){
-		GTE.updateUI();
-	}
-
 	requestNextAnimationFrame(GTE.gameLoop);
 
 	GTE.frameRenderTime = time - GTE.lastFrameTime;
@@ -197,6 +195,7 @@ GTE.initEvents = function(){
 	});
 
 	$(document).mouseup(function (e) {
+		GTE.mouse = "up";
 		var offset = $(GTE.canvasID).offset();
 		var x = e.pageX - offset.left;
 		var y = e.pageY - offset.top;
@@ -212,6 +211,7 @@ GTE.initEvents = function(){
 	});
 
 	document.addEventListener('touchend', function(e) {
+		GTE.mouse = "up";
 		e.preventDefault();
 		for(var i = 0; i < e.changedTouches.length; i++){
 			var touch = e.changedTouches[i];
@@ -233,6 +233,7 @@ GTE.initEvents = function(){
 	}, false);
 
 	$(document).mousedown(function (e) {
+		GTE.mouse = "down";
 		if("#"+e.target.id !== GTE.canvasID){
 			return;
 		}
@@ -251,6 +252,7 @@ GTE.initEvents = function(){
 	});
 
 	document.addEventListener('touchstart', function(e) {
+		GTE.mouse = "down";
 		e.preventDefault();
 
 		for(var i = 0; i < e.touches.length; i++){
@@ -292,7 +294,6 @@ GTE.initEvents = function(){
 		for(var i = 0; i < e.touches.length; i++){
 			var touch = e.touches[i];
 			if(!touch){continue;}
-			// console.log(touch.identifier);
 
 			var offset = $(GTE.canvasID).offset();
 			var x = touch.pageX - offset.left;
@@ -324,7 +325,6 @@ GTE.canPlayLevel = function(level){
 	return prevLevel.stars > 0;
 };
 
-
 GTE.setView = function(view){
 	if(view === "board"){
 		GTE.viewBoard = true;
@@ -342,6 +342,8 @@ GTE.setView = function(view){
 		GTE.viewBoard = false;
 		GTE.viewLevel = true;
 	}
+
+	GTE.resizeToFit();
 };
 
 GTE.selectLevel = function(i){
@@ -492,9 +494,9 @@ GTE.playSound = function(name,hash,gain){
 
 // *** LocalStorage Check ***
 function supports_html5_storage() {
-	try {
+	try{
 		return 'localStorage' in window && window['localStorage'] !== null;
-	} catch (e) {
+	}catch (e){
 		return false;
 	}
 }

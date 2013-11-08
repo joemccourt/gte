@@ -1,5 +1,6 @@
+"use strict";
+
 GTE.drawGame = function(drawGameParams){
-	// console.log(drawGameParams.phase);
 	if(drawGameParams.phase === 'board'){
 		GTE.drawBoardGame();
 	}else if(drawGameParams.phase === 'run'){
@@ -206,7 +207,7 @@ GTE.drawBoardGame = function(){
 		}else{
 			if(i > 0){
 				var lastStars = GTE.userStats['level'+(i-1)];
-				if(lastStars > 0){
+				if(lastStars && lastStars.stars > 0){
 					stars = 0;
 				}else{
 					stars = -1;
@@ -235,7 +236,7 @@ GTE.drawBoardGame = function(){
 			}
 			
 			// create radial gradient
-			grd = ctx.createRadialGradient(x-r*0.1,y-r*0.3,r*0.1,x,y,r);
+			var grd = ctx.createRadialGradient(x-r*0.1,y-r*0.3,r*0.1,x,y,r);
 
 			var colorShine  = {r:color.r,g:color.g,b:color.b};
 			var colorShadow = {r:color.r,g:color.g,b:color.b};
@@ -1508,25 +1509,4 @@ GTE.endLevelAnimation = function(time){
 	}
 
 	ctx.restore();
-};
-
-GTE.updateUI = function(){
-	//$('#renderTime').text("Frame Render Time: "+(GTE.frameRenderTime+0.5|0)+"ms");
-};
-
-GTE.updateHUD = function(){
-	var outText = "";
-	outText += "Level: " + GTE.level + " ";
-	outText += "Stage: " + GTE.stage + "/" + GTE.levelSettings['rounds'] + " ";
-	outText += "Record: " +  GTE.stagesWon + "-" + GTE.stagesLost + " ";
-
-	if(GTE.stagesWon < GTE.levelSettings['starReqs'][0]){
-		outText += "(need " + (GTE.levelSettings['starReqs'][0] - GTE.stagesWon)+ " more to pass)" + " ";
-	}else if(GTE.stagesWon < GTE.levelSettings['starReqs'][1]){
-		outText += "(need " + (GTE.levelSettings['starReqs'][1] - GTE.stagesWon)+ " more to get two stars)" + " ";
-	}else if(GTE.stagesWon < GTE.levelSettings['starReqs'][2]){
-		outText += "(need " + (GTE.levelSettings['starReqs'][2] - GTE.stagesWon)+ " more to get three stars)" + " ";
-	}
-
-	// $('#hud').text(outText);
 };

@@ -5,11 +5,6 @@ canvas{
 	display:block;
 }
 
-html{
-	width:800px;
-	height:600px;
-}
-
 body{
 	background-color:'rgba(128,128,128,0)';
 	border:0;

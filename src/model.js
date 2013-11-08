@@ -1,3 +1,5 @@
+"use strict";
+
 GTE.gameInternalToRenderSpace = function(x,y){
 	var xRender = x / 2 * GTE.getRenderBoxWidth()  + GTE.renderBox[0];
 	var yRender = GTE.renderBox[1] + y*GTE.getRenderBoxWidth()/2;
@@ -69,8 +71,8 @@ GTE.sanitizeLevelSettings = function(s){
 		'g' : 0
 	};
 
-	for(key in defaultS){
-		if(s[key] == null){
+	for(var key in defaultS){
+		if(defaultS.hasOwnProperty(key) && s[key] == null){
 			s[key] = defaultS[key];
 		}
 	}
@@ -739,7 +741,7 @@ GTE.updateAABBTree = function(){
 		var p = GTE.levelState.particles[i];
 		
 		if(p.toRemove){
-			index = GTE.levelState.particles.indexOf(p);
+			var index = GTE.levelState.particles.indexOf(p);
 			if(index >= 0){
 				GTE.levelState.particles.splice(index,1);
 				i--;

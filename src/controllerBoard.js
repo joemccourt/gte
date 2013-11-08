@@ -1,13 +1,12 @@
-GTE.drawBoardGameBox = [-0.1,-2,1.1,1.1];
+"use strict";
 
+GTE.drawBoardGameBox = [-0.1,-2,1.1,1.1];
 GTE.drawBoardGameTransform = [1,0,0,0,
 							  0,1,0,0,
 							  0,0,1,0];
-GTE.drawBoardGameTransformTmp = [1,0,0,0,
-								 0,1,0,0,
-								 0,0,1,0];
-GTE.boardLevelRadius = 0.036; //*(w+h)/2
-
+GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform.slice(0);
+GTE.boardLevelRadius = 0.036;
+GTE.dirtyBoardGameBackground = true;
 
 GTE.setBoardRenderBox = function(){
 	var w = GTE.canvas.width;
@@ -23,13 +22,7 @@ GTE.boardMouseup = function(x,y){
 };
 
 GTE.boardMousedown = function(x,y){
-	GTE.mouse = "down";
-
-	GTE.mouseDownPos.x = x;
-	GTE.mouseDownPos.y = y;
-
 	GTE.mouseDownLast = {x:x,y:y};
-
 	GTE.drawBoardGameTransform = GTE.drawBoardGameTransformTmp;
 
 	var w  = GTE.getRenderBoxWidth();
@@ -38,7 +31,7 @@ GTE.boardMousedown = function(x,y){
 	var y1 = GTE.renderBox[1];
 
 	var posC = GTE.getTransformedCoordsInv(GTE.drawBoardGameTransform,x,y);
-	console.log("["+posC[0].toFixed(2)+","+posC[1].toFixed(2)+"]");
+	//console.log("["+posC[0].toFixed(2)+","+posC[1].toFixed(2)+"]");
 	var pC = GTE.internalToRenderSpace(posC[0],posC[1]);
 
 	var coords = GTE.levelCoords;
