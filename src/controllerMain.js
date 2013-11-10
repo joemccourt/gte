@@ -1,5 +1,6 @@
 "use strict";
 
+//Power overwhelming
 //There is no cow level
 //GTE namespace
 var GTE = {};
