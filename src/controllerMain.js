@@ -25,7 +25,6 @@ GTE.font = 'Verdana';
 GTE.renderBox = [0,0,0,0];
 
 //Timing
-GTE.startTime = (new Date()).getTime();
 GTE.lastFrameTime = 0;
 GTE.frameRenderTime = 0;
 
@@ -33,8 +32,6 @@ GTE.frameRenderTime = 0;
 GTE.mouse = "up";
 GTE.mouseDownPos = {x:0,y:0};
 GTE.mouseDownLast = {x:0,y:0};
-// GTE.toAddSpring = false;
-// GTE.toAddSpringIndex = -1;
 
 GTE.kongregate = parent.kongregate;
 
@@ -189,8 +186,48 @@ GTE.saveGameState = function() {
 	localStorage["GTE.levelCompleted"]  = GTE.levelCompleted  == true ? 1 : 0;
 };
 
+// *** Main Events *** //
+GTE.mousemove = function(x,y,id){
+	if(GTE.viewBoard){
+		var internalPoint = GTE.renderToInternalSpace(x,y,id);
+		GTE.mousemoveBoard(internalPoint[0],internalPoint[1]);
+	}else{
+		var internalPoint = GTE.gameRenderToInternalSpace(x,y);
+		GTE.mousemoveLevel(internalPoint[0],internalPoint[1],id);
+	}
+};
 
-// *** Event binding ***
+GTE.mousedown = function(x,y,id){
+	var internalPoint;
+	if(GTE.viewBoard){
+		internalPoint = GTE.renderToInternalSpace(x,y);
+		GTE.mousedownBoard(internalPoint[0],internalPoint[1],id);
+	}else{
+		internalPoint = GTE.gameRenderToInternalSpace(x,y);
+		GTE.mousedownLevel(internalPoint[0],internalPoint[1],id);
+	}
+};
+
+GTE.mouseup = function(x,y,id){
+	var internalPoint;
+	if(GTE.viewBoard){
+		internalPoint = GTE.renderToInternalSpace(x,y);
+		GTE.mouseupBoard(internalPoint[0],internalPoint[1],id);
+	}else{
+		internalPoint = GTE.gameRenderToInternalSpace(x,y);
+		GTE.mouseupLevel(internalPoint[0],internalPoint[1],id);
+	}
+};
+
+GTE.keydown = function(e){
+	if(GTE.viewBoard){
+		GTE.keydownBoard(e.which);
+	}else if(GTE.viewLevel){
+		GTE.keydownLevel(e.which);
+	}
+};
+
+// *** Event binding *** //
 GTE.initEvents = function(){
 	$(window).resize(function(){
 		GTE.resizeToFit();
@@ -202,14 +239,7 @@ GTE.initEvents = function(){
 		var x = e.pageX - offset.left;
 		var y = e.pageY - offset.top;
 
-		//Convert to internal coord system
-		if(GTE.viewBoard){
-			var internalPoint = GTE.renderToInternalSpace(x,y);
-			GTE.boardMouseup(internalPoint[0],internalPoint[1]);
-		}else{
-			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-			GTE.mouseup(internalPoint[0],internalPoint[1]);
-		}
+		GTE.mouseup(x,y);
 	});
 
 	document.addEventListener('touchend', function(e) {
@@ -217,20 +247,13 @@ GTE.initEvents = function(){
 		e.preventDefault();
 		for(var i = 0; i < e.changedTouches.length; i++){
 			var touch = e.changedTouches[i];
-			// console.log("End: " + touch.identifier);
 			if(!touch){continue;}
 
 			var offset = $(GTE.canvasID).offset();
 			var x = touch.pageX - offset.left;
 			var y = touch.pageY - offset.top;
 
-			if(GTE.viewBoard){
-				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMouseup(internalPoint[0],internalPoint[1],touch.identifier);
-			}else{
-				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-				GTE.mouseup(internalPoint[0],internalPoint[1],touch.identifier);
-			}
+			GTE.mouseup(x,y,touch.identifier);
 		}
 	}, false);
 
@@ -243,14 +266,8 @@ GTE.initEvents = function(){
 		var offset = $(GTE.canvasID).offset();
 		var x = e.pageX - offset.left;
 		var y = e.pageY - offset.top;
-		//Convert to internal coord system
-		if(GTE.viewBoard){
-			var internalPoint = GTE.renderToInternalSpace(x,y);
-			GTE.boardMousedown(internalPoint[0],internalPoint[1]);
-		}else{
-			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-			GTE.mousedown(internalPoint[0],internalPoint[1]);
-		}
+
+		GTE.mousedown(x,y);
 	});
 
 	document.addEventListener('touchstart', function(e) {
@@ -265,13 +282,7 @@ GTE.initEvents = function(){
 			var x = touch.pageX - offset.left;
 			var y = touch.pageY - offset.top;
 
-			if(GTE.viewBoard){
-				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMousedown(internalPoint[0],internalPoint[1],touch.identifier);
-			}else{
-				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-				GTE.mousedown(internalPoint[0],internalPoint[1],touch.identifier);
-			}
+			GTE.mousedown(x,y,touch.identifier);
 		}
 	}, false);
 
@@ -280,14 +291,7 @@ GTE.initEvents = function(){
 		var x = e.pageX - offset.left;
 		var y = e.pageY - offset.top;
 
-		//Convert to intenal coord system
-		if(GTE.viewBoard){
-			var internalPoint = GTE.renderToInternalSpace(x,y);
-			GTE.boardMousemove(internalPoint[0],internalPoint[1]);
-		}else{
-			var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-			GTE.mousemove(internalPoint[0],internalPoint[1]);
-		}
+		GTE.mousemove(x,y);
 	});
 
 	document.addEventListener('touchmove', function(e) {
@@ -301,22 +305,12 @@ GTE.initEvents = function(){
 			var x = touch.pageX - offset.left;
 			var y = touch.pageY - offset.top;
 
-			if(GTE.viewBoard){
-				var internalPoint = GTE.renderToInternalSpace(x,y);
-				GTE.boardMousemove(internalPoint[0],internalPoint[1],touch.identifier);
-			}else{
-				var internalPoint = GTE.gameRenderToInternalSpace(x,y);
-				GTE.mousemove(internalPoint[0],internalPoint[1],touch.identifier);
-			}
+			GTE.mousemove(x,y,touch.identifier);
 		}
 	}, false);
 
 	$(document).keydown(function (e) {
-		if(GTE.viewBoard){
-			GTE.keydownBoard(e.which);
-		}else if(GTE.viewLevel){
-			GTE.keydownLevel(e.which);
-		}
+		GTE.keydown(e);
 	});
 };
 

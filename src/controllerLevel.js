@@ -1,11 +1,12 @@
 "use strict";
 
-GTE.maxLevel = 100;
+GTE.maxLevel = 50;
 GTE.level = 0;
 GTE.stage = 0;
 GTE.stagesWon = 0;
 GTE.stagesLost = 0;
 
+//View space filing tree for debug
 GTE.viewAABBTree = false;
 
 //Timing (ms)
@@ -219,14 +220,14 @@ GTE.closeMenu = function(){
 };
 
 // **** Level Events **** //
-GTE.mousemove = function(x,y,touchIndex){
+GTE.mousemoveLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	if(GTE.mouse === "down"){
 		GTE.updateMouseForce(touchIndex,x,y);
 	}
 };
 
-GTE.mousedown = function(x,y,touchIndex){
+GTE.mousedownLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "down";
 
@@ -277,34 +278,17 @@ GTE.mousedown = function(x,y,touchIndex){
 		if(dist2 < minD2){
 			minD2 = dist2;
 			minI = i;
-			//GTE.mouseDownIndex = p.id;
-			//idForces for possible multitouch ability in future
 		}
 	}
 	if(minI >= 0){
-
-		// if(GTE.toAddSpring){
-		// 	if(minI != GTE.toAddSpringIndex){
-		// 		//GTE.createSpringForce(touchIndex,GTE.toAddSpringIndex,minI);
-		// 		GTE.toAddSpringIndex = -1;
-		// 		GTE.toAddSpring = false;
-		// 	}
-		// }else{
-		// 	GTE.toAddSpringIndex = minI;
-		// 	GTE.toAddSpring = true;
-		// }
-
 		GTE.createMouseForce(touchIndex,minI,x,y);
 	}
 };
 
-GTE.mouseup = function(x,y,touchIndex){
+GTE.mouseupLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "up";
-
-	//if(GTE.mouseDownIndex >= 0){
-		GTE.destroyMouseForce(touchIndex,x,y);
-	//}
+	GTE.destroyMouseForce(touchIndex,x,y);
 };
 
 GTE.keydownLevel = function(k){

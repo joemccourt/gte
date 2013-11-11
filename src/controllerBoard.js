@@ -15,13 +15,13 @@ GTE.setBoardRenderBox = function(){
 };
 
 // *** Events ***
-GTE.boardMouseup = function(x,y){
+GTE.mouseupBoard = function(x,y){
 	GTE.mouse = "up";
 	GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 	GTE.saveGameState();
 };
 
-GTE.boardMousedown = function(x,y){
+GTE.mousedownBoard = function(x,y){
 	GTE.mouseDownLast = {x:x,y:y};
 	GTE.drawBoardGameTransform = GTE.drawBoardGameTransformTmp;
 
@@ -60,7 +60,7 @@ GTE.boardMousedown = function(x,y){
 	}
 };
 
-GTE.boardMousemove = function(x,y){
+GTE.mousemoveBoard = function(x,y){
 	if(GTE.mouse == "down"){
 		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, x - GTE.mouseDownLast.x, y - GTE.mouseDownLast.y);
 		GTE.dirtyCanvas = true;	
