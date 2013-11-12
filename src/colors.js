@@ -35,7 +35,7 @@ GTE.colorToStr = function(color,alpha){
 	}
 }
 
-
+GTE.starColors = [GTE.colors['starBronze'],GTE.colors['starSilver'],GTE.colors['starGold']];
 GTE.starColorStr = [GTE.colorToStr(GTE.colors['starBronze']),GTE.colorToStr(GTE.colors['starSilver']),GTE.colorToStr(GTE.colors['starGold'])];
 
 GTE.colorSets = {

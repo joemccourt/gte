@@ -893,21 +893,40 @@ GTE.drawButtons = function(mode){
 				stars = Math.max(stars,levelStats.stars);
 			}
 
-			for(var j = 0; j < 3; j++){
-				var yStar = y1+0.2*(y2-y1);
+			var h = y2-y1;
+			var w = x2-x1;
+			var starR = 0.2*Math.min(0.8*w,h);
 
-				GTE.drawStar(ctx, x1+(j+1)*0.25*(x2-x1), yStar, Math.min(x2-x1,y2-y1)*0.17);
+			for(var j = 0; j < 3; j++){
+				var yStar = y1+h*0.22;
+				var xStar;
+
+				if(j == 0){
+					yStar = y1+h*0.3;
+					xStar = x1+(w/2-starR)/2;
+				}else if(j == 1){
+					yStar = y1+h*0.3;
+					xStar = x1+(w-(w/2-starR)/2);
+				}else if(j == 2){
+					yStar = y1+h*0.22;
+					xStar = x1+w/2;
+				}
+
+				GTE.drawStar(ctx, xStar, yStar, starR);
 				ctx.stroke();
 
 				if(stars > j){
 					ctx.fillStyle = GTE.starColorStr[j];
 				}else{
-					ctx.fillStyle = 'rgba(30,30,30,1)';
+					ctx.lineWidth = 5;
+					ctx.strokeStyle = GTE.colorToStr(GTE.starColors[j],0.8);
+					ctx.stroke();
+					ctx.fillStyle = 'rgba(0,0,0,1)';
 				}
-				ctx.fill();
+					ctx.fill();
 			}
 	
-			var height = 48*(GTE.getRenderBoxHeight())/1000;
+			var height = 42*(GTE.getRenderBoxHeight())/1000;
 
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
@@ -977,18 +996,44 @@ GTE.drawButtons = function(mode){
 			ctx.fill();
 		}else if(button.name === "replay"){
 			ctx.strokeStyle = 'rgba(0,0,0,1)';
+			ctx.fillStyle = 'rgba(0,0,0,1)';
 			if(GTE.levelCompleted){
 				var w = x2-x1;
 				var h = y2-y1;
 
 				var r = Math.min(w,h)*0.3;
 
-				ctx.beginPath();
-				ctx.arc(x1+w/2,y1+h/2, r, 60 * Math.PI/180, 180 * Math.PI/180, false);
+				var centerX = x1+w/2;
+				var centerY = y1+h/2;
 
-				ctx.moveTo(x1+w/2+r*Math.cos(240 * Math.PI/180),y1+h/2+r*Math.sin(240 * Math.PI/180));
-				ctx.arc(x1+w/2,y1+h/2, r, 240 * Math.PI/180, 360 * Math.PI/180, false);
+				var a1 = 20 * Math.PI/180;
+				var a2 = 315 * Math.PI/180;
+
+				var endX = centerX + r*Math.cos(a2);
+				var endY = centerY + r*Math.sin(a2);
+
+				var end3X = centerX + r*Math.cos(a2+25*Math.PI/180);
+				var end3Y = centerY + r*Math.sin(a2+25*Math.PI/180);
+				
+				var end1X = end3X;
+				var end1Y = end3Y - r*0.65;
+
+				var end2X = end3X - r*0.65;
+				var end2Y = end3Y;
+
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, r, a1, a2, false);
+
+				// ctx.moveTo(x1+w/2+r*Math.cos(240 * Math.PI/180),y1+h/2+r*Math.sin(240 * Math.PI/180));
+				// ctx.arc(x1+w/2,y1+h/2, r, 240 * Math.PI/180, 360 * Math.PI/180, false);
 				ctx.stroke();
+
+				ctx.beginPath();
+				ctx.moveTo(end1X,end1Y);
+				ctx.lineTo(end2X,end2Y);
+				ctx.lineTo(end3X,end3Y);
+				ctx.closePath();
+				ctx.fill();
 
 			}else{
 				var w = x2-x1;

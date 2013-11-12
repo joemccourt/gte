@@ -13,7 +13,7 @@ GTE.viewAABBTree = false;
 GTE.startNewStageAnimationTime = 0;
 GTE.startEndStageAnimationTime = 0;
 GTE.newStageAnimationTime = 500;
-GTE.endStageAnimationTime = 3000;
+GTE.endStageAnimationTime = 3500;
 
 GTE.levelState = {};
 GTE.AABBTree = {};
@@ -172,26 +172,30 @@ GTE.quit = function(){
 };
 
 GTE.endStage = function(){
+	var stars = 0;
+	if(GTE.stagesWon >= GTE.levelSettings['starReqs'][2]){
+		stars = 3;
+	}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][1]){
+		stars = 2;
+	}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][0]){
+		stars = 1;			
+	}
+
+	if(GTE.userStats[levelStr] && GTE.userStats[levelStr].stars){
+		stars = Math.max(stars,GTE.userStats[levelStr].stars);
+	}
+	
+	if(stars > 0){
+		var levelStr = 'level'+GTE.level;
+		if(GTE.userStats[levelStr] != null){
+			GTE.userStats[levelStr].stars = Math.max(stars,GTE.userStats[levelStr].stars);
+		}else{
+			GTE.userStats[levelStr] = {};
+			GTE.userStats[levelStr].stars = stars;
+		}
+	}
+
 	if(GTE.stage >= GTE.levelSettings['rounds']){
-		var stars = 0;
-		if(GTE.stagesWon >= GTE.levelSettings['starReqs'][2]){
-			stars = 3;
-		}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][1]){
-			stars = 2;
-		}else if(GTE.stagesWon >= GTE.levelSettings['starReqs'][0]){
-			stars = 1;			
-		}
-
-		if(stars > 0){
-			var levelStr = 'level'+GTE.level;
-			if(GTE.userStats[levelStr] != null){
-				GTE.userStats[levelStr].stars = Math.max(stars,GTE.userStats[levelStr].stars);
-			}else{
-				GTE.userStats[levelStr] = {};
-				GTE.userStats[levelStr].stars = stars;
-			}
-		}
-
 		GTE.levelCompleted = true;
 	}else{
 		GTE.levelCompleted = false;
