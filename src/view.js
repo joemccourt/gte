@@ -39,7 +39,7 @@ GTE.drawGameStart = function(drawGameParams){
 };
 
 GTE.drawGameEnd = function(drawGameParams){
-	GTE.drawBackground();
+	GTE.drawBackground(true);
 	GTE.drawMidline(Math.pow(drawGameParams.timeUntilEnd/GTE.endStageAnimationTime,4));
 	GTE.drawMouseForces();
 	GTE.drawButtons();
@@ -593,22 +593,22 @@ GTE.drawLevel = function(){
 	// ctx.restore();
 };
 
-GTE.drawBackground = function(){
+GTE.drawBackground = function(endStage){
 	var ctx = GTE.ctx;
 	ctx.save();
 
 	ctx.clearRect(0,0,GTE.canvas.width,GTE.canvas.height);
 
-	var grd;
+	// var grd;
 
-	var redLeft  = 128-(GTE.levelState.temperatureLeft  * 3).toFixed(0);
-	var redRight = 128-(GTE.levelState.temperatureRight * 3).toFixed(0);
+	// var redLeft  = 128-(GTE.levelState.temperatureLeft  * 3).toFixed(0);
+	// var redRight = 128-(GTE.levelState.temperatureRight * 3).toFixed(0);
 
-	if(isNaN(redLeft)){redLeft = 0;}
-	if(isNaN(redRight)){redRight = 0;}
+	// if(isNaN(redLeft)){redLeft = 0;}
+	// if(isNaN(redRight)){redRight = 0;}
 
-	redLeft  = redLeft  < 0 ? 0 : redLeft  > 255 ? 255 : redLeft;
-	redRight = redRight < 0 ? 0 : redRight > 255 ? 255 : redRight;
+	// redLeft  = redLeft  < 0 ? 0 : redLeft  > 255 ? 255 : redLeft;
+	// redRight = redRight < 0 ? 0 : redRight > 255 ? 255 : redRight;
 
 	if(GTE.dirtyBG){
 		GTE.dirtyBG = false;
@@ -630,18 +630,49 @@ GTE.drawBackground = function(){
 	// ctx.fillStyle = grd;
 
 	//Box border
-	var x1 =  GTE.renderBox[0];
-	var x2 =  GTE.renderBox[2];//(GTE.renderBox[0]+GTE.renderBox[2])/2 - GTE.renderBoxGap/2;
-	ctx.beginPath();
-    ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
-    ctx.strokeStyle = '000';
-    ctx.lineWidth = 3;
+    // ctx.strokeStyle = '000';
+    // ctx.lineWidth = 3;
     // ctx.stroke();
 	// ctx.fill();
+
+	var w = GTE.getRenderBoxWidth();
+	var h = GTE.getRenderBoxHeight();
+
+
+	ctx.beginPath();
+	if(endStage){
+		ctx.lineWidth = 5;
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
+
+		//Check mark
+		if(GTE.lastWon){
+			ctx.strokeStyle = GTE.colorToStr(GTE.colors.winColor,0.9);
+			ctx.moveTo(GTE.renderBox[0]+Math.max(0.1,(0.50-0.15*GTE.getYScale()))*w,GTE.renderBox[1]+(0.60+0.05*GTE.getYScale())*h);
+			ctx.lineTo(GTE.renderBox[0]+0.50*w,GTE.renderBox[1]+0.95*h);
+			ctx.lineTo(GTE.renderBox[0]+0.90*w,GTE.renderBox[1]+0.05*h);
+			ctx.stroke();
+		}else{
+			// X mark
+			ctx.strokeStyle = GTE.colorToStr(GTE.colors.loseColor,0.6);
+			ctx.moveTo(GTE.renderBox[0]+0.10*w,GTE.renderBox[1]+0.1*h);
+			ctx.lineTo(GTE.renderBox[0]+0.90*w,GTE.renderBox[1]+0.9*h);
+			ctx.moveTo(GTE.renderBox[0]+0.10*w,GTE.renderBox[1]+0.9*h);
+			ctx.lineTo(GTE.renderBox[0]+0.90*w,GTE.renderBox[1]+0.1*h);
+			ctx.stroke();
+		}
+
+		var x1 =  GTE.renderBox[0];
+		var x2 =  GTE.renderBox[2];
+		ctx.beginPath();
+		ctx.moveTo(x1-0.5,GTE.renderBox[1]-0.5);
+		ctx.lineTo(x1-0.5,GTE.renderBox[3]+0.5);
+		ctx.lineTo(x2+0.5,GTE.renderBox[3]+0.5);
+		ctx.lineTo(x2+0.5,GTE.renderBox[1]-0.5);
+		ctx.lineTo(x1-0.5,GTE.renderBox[1]-0.5);
+		ctx.lineWidth = 3;
+		ctx.stroke();
+	}
 
 
 	// var x1 = (GTE.renderBox[0]+GTE.renderBox[2])/2 + GTE.renderBoxGap/2;

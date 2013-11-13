@@ -1,6 +1,6 @@
 GTE.pCanvases = {};
 
-GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
+GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h,alpha){
 
 	// create radial gradient
 	var grd = ctx.createRadialGradient((r+offX)*0.85,(r+offY)*0.7,r*0.1,r+offX,r+offY,r);
@@ -23,9 +23,9 @@ GTE.getFillGrad = function(ctx,color,offX,offY,r,w,h){
     if(colorShadow.g < 0){colorShadow.g = 0;}
     if(colorShadow.b < 0){colorShadow.b = 0;}
 
-	grd.addColorStop(0, GTE.colorToStr(colorShine)); // center
-	grd.addColorStop(0.98, GTE.colorToStr(color));
-	grd.addColorStop(1, GTE.colorToStr(colorShadow));
+	grd.addColorStop(0, GTE.colorToStr(colorShine,alpha)); // center
+	grd.addColorStop(0.98, GTE.colorToStr(color,alpha));
+	grd.addColorStop(1, GTE.colorToStr(colorShadow,alpha));
 
 	return grd;
 };
@@ -52,8 +52,26 @@ GTE.drawParticle = function(canvas,p,r){
 		ctx.fillStyle = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h);
 	}
 
+	if(p.m > 0 && p.m < 1 || p.m < 0 && p.m > -1){
+		var angleEnd = 2*Math.PI;
+			angleEnd *= Math.abs(p.m);
+
+		ctx.beginPath();
+			ctx.moveTo(r+offX,r+offY);
+			ctx.lineTo(r+offX+r,r+offY)
+			ctx.arc(r+offX,r+offY,r, 0, angleEnd, false);
+		ctx.closePath();
+		ctx.fill();
+
+		if(p.m > 0){
+			ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h,0.5);
+		}else{
+			ctx.fillStyle = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h,0.5);
+		}
+	}
+
 	ctx.beginPath();
-		ctx.arc(r+offX,r+offY,r, 0, 2 * Math.PI, false);
+		ctx.arc(r+offX,r+offY,r, 0, 2*Math.PI, false);
 	ctx.closePath();
 	ctx.fill();
 	
@@ -137,8 +155,9 @@ GTE.drawParticle = function(canvas,p,r){
 
 		if(mass - i < 1){
 			angleDelta*=mass*(mass-i);
+		}else{
+			drawStripe(center,angleDelta,p.id);
 		}
-		drawStripe(center,angleDelta,p.id);
 	}
 
 	ctx.restore();

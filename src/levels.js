@@ -8,6 +8,7 @@ GTE.gameLevels =
 		'starReqs': [4,5,6],
 
 		'numParticles'    : 6,
+		'numParticlesSTD' : 0.50,
 		'viscosity'       : 0.2,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
