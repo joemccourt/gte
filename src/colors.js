@@ -10,7 +10,7 @@ GTE.colors = {
 	'particleBlue'  : {r: 25,g:73,b:204},
 	'particleDarkBlue': {r: 35,g:46,b:125},
 	'particleRed'   : {r:200,g: 25,b: 54},
-	'particleWhite' : {r:191,g:201,b:213},
+	'particleWhite' : {r:211,g:231,b:243},
 	'winColor'      : {r:100,g:200,b:100},
 	'loseColor'      : {r:200,g:40,b:40},
 	'starBronze': {r:150,g:90,b:56},
@@ -33,7 +33,11 @@ GTE.colorToStr = function(color,alpha){
 	}else{
 		return 'rgb('+color.r+','+color.g+','+color.b+')';
 	}
-}
+};
+
+GTE.negateColor = function(color){
+	return {r:255-color.r,g:255-color.g,b:255-color.b};
+};
 
 GTE.starColors = [GTE.colors['starBronze'],GTE.colors['starSilver'],GTE.colors['starGold']];
 GTE.starColorStr = [GTE.colorToStr(GTE.colors['starBronze']),GTE.colorToStr(GTE.colors['starSilver']),GTE.colorToStr(GTE.colors['starGold'])];

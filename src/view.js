@@ -351,7 +351,7 @@ GTE.drawBoardGame = function(){
 };
 
 GTE.drawSpringForces = function(){
-
+	return;
 	var ctx = GTE.ctx;
 	ctx.save();
 
@@ -403,11 +403,52 @@ GTE.drawMouseForces = function(){
 		var canvasCoordP = GTE.gameInternalToRenderSpace(p.x,p.y);
 		var canvasCoordF = GTE.gameInternalToRenderSpace(f.fX,f.fY);
 
+		var num = 25;
+
+		var vLength = Math.sqrt(Math.pow(p.x-f.fX,2)+Math.pow(p.y-f.fY,2));
+		if(vLength <= 0){continue;}
+
+		var v = {
+			x:(p.x-f.fX)/vLength,
+			y:(p.y-f.fY)/vLength
+		};
+
+		var n = {
+			x: -v.y,
+			y: v.x
+		};
+
+		var canvasCoordCtrl;
+
 		ctx.beginPath();
 	    ctx.moveTo(canvasCoordF[0], canvasCoordF[1]);
-	    ctx.lineTo(canvasCoordP[0], canvasCoordP[1]);
-	    ctx.strokeStyle = '800';
-	    ctx.lineWidth = 3;
+		for(var i = 0; i < num; i++){
+			
+			var point = {x:f.fX,y:f.fY};
+			point.x += v.x*(i+1)*vLength/(num+1);
+			point.y += v.y*(i+1)*vLength/(num+1);
+
+			var pointCtrl = {x:point.x,y:point.y};
+			var edge = i%2?-1:1;
+			pointCtrl.x += edge*n.x*p.r*0.8;
+			pointCtrl.y += edge*n.y*p.r*0.8;
+
+
+			point.x += v.x*(0.5)*vLength/(num+1);
+			point.y += v.y*(0.5)*vLength/(num+1);
+			canvasCoordP = GTE.gameInternalToRenderSpace(point.x,point.y);
+			canvasCoordCtrl = GTE.gameInternalToRenderSpace(pointCtrl.x,pointCtrl.y);
+
+		    ctx.quadraticCurveTo(canvasCoordCtrl[0], canvasCoordCtrl[1], canvasCoordP[0], canvasCoordP[1]);
+		}
+
+		canvasCoordP = GTE.gameInternalToRenderSpace(p.x,p.y);
+		ctx.lineTo(canvasCoordP[0], canvasCoordP[1]);
+
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
+	    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+	    ctx.lineWidth = 2;
 	    ctx.stroke();
 	}
 	ctx.restore();
@@ -1217,7 +1258,7 @@ GTE.formatPrimeFactors = function(factors){
 	}
 
 	if(count == 1){
-		str += " (prime)";
+		str = "prime";
 	}
 	return str;
 }
@@ -1465,8 +1506,6 @@ GTE.endLevelAnimation = function(time){
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
-	var leftFactorsFormat  = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumLAbs));
-	var rightFactorsFormat = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumRAbs));
 	ctx.fillText(centerText,(x1+x2)/2,y1);
 	ctx.fillText(leftFormat,x1,y1);
 	ctx.fillText(rightFormat,x2,y2);
@@ -1475,10 +1514,14 @@ GTE.endLevelAnimation = function(time){
 	ctx.strokeText(leftFormat,x1,y1);
 	ctx.strokeText(rightFormat,x2,y2);
 
-	ctx.fillStyle   = 'rgb(0,0,0)';
-	ctx.font = 12*GTE.getRenderBoxWidth()/600 + "px Verdana";
-	ctx.fillText(leftFactorsFormat,x1,y1+50*GTE.getRenderBoxWidth()/600);
-	ctx.fillText(rightFactorsFormat,x2,y2+50*GTE.getRenderBoxWidth()/600);
+	if(GTE.levelSettings.integerMass){
+		var leftFactorsFormat  = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumLAbs));
+		var rightFactorsFormat = GTE.formatPrimeFactors(GTE.getPrimeFactors(sumRAbs));
+		ctx.fillStyle   = 'rgb(0,0,0)';
+		ctx.font = 12*GTE.getRenderBoxWidth()/600 + "px Verdana";
+		ctx.fillText(leftFactorsFormat,x1,y1+50*GTE.getRenderBoxWidth()/600);
+		ctx.fillText(rightFactorsFormat,x2,y2+50*GTE.getRenderBoxWidth()/600);
+	}
 
 	// ctx.fillStyle = 'rgba(255,255,255,0.7)';
 	// var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
@@ -1572,7 +1615,7 @@ GTE.endLevelAnimation = function(time){
 				var p = GTE.levelState.particles[bestI];
 				var force = {
 					p: p,
-					k: 25,
+					k: 7,
 					x: x,
 					y: y,
 					r0: 0

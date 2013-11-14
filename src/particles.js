@@ -45,11 +45,14 @@ GTE.drawParticle = function(canvas,p,r){
 	var red   = GTE.colors.particleRed;
 	var white = GTE.colors.particleWhite;
 	var darkBlue = GTE.colors.particleDarkBlue;
-	
+
+	var nWhite = GTE.negateColor(white);
+	var nBlue = GTE.negateColor(blue);
+
 	if(p.m > 0){
 		ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h);
 	}else{
-		ctx.fillStyle = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h);
+		ctx.fillStyle = GTE.getFillGrad(ctx,nWhite,offX,offY,r,w,h);
 	}
 
 	if(p.m > 0 && p.m < 1 || p.m < 0 && p.m > -1){
@@ -66,7 +69,7 @@ GTE.drawParticle = function(canvas,p,r){
 		if(p.m > 0){
 			ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h,0.5);
 		}else{
-			ctx.fillStyle = GTE.getFillGrad(ctx,darkBlue,offX,offY,r,w,h,0.5);
+			ctx.fillStyle = GTE.getFillGrad(ctx,nWhite,offX,offY,r,w,h,0.5);
 		}
 	}
 
@@ -79,7 +82,7 @@ GTE.drawParticle = function(canvas,p,r){
 	if(p.m > 0){
 		ctx.fillStyle = ctx.fillStyle = GTE.getFillGrad(ctx,blue,offX,offY,r,w,h);
 	}else{
-		ctx.fillStyle = ctx.fillStyle = GTE.getFillGrad(ctx,red,offX,offY,r,w,h);
+		ctx.fillStyle = ctx.fillStyle = GTE.getFillGrad(ctx,nBlue,offX,offY,r,w,h);
 	}
 
 	drawStripe = function(center,angleDelta,seed){
@@ -93,7 +96,7 @@ GTE.drawParticle = function(canvas,p,r){
 		var ca1 = Math.cos(a1);
 		var sa2 = Math.sin(a2);
 		var ca2 = Math.cos(a2);
-		var fR = 0.7;
+		var fR = 0.57;
 		var x11 = center.x-fR*ca1;
 		var x21 = center.x+fR*ca1;
 		var y11 = center.y+fR*sa1;
@@ -104,22 +107,25 @@ GTE.drawParticle = function(canvas,p,r){
 		var y12 = center.y+fR*sa2;
 		var y22 = center.y-fR*sa2;
 
-		var rControl = fR * (0.5*rng.getFloat()+0.5);
+		var rControl1 = fR * (0.5*rng.getFloat()+0.5);
+		var rControl2 = fR * (0.5*rng.getFloat()+0.5);
+		var rControl3 = fR * (0.5*rng.getFloat()+0.5);
+		var rControl4 = fR * (0.5*rng.getFloat()+0.5);
 
 		var ac1 = a1 + Math.PI/180*angleDelta*2*(rng.getFloat()-0.5);
 		var ac4 = a1 + (a1-ac1);
 
 		var ac2 = Math.PI+a2 + Math.PI/180*angleDelta*2*(rng.getFloat()-0.5);
-		var ac3 = Math.PI+a2 + (Math.PI+a2-ac2);
+		var ac3 = Math.PI+a2 + Math.PI+a2-ac2;
 
-		var c1x = x11+rControl*Math.cos(ac1);
-		var c1y = y11-rControl*Math.sin(ac1);
-		var c2x = x22+rControl*Math.cos(ac2);
-		var c2y = y22-rControl*Math.sin(ac2);
-		var c3x = x21+rControl*Math.cos(ac3);
-		var c3y = y21-rControl*Math.sin(ac3);
-		var c4x = x12+rControl*Math.cos(ac4);
-		var c4y = y12-rControl*Math.sin(ac4);
+		var c1x = x11+rControl1*Math.cos(ac1);
+		var c1y = y11-rControl1*Math.sin(ac1);
+		var c2x = x22+rControl2*Math.cos(ac2);
+		var c2y = y22-rControl2*Math.sin(ac2);
+		var c3x = x21+rControl3*Math.cos(ac3);
+		var c3y = y21-rControl3*Math.sin(ac3);
+		var c4x = x12+rControl4*Math.cos(ac4);
+		var c4y = y12-rControl4*Math.sin(ac4);
 
 		ctx.beginPath();
 			ctx.moveTo(w*x11,h*y11);
@@ -136,6 +142,7 @@ GTE.drawParticle = function(canvas,p,r){
 			ctx.arc(w*x21, h*y21, 3, 0, 2 * Math.PI, false);
 			ctx.arc(w*x12, h*y12, 3, 0, 2 * Math.PI, false);
 			ctx.arc(w*x22, h*y22, 3, 0, 2 * Math.PI, false);
+
 			ctx.arc(w*c1x, h*c1y, 3, 0, 2 * Math.PI, false);
 			ctx.arc(w*c2x, h*c2y, 3, 0, 2 * Math.PI, false);
 			ctx.arc(w*c3x, h*c3y, 3, 0, 2 * Math.PI, false);

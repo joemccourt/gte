@@ -61,6 +61,7 @@ GTE.sanitizeLevelSettings = function(s){
 		'massSigma' : 0.001,
 		'massMax' : 100,
 		'initMassMax' : 3,
+		'initMassMin' : 0.1,
 
 		'numParticles' : 20,
 		'numParticlesSTD' : 0.10,
@@ -135,6 +136,10 @@ GTE.initModel = function(){
 			var mass = GTE.levelSettings['initMassMax'] * sign* Math.random();
 			if(GTE.levelSettings['integerMass']){
 				mass = Math.round(mass);
+			}
+
+			if(GTE.levelSettings['initMassMin'] > Math.abs(mass)){
+				mass = GTE.sign(mass)*GTE.levelSettings['initMassMin'];
 			}
 
 			var angle = Math.random() * Math.PI * 2;
@@ -828,6 +833,7 @@ GTE.updateModel = function(deltaTime){
 			var force = f.k*dr;
 
 			var absM = Math.abs(p.m);
+			if(absM < 1){absM = 1;}
 
 			var vF = p.vX*cX+p.vY*cY;
 			var forceDamp  = -Math.sqrt(4 * f.k * absM) * vF;
