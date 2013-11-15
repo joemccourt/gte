@@ -1,6 +1,5 @@
 TODO
 ----------
-* Make particles more stable when pulling across edges
 * Board Game view zooming
 * Refactor view.js into separate files
 * Particle annihilate and combine animations
@@ -12,6 +11,11 @@ TODO
   * Safari
   * iOS devices
 
+
+November 14th 2013
+----------
+* Made particles more stable when pulling across edges
+* Starting work on board zoom
 
 November 13th 2013
 ----------

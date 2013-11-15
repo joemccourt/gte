@@ -74,7 +74,6 @@ GTE.keydownBoard = function(k){
 	// 38 - up  87 - w
 	// 39 - right 68 - d
 	// 40 - down 83 - s
-
 	if(k == 37 || k == 65){
 		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, 0.05, 0);
 		GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
@@ -92,6 +91,20 @@ GTE.keydownBoard = function(k){
 		GTE.dirtyCanvas = true;
 	}else if(k == 40 || k == 83){
 		GTE.drawBoardGameTransform = GTE.transfromTranslate(GTE.drawBoardGameTransform, 0,-0.05);
+		GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+		GTE.saveGameState();
+		GTE.dirtyCanvas = true;
+	}else if(k == 189){
+
+		//zoom out
+		GTE.drawBoardGameTransform = GTE.transfromScale(GTE.drawBoardGameTransform, 0.8);
+		GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
+		GTE.saveGameState();
+		GTE.dirtyCanvas = true;
+	}else if(k == 187){
+
+		//zoom in
+		GTE.drawBoardGameTransform = GTE.transfromScale(GTE.drawBoardGameTransform, 1.25);
 		GTE.drawBoardGameTransformTmp = GTE.drawBoardGameTransform;
 		GTE.saveGameState();
 		GTE.dirtyCanvas = true;
@@ -133,5 +146,15 @@ GTE.transfromTranslate = function(t,x,y){
 	newT[3] = -offX;
 	newT[7] = -offY;
 
+	return newT;
+};
+
+
+GTE.transfromScale = function(t,s){
+	var newT = t.slice(0);
+	newT[0] *= s;
+	newT[5] *= s;
+
+	var gameBox = GTE.drawBoardGameBox;
 	return newT;
 };

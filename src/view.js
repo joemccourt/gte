@@ -127,10 +127,16 @@ GTE.drawBoardGame = function(){
 	var x1 = GTE.renderBox[0];
 	var y1 = GTE.renderBox[1];
 
-	var offX = w*GTE.drawBoardGameTransform[3];
-	var offY = h*GTE.drawBoardGameTransform[7];
+	var trans = GTE.drawBoardGameTransform;
 
-	ctx.transform(1,0,0,1,offX,offY);
+	var offX = w*trans[3];
+	var offY = h*trans[7];
+
+	var scaleX = trans[0];
+	var scaleY = trans[5];
+	console.log(scaleX,scaleY);
+
+	ctx.transform(scaleX,0,0,scaleY,offX,offY);
 
 	var paraX = -0.25;
 	var paraY = -0.25;

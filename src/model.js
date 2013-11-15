@@ -842,12 +842,43 @@ GTE.updateModel = function(deltaTime){
 			var forceDampT = -Math.sqrt(4 * f.k * absM) * vFT;
 
 			if(dr > 0){
-				p.vX += dT * (force+forceDamp) * cX / absM;
-				p.vY += dT * (force+forceDamp) * cY / absM;
+				var vXAdd = dT * ((force+forceDamp) * cX + forceDampT * tX)/ absM;
+				var vYAdd = dT * ((force+forceDamp) * cY + forceDampT * tY)/ absM;
+				
+				var pXNew = p.x+(p.vX+vXAdd)*dT;
+				var pYNew = p.y+(p.vY+vYAdd)*dT;
 
-				p.vX += dT * forceDampT * tX / absM;
-				p.vY += dT * forceDampT * tY / absM;
+				if(pXNew - p.r < 0){
+					vXAdd = -(p.x-p.r)/dT;
+				}
+
+				if(pXNew + p.r > 2){
+					vXAdd = (2-p.x-p.r)/dT;
+				}
+
+				if(pYNew - p.r < 0){
+					vYAdd = -(p.y-p.r)/dT;
+				}
+
+				if(pYNew + p.r > yLimit){
+					vYAdd = (yLimit-p.y-p.r)/dT;
+				}
+
+				if(!transfer){
+					if(p.x < leftWall && pXNew+p.r > leftWall){
+						vXAdd = (leftWall-p.x-p.r)/dT;
+					}
+
+					if(p.x > rightWall && pXNew-p.r < rightWall){
+						vXAdd = -(p.x-p.r-rightWall)/dT;
+					}
+				}
+
+				p.vX += vXAdd;
+				p.vY += vYAdd;
 			}
+
+
 		}
 
 		for(var i = 0; i < GTE.levelState.springForces.length; i++){
@@ -1181,7 +1212,7 @@ GTE.updateModel = function(deltaTime){
 
 						//Left to Right collision
 						if(p.x < leftWall && pXNew+p.r > leftWall){
-							p.vX = -p.vX*GTE.levelSettings.CoeffRestitution;
+							p.vX = -p.vX * GTE.levelSettings.CoeffRestitution;
 
 							// newP.m = -p.m;
 							pXNew = leftWall-(p.r + pXNew - leftWall) - p.r;
