@@ -122,7 +122,7 @@ GTE.setLevelRenderBox = function(){
 	GTE.rightWall = 1 + GTE.renderBoxGap/GTE.getRenderBoxWidth();
 };
 
-GTE.startNewStage = function(){			
+GTE.startNewStage = function(){
 	GTE.toStartNewStage = false;
 	GTE.playingLevel = true;
 	GTE.initModel();
@@ -184,7 +184,7 @@ GTE.endStage = function(){
 	if(GTE.userStats[levelStr] && GTE.userStats[levelStr].stars){
 		stars = Math.max(stars,GTE.userStats[levelStr].stars);
 	}
-	
+
 	if(stars > 0){
 		var levelStr = 'level'+GTE.level;
 		if(GTE.userStats[levelStr] != null){

@@ -44,6 +44,26 @@ GTE.randGaussian = function(avg,std){
 	return avg + std * z;
 };
 
+GTE.sign = function(x){return x < 0 ? -1 : x > 0 ? 1 : 0;};
+
+GTE.getPrimeFactors = function(number){
+	var factors = {};
+	var d = 2;
+	while(d <= number){
+		if(!(number%d)){
+			if(!factors[d]){
+				factors[d] = 1;
+			}else{
+				factors[d]++; 
+			}
+			number/=d;
+		}else{
+			d++;
+		}
+	}
+	return factors;
+};
+
 GTE.sanitizeLevelSettings = function(s){
 	if(typeof s !== 'object'){s = {};}
 
@@ -315,6 +335,9 @@ GTE.setParticlesUnresolved = function(){
 };
 
 GTE.scaleModel = function(){
+
+	if(!GTE.levelState || !GTE.levelState.particles){return;}
+
 	var w = GTE.getRenderBoxWidth();
 	var h = GTE.getRenderBoxHeight();
 	// console.log(w,h,GTE.levelState.aspect);
