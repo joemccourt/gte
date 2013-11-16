@@ -191,7 +191,6 @@ GTE.drawButtons = function(mode){
 		ctx.closePath();
 
 		ctx.strokeStyle = button.strokeStyle;
-		// ctx.fillStyle   = button.fillStyle;
 
 		if(button.name === "background"){
 			ctx.fillStyle = 'rgba(255,255,255,0.7)';
@@ -364,8 +363,6 @@ GTE.drawButtons = function(mode){
 				ctx.beginPath();
 				ctx.arc(centerX, centerY, r, a1, a2, false);
 
-				// ctx.moveTo(x1+w/2+r*Math.cos(240 * Math.PI/180),y1+h/2+r*Math.sin(240 * Math.PI/180));
-				// ctx.arc(x1+w/2,y1+h/2, r, 240 * Math.PI/180, 360 * Math.PI/180, false);
 				ctx.stroke();
 
 				ctx.beginPath();

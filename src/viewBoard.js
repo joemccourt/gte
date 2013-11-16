@@ -49,15 +49,6 @@ GTE.drawBoardGame = function(){
 
 	ctx.drawImage(GTE.boardGameCanvas,boardStartX+offX*paraX-drawOffX,boardStartY+offY*paraY-drawOffY);
 
-	// var grd;
-	// grd = ctx.createLinearGradient(GTE.renderBox[0],GTE.renderBox[1],w,h/2);
-	// grd.addColorStop(0, 'rgb(255,198,198)');
-	// grd.addColorStop(0.5, 'rgb(255,226,222)');
-	// grd.addColorStop(1, 'rgb(109,216,230)');
-
-	// ctx.fillStyle = grd;
-	// ctx.fillRect(boardStartX,boardStartY,boardWidth,boardHeight);
-
 	// *** Draw Levels *** //
 	var r = GTE.boardLevelRadius * (w+h)/2;
 	var coords = GTE.levelCoords;
@@ -83,7 +74,6 @@ GTE.drawBoardGame = function(){
 			var i0x = x1+coords[i-1][0]*w;
 			var i0y = y1+coords[i-1][1]*h;
 
-			// ctx.moveTo((i0x+i1x)/2,(i0y+i1y)/2);
 			ctx.quadraticCurveTo(i1x,i1y,(i1x+i2x)/2,(i1y+i2y)/2);
 		}
 	}
@@ -110,7 +100,6 @@ GTE.drawBoardGame = function(){
 				stars = 0;
 			}
 		}
-
 
 		var x = x1+coords[i][0]*w;
 		var y = y1+coords[i][1]*h;
@@ -161,7 +150,6 @@ GTE.drawBoardGame = function(){
 				ctx.arc(x, y, r, 0, 2 * Math.PI, false);
 				ctx.closePath();
 				ctx.fill();
-				// ctx.stroke();
 			}else{	
 				ctx.font = "" + (r) + "px Verdana";
 				
@@ -171,7 +159,6 @@ GTE.drawBoardGame = function(){
 				ctx.textBaseline = 'middle';
 				ctx.fillText(""+i,x,y);
 				ctx.strokeText(""+i,x,y);
-				// ctx.fillText(""+i,x+1.3*r,y+1.3*r);
 			}
 		}
 
@@ -219,7 +206,6 @@ GTE.drawBoardGame = function(){
 			ctx.fill();
 		}
 	}
-
 
     ctx.restore();
 

@@ -18,7 +18,6 @@ GTE.drawGameRun = function(drawGameParams){
 	GTE.drawBackground();
 	GTE.drawMidline();
 	GTE.drawMouseForces();
-	GTE.drawSpringForces();
 	GTE.drawLevel();
 	GTE.drawButtons();
 	GTE.drawProgress();
@@ -35,7 +34,6 @@ GTE.drawGameStart = function(drawGameParams){
 	GTE.drawLevel();
 	GTE.drawButtons();
 	GTE.drawProgress();
-	GTE.newLevelAnimation(drawGameParams.timeSinceStart);
 };
 
 GTE.drawGameEnd = function(drawGameParams){

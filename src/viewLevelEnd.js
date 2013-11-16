@@ -102,67 +102,7 @@ GTE.getEndGoalsFactors = function(num,side){
 	if(yScale < 1){r = r*yScale;}
 	setGoals(goals,center,num,r,-Math.PI/2);
 
-    return {
-				goals: goals,
-				w: 1,
-				h: 1,
-				r: r,
-				center: center,
-				pR: pR
-			};
-};
-
-GTE.getEndGoalsBox = function(num,side){
-    var yScale = GTE.getYScale();
-	
-	var pR = 0.05;
-	var goals = [];
-
-	var p0 = GTE.levelState.particles[0];
-	if(typeof p0 === 'object'){
-		pR = p0.r;
-	}
-
-	var r = 2.5*pR;
-
-	var center = 
-	{
-		x:0.5,
-		y:0.5 * yScale
-	};
-
-	if(side == 'right'){
-		center.x += 1;
-	}
-
-	var w = 1;
-	if(num < 10){w = Math.ceil(num/2);}
-	if(num < 4){w = num;}
-	if(num >= 10){w = 5;}
-	if(num >= 50){w = 10;}
-
-	var h = Math.ceil(num / w);
-	var x,y;
-
-	for(y = 0; y < h; y++){
-		for(x = 0; x < w; x++){
-			if(y*w+x >= num){break;}
-			goals[y*w+x] = 
-			{
-				x:center.x+(x-(w-1)/2)*r,
-				y:center.y-(y-(h-1)/2)*r
-			};
-		}
-	}
-
-    return {
-				goals: goals,
-				w: w,
-				h: h,
-				r: r,
-				center: center,
-				pR: pR
-			};
+    return goals
 };
 
 GTE.endLevelAnimation = function(time){
@@ -233,48 +173,6 @@ GTE.endLevelAnimation = function(time){
 		centerText = "=";
 	}
 
-
-	//Right side
-	var alpha = (Math.pow((time/timeWidth),4)).toFixed(2);
-	if(sumL >= sumR){
-		ctx.fillStyle = 'rgba(0,150,0,'+alpha+')';
-	}else{
-		ctx.fillStyle = 'rgba(150,0,0,'+alpha+')';
-	}
-
-	var xMid = GTE.renderBox[0] + (GTE.renderBox[2] - GTE.renderBox[0])/2;
-	ctx.beginPath();
-    ctx.moveTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(xMid,GTE.renderBox[3]+0.5);
-    ctx.lineTo(xMid,GTE.renderBox[1]-0.5);
-    ctx.lineTo(GTE.renderBox[0]-0.5,GTE.renderBox[1]-0.5);
-    ctx.closePath();
-    //ctx.fill();
-
-    var yScale = GTE.getYScale();
-
-    //Right side box
-	if(sumR >= sumL){
-		ctx.fillStyle = 'rgba(0,150,0,'+alpha+')';
-	}else{
-		ctx.fillStyle = 'rgba(150,0,0,'+alpha+')';
-	}
-
-	var xMid = GTE.renderBox[0] + (GTE.renderBox[2] - GTE.renderBox[0])/2;
-	ctx.beginPath();
-    ctx.moveTo(xMid,GTE.renderBox[1]-0.5);
-    ctx.lineTo(xMid,GTE.renderBox[3]+0.5);
-    ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[3]+0.5);
-    ctx.lineTo(GTE.renderBox[2]+0.5,GTE.renderBox[1]-0.5);
-    ctx.lineTo(xMid,GTE.renderBox[1]-0.5);
-    ctx.closePath();
-    //ctx.fill();
-    ctx.restore();
-
-    var dT = time/timeWidth;
-
-
 	ctx.fillStyle   = 'rgb(255,255,255)';
 	ctx.strokeStyle = 'rgb(0,0,0)';
 	ctx.font = 72*GTE.getRenderBoxWidth()/600 + "px Verdana";
@@ -299,64 +197,10 @@ GTE.endLevelAnimation = function(time){
 		ctx.fillText(rightFactorsFormat,x2,y2+50*GTE.getRenderBoxWidth()/600);
 	}
 
-	// ctx.fillStyle = 'rgba(255,255,255,0.7)';
-	// var fontSize = 16*GTE.getRenderBoxWidth()/600 + 0.5 | 0;
-	// ctx.font = fontSize + "px Verdana";
-    
-  //   for(var k = 0; k <= 1; k++){
-  //   	var goalInfo;
-  //   	if(k == 0){
-  //   		goalInfo = cLInfo;
-  //   	}else{
-  //   		goalInfo = cRInfo;
-  //   	}
-
-		// var coordsCenter = GTE.gameInternalToRenderSpace(goalInfo.center.x,goalInfo.center.y);
-		// var dr = GTE.getRenderBoxWidth()/2 * goalInfo.r;
-
-		// var w = goalInfo.w;
-		// var h = goalInfo.h;
-
-		// var dh = h-Math.floor(sumLAbs/w);
-
-		// var dx = -dr*(w/2+0.25);
-		// var dy =  dr*(h/2+0.25);
-
-		// ctx.fillText(goalInfo.w,coordsCenter[0],coordsCenter[1]+dy+fontSize);
-		// ctx.fillText(goalInfo.h,coordsCenter[0]+dx-fontSize,coordsCenter[1]);
-
-		// ctx.beginPath();
-		// ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-		// ctx.lineWidth = 2;
-
-		// var gridWidth  = dr*(w-0.25);
-		// var gridHeight = dr*(h-0.25);
-
-		// var ddx = dr*0.15;
-
-		// ctx.moveTo(coordsCenter[0]+dx+ddx, coordsCenter[1]-gridHeight/2);
-		// ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]-gridHeight/2);
-		// ctx.lineTo(coordsCenter[0]+dx,     coordsCenter[1]+gridHeight/2);
-		// ctx.lineTo(coordsCenter[0]+dx+ddx, coordsCenter[1]+gridHeight/2);
-
-		// ctx.moveTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy-ddx);
-		// ctx.lineTo(coordsCenter[0]-gridWidth/2, coordsCenter[1]+dy);
-		// ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy);
-		// ctx.lineTo(coordsCenter[0]+gridWidth/2, coordsCenter[1]+dy-ddx);
-
-		// ctx.stroke();
-  //   }
-
-	// GTE.drawEndGoals(cL);
-	// GTE.drawEndGoals(cR);
-
 	//Find closest particles
 	if(firstRender){
-		var cLInfo = GTE.getEndGoalsFactors(sumLAbs,'left');
-		var cRInfo = GTE.getEndGoalsFactors(sumRAbs,'right');
-
-		var cL = cLInfo.goals;
-		var cR = cRInfo.goals;
+		var cL = GTE.getEndGoalsFactors(sumLAbs,'left');
+		var cR = GTE.getEndGoalsFactors(sumRAbs,'right');
 
 	    var iL = 0;
 	    var iR = 0;
