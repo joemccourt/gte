@@ -43,11 +43,19 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 	}else if(GTE.level == 18){
 		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],15,0.6,10,"hex");
 	}else if(GTE.level == 19){
-		GTE.bgTriGrid(canvas,GTE.colorSets['iridescentSunset'],3,1,40);
+		GTE.bgTriGrid(canvas,GTE.colorSets['iridescentSunset'],3,1,401,"halfstripes");
 	}else if(GTE.level == 20){
 		GTE.bgTriGrid(canvas,GTE.colorSets['aKissToAwake'],80,1,41);
 	}else if(GTE.level == 21){
 		GTE.bgTriGrid(canvas,GTE.colorSets['melonBallSurprise'],5,1,41,"stripes");
+	}else if(GTE.level == 22){
+		GTE.bgTriGrid(canvas,GTE.colorSets['popIsEverything'],5,0.4,41,"hex");
+	}else if(GTE.level == 23){
+		GTE.bgCircles(canvas,GTE.colorSets['loveFlowers'],5,0.3,141);
+	}else if(GTE.level == 24){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['loveFlowers'],75,0.2,10);
+	}else if(GTE.level == 25){
+		GTE.bgSquareGrid(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.2,13);
 	}
 
 };

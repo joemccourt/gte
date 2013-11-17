@@ -1091,10 +1091,16 @@ GTE.updateModel = function(deltaTime){
 							if(dist < rA + rB){
 								var annihilates = annihilate && mA*mB*(pA.x-1)*(pB.x-1) < 0;
 								var combines = Math.abs(pB.m) < GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax && combine && pA.m*pB.m > 0;
+								
 								//TODO: fix combine
 								if(annihilates || combines){
 
+									GTE.pCanvases[pA.id] = undefined;
+									GTE.pCanvases[pB.id] = undefined;
+
 									var massTransfer = pA.m;
+									pA.toRemove = true;
+
 									if(combines && Math.abs(pA.m+pB.m) > GTE.levelSettings.massMax){
 										massTransfer = Math.abs(pA.m+pB.m) - GTE.levelSettings.massMax;
 
@@ -1103,14 +1109,11 @@ GTE.updateModel = function(deltaTime){
 										}else{
 											massTransfer = pA.m + massTransfer;	
 										}
-
-										p.toRemove = false;
-									}else{
-										p.toRemove = true;
+										pA.toRemove = false;
 									}
+										// console.log(pA.m,pB.m,massTransfer);
 
 									if(Math.abs(pB.m*(pB.x<1?1:-1) + massTransfer*(pA.x<1?1:-1)) < GTE.levelSettings.massSigma){
-										//GTE.levelState.particles.splice(j,1);
 										pB.toRemove = true;
 									}else{
 										var absA = Math.abs(massTransfer);
@@ -1125,8 +1128,13 @@ GTE.updateModel = function(deltaTime){
 										pB.m += massTransfer;
 										pA.m -= massTransfer;
 
-										GTE.pCanvases[pA.id] = undefined;
-										GTE.pCanvases[pB.id] = undefined;
+										if(Math.abs(pB.m)+GTE.levelSettings.massSigma > GTE.levelSettings.massMax && Math.abs(pB.m) < GTE.levelSettings.massMax){
+											pB.m = GTE.sign(pB.m)*GTE.levelSettings.massMax;
+										}
+										if(Math.abs(pA.m)+GTE.levelSettings.massSigma > GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax){
+											pA.m = GTE.sign(pA.m)*GTE.levelSettings.massMax;
+										}
+										// console.log(pB.m,pA.m);
 
 										if(p.toRemove){
 											for(var k = 0; k < GTE.levelState.mouseForces.length; k++){

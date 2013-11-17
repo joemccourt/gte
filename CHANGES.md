@@ -1,16 +1,26 @@
 TODO
 ----------
-* Board Game view zooming
-* Refactor view.js into separate files
-* Particle annihilate and combine animations
-* More realistic collisions
 * Refine level progression all the way to lvl 50
-* Fix gradients on mobile chrome
+* Fix multitouch
+* More fun backgrounds
+* Particle annihilate and combine animations
+* Board Game view zooming
+* More realistic collisions
+* Fix gradients on mobile chrome (chrome's fault imo)
 * Test on:
   * IE
   * Safari
   * iOS devices
+* Exclude possibility of equal when combine
 
+November 16th 2013
+----------
+* Refine level progression all the way to lvl 25
+* Fix fractional combine bug
+
+November 15th 2013
+----------
+* Refactor view.js into separate files
 
 November 14th 2013
 ----------
