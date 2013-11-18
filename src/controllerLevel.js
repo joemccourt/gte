@@ -1,6 +1,5 @@
 "use strict";
 
-GTE.maxLevel = 50;
 GTE.level = 0;
 GTE.stage = 0;
 GTE.stagesWon = 0;

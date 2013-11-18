@@ -987,6 +987,9 @@ GTE.updateModel = function(deltaTime){
 			}
 		}
 
+
+		var vAmount = dT * GTE.levelSettings.viscosity;
+		if(vAmount > 1){vAmount = 1;}
 		for(var i = 0; i < GTE.levelState.particles.length; i++){
 			var p = GTE.levelState.particles[i];
 
@@ -994,8 +997,8 @@ GTE.updateModel = function(deltaTime){
 			p.vY += dT * GTE.levelSettings.g;
 	
 			//Viscosity force
-			p.vX -= dT * GTE.levelSettings.viscosity * p.vX;
-			p.vY -= dT * GTE.levelSettings.viscosity * p.vY;
+			p.vX -= vAmount * p.vX;
+			p.vY -= vAmount * p.vY;
 
 		}
 

@@ -1,8 +1,6 @@
 TODO
 ----------
-* Refine level progression all the way to lvl 50
 * Fix multitouch
-* More fun backgrounds
 * Particle annihilate and combine animations
 * Board Game view zooming
 * More realistic collisions
@@ -12,6 +10,18 @@ TODO
   * Safari
   * iOS devices
 * Exclude possibility of equal when combine
+* Animation bug when quickly starting new level
+* Figure out what to do at end
+* Better star count layout
+* Draw fractional mass when greater than one
+* Bug: sometimes combining when shouldn't
+* Make group buttons look like buttons
+
+November 17th 2013
+----------
+* Refine level progression all the way to lvl 50
+* More fun backgrounds
+* Total star count on board game view
 
 November 16th 2013
 ----------

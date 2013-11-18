@@ -2,25 +2,23 @@
 GTE.drawBackgroundBasedOnLevel = function(canvas){
 
 	if(GTE.level == 0){
-		GTE.bgSquareGrid(canvas,GTE.colorSets['aKissToAwake'],37,0.7,10);
+		GTE.bgTriGrid(canvas,GTE.colorSets['xanthe'].slice(1,4),20,0.6,10,"hex");
 	}else if(GTE.level == 1){
-		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],7,0.2,0);
+		GTE.bgTriGrid(canvas,GTE.colorSets['popIsEverything'],7,0.4,90,"halfstripes");
 	}else if(GTE.level == 2){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],30,0.3,40);
 	}else if(GTE.level == 3){
-		GTE.bgTriGrid(canvas,GTE.colorSets['primaries'],50,0.1,40);
+		GTE.bgTriGrid(canvas,GTE.colorSets['melonBallSurprise'],50,1,40);
 	}else if(GTE.level == 4){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,0.5,10,"diamonds");
 	}else if(GTE.level == 5){
-		GTE.bgTriGrid(canvas,[GTE.colors['black'],GTE.colors['white']],31,0.1,10,"split");
-	}else if(GTE.level == 5){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],40,1,10,"3d");
+		GTE.bgCircles(canvas,GTE.colorSets['petit'],50,1,14133);
 	}else if(GTE.level == 6){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'].slice(1,4),30,0.45,10,"hex");
 	}else if(GTE.level == 7){
 		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"stripes");
 	}else if(GTE.level == 8){
-		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],10,0.5,10,"halfstripes");
+		GTE.bgTriGrid(canvas,GTE.colorSets['voyage'],10,0.5,10,"halfstripes");
 	}else if(GTE.level == 9){
 		GTE.bgSquareGrid(canvas,GTE.colorSets['pastels'],30,0.5,10);
 	}else if(GTE.level == 10){
@@ -56,8 +54,70 @@ GTE.drawBackgroundBasedOnLevel = function(canvas){
 		GTE.bgSquareGrid(canvas,GTE.colorSets['loveFlowers'],75,0.2,10);
 	}else if(GTE.level == 25){
 		GTE.bgSquareGrid(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.2,13);
+	}else if(GTE.level == 26){
+		GTE.bgTriGrid(canvas,GTE.colorSets['snowyOwl'],7,1,90);
+	}else if(GTE.level == 27){
+		GTE.bgTriGrid(canvas,[GTE.colors['black'],GTE.colors['white']],31,0.5,10,"split");
+	}else if(GTE.level == 28){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],15,0.6,10,"3d");
+	}else if(GTE.level == 29){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],5,0.6,41,"stripes");
+		GTE.bgCircles(canvas,GTE.colorSets['snowyOwl'],50,1,71413);
+	}else if(GTE.level == 30){
+		GTE.bgTriGrid(canvas,GTE.colorSets['popIsEverything'],25,0.4,41,"hex");
+	}else if(GTE.level == 31){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['voyage'],75,0.6,10);
+	}else if(GTE.level == 32){
+		GTE.bgTriGrid(canvas,GTE.colorSets['giantGoldfish'],65,0.6,51,"hex");
+	}else if(GTE.level == 33){
+		GTE.bgTriGrid(canvas,GTE.colorSets['snowyOwl'],70,0.6,41);
+		GTE.bgCircles(canvas,GTE.colorSets['pastels'],50,0.3,71413);
+	}else if(GTE.level == 34){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],50,0.5,10,"diamonds");
+	}else if(GTE.level == 35){
+		GTE.bgTriGrid(canvas,GTE.colorSets['iridescentSunset'],30,0.3,41);
+	}else if(GTE.level == 36){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['voyage'],70,1,41);
+		GTE.bgCircles(canvas,GTE.colorSets['voyage'],50,1,71413);
+	}else if(GTE.level == 37){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],5,1,4191,"stripes");
+	}else if(GTE.level == 38){
+		GTE.bgCircles(canvas,GTE.colorSets['pastels'],50,0.3,741413);
+		GTE.bgTriGrid(canvas,GTE.colorSets['popIsEverything'],5,0.15,4191,"stripes");
+		GTE.bgCircles(canvas,GTE.colorSets['pastels'],50,0.3,71413);
+	}else if(GTE.level == 39){
+		GTE.bgTriGrid(canvas,GTE.colorSets['loveFlowers'],75,0.4,10);
+	}else if(GTE.level == 40){
+		GTE.bgTriGrid(canvas,GTE.colorSets['giantGoldfish'],19,0.4,51);
+	}else if(GTE.level == 41){
+		GTE.bgTriGrid(canvas,GTE.colorSets['popIsEverything'],25,0.2,411);
+	}else if(GTE.level == 42){
+		GTE.bgCircles(canvas,[GTE.colors['particleBlue'],GTE.negateColor(GTE.colors['particleBlue'])],50,0.4,1413);
+		GTE.bgSquareGrid(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.2,43);
+		GTE.bgCircles(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.4,113);
+	}else if(GTE.level == 43){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],15,0.4,10,"3d");
+		GTE.bgSquareGrid(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.2,43);
+	}else if(GTE.level == 44){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],15,0.6,106);
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],50,0.2,1230);
+	}else if(GTE.level == 45){
+		GTE.bgTriGrid(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.1,1230);
+		GTE.bgCircles(canvas,[GTE.colors['black'],GTE.colors['white']],50,0.2,113);
+	}else if(GTE.level == 46){
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],9,0.4,710,"diamonds");
+		GTE.bgTriGrid(canvas,GTE.colorSets['pastels'],80,0.2,10,"diamonds");
+	}else if(GTE.level == 47){
+		GTE.bgTriGrid(canvas,GTE.colorSets['petit'],5,1,41,"stripes");
+	}else if(GTE.level == 48){
+		GTE.bgTriGrid(canvas,GTE.colorSets['oceanFive'],55,0.4,4191,"stripes");
+	}else if(GTE.level == 49){
+		GTE.bgSquareGrid(canvas,GTE.colorSets['xanthe'],50,0.3,433);
+	}else if(GTE.level == 50){
+		GTE.bgCircles(canvas,GTE.colorSets['snowyOwl'],80,0.5,7134);
+		GTE.bgSquareGrid(canvas,GTE.colorSets['snowyOwl'],80,0.5,433);
+		GTE.bgCircles(canvas,GTE.colorSets['snowyOwl'],80,0.5,4334);
 	}
-
 };
 
 GTE.drawTriAtCoord = function(ctx, x, y, scale){
@@ -180,8 +240,8 @@ GTE.bgCircles = function(canvas,colors,nWidth,alpha,seed,type){
 
 		var p = 0;
 		while(r <= 0){
-			x = w*Math.random();
-			y = h*Math.random();
+			x = w*rng.getFloat();
+			y = h*rng.getFloat();
 			
 			var minR = r0;
 

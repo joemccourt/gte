@@ -8,10 +8,13 @@ var GTE = {};
 //Increase this when I introduce
 //Change to localstorage state
 GTE.stateVersion = "0.1.1";
+GTE.maxLevel = 50;
 
 GTE.userStats = {
 	'level0' : {'stars':0}
 };
+
+GTE.unlockAllLevels = true;
 
 GTE.canvasID = "#gameCanvas";
 
@@ -315,7 +318,8 @@ GTE.initEvents = function(){
 };
 
 GTE.canPlayLevel = function(level){
-	if(level == 0){return true;}
+	if(level > GTE.maxLevel){return false;}
+	if(level == 0 || GTE.unlockAllLevels){return true;}
 	var prevLevel = GTE.userStats['level'+(level-1)];
 	if(!prevLevel || prevLevel == null){return false}
 	return prevLevel.stars > 0;

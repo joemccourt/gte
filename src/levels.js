@@ -369,8 +369,8 @@ GTE.gameLevels =
 		'initMassMax'     : 1,
 		'signBias'        : 0,
 		'v0'              : 0.2,
-		'r'               : 0.04,
-		'g'               : 0.35
+		'r'               : 0.05,
+		'g'               : 0.18
 	},
 	
 	'level17':
@@ -392,8 +392,8 @@ GTE.gameLevels =
 		'initMassMax'     : 1,
 		'signBias'        : 0,
 		'v0'              : 0.2,
-		'r'               : 0.035,
-		'g'               : 0.5
+		'r'               : 0.05,
+		'g'               : 0.2
 	},
 	
 	'level18':
@@ -511,14 +511,37 @@ GTE.gameLevels =
 
 	'level23':
 	{
-		'description' : 'Now negative and transfer',
+		'description' : 'More and can transfer.',
 
 		'levelID' : 23,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
-		'numParticles'    : 100,
-		'viscosity'       : 0.1,
+		'numParticles'    : 120,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : true,
+		'integerMass'     : false,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.4,
+		'r'               : 0.038,
+		'g'               : 0
+	},
+
+	'level24':
+	{
+		'description' : 'Now negative',
+
+		'levelID' : 24,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 120,
+		'viscosity'       : 0.08,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
 		'combine'         : true,
@@ -527,20 +550,67 @@ GTE.gameLevels =
 		'massMax'         : 1,
 		'initMassMax'     : 1,
 		'signBias'        : 0,
-		'v0'              : 0.1,
+		'v0'              : 0.4,
 		'r'               : 0.04,
 		'g'               : 0
 	},
 
-	'level24':
+	'level25':
+	{
+		'description' : 'Only negative, and can\'t transfer',
+
+		'levelID' : 25,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 125,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : false,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : -1,
+		'v0'              : 0.4,
+		'r'               : 0.04,
+		'g'               : 0
+	},
+
+
+	'level26':
+	{
+		'description' : 'Now can\'t combine',
+
+		'levelID' : 26,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 125,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : false,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : -1,
+		'v0'              : 0.4,
+		'r'               : 0.04,
+		'g'               : 0
+	},
+
+	'level27':
 	{
 		'description' : 'Integer, possitive, fewer, larger, can go up to mass of 2 now',
 
-		'levelID' : 24,
-		'rounds'  : 8,
-		'starReqs': [5, 7, 8],
+		'levelID' : 27,
+		'rounds'  : 6,
+		'starReqs': [4, 5, 6],
 
-		'numParticles'    : 20,
+		'numParticles'    : 15,
 		'viscosity'       : 0.1,
 		'CoeffRestitution': 0.6,
 		'annihilate'      : false,
@@ -555,11 +625,11 @@ GTE.gameLevels =
 		'g'               : 0
 	},
 
-	'level25':
+	'level28':
 	{
 		'description' : 'More, smaller, faster, up to 3',
 
-		'levelID' : 25,
+		'levelID' : 28,
 		'rounds'  : 11,
 		'starReqs': [7, 9, 11],
 
@@ -575,6 +645,513 @@ GTE.gameLevels =
 		'signBias'        : 1,
 		'v0'              : 0.1,
 		'r'               : 0.04,
+		'g'               : 0
+	},
+
+	'level29':
+	{
+		'description' : 'More, up to 5',
+
+		'levelID' : 29,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 90,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 5,
+		'initMassMax'     : 5,
+		'signBias'        : 1,
+		'v0'              : 0.1,
+		'r'               : 0.04,
+		'g'               : 0
+	},
+
+	'level30':
+	{
+		'description' : 'Larger, up to 10',
+
+		'levelID' : 30,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 100,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 10,
+		'initMassMax'     : 10,
+		'signBias'        : 1,
+		'v0'              : 0.1,
+		'r'               : 0.06,
+		'g'               : 0
+	},
+
+	'level31':
+	{
+		'description' : 'Up to 100!',
+
+		'levelID' : 31,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 100,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 100,
+		'initMassMax'     : 3,
+		'signBias'        : 1,
+		'v0'              : 0.4,
+		'r'               : 0.1,
+		'g'               : 0
+	},
+
+	'level32':
+	{
+		'description' : 'Back to 5 max, but can transfer',
+
+		'levelID' : 32,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 100,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 5,
+		'initMassMax'     : 5,
+		'signBias'        : 1,
+		'v0'              : 0.2,
+		'r'               : 0.04,
+		'g'               : 0
+	},
+
+	'level33':
+	{
+		'description' : 'More, equal bias',
+
+		'levelID' : 33,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 120,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 5,
+		'initMassMax'     : 5,
+		'signBias'        : 0,
+		'v0'              : 0.2,
+		'r'               : 0.035,
+		'g'               : 0
+	},
+
+	'level34':
+	{
+		'description' : 'Back, only up to one, can annihilate.',
+
+		'levelID' : 34,
+		'rounds'  : 6,
+		'starReqs': [4, 5, 6],
+
+		'numParticles'    : 30,
+		'viscosity'       : 0.1,
+		'CoeffRestitution': 0.6,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0.5,
+		'v0'              : 0.05,
+		'r'               : 0.09,
+		'g'               : 0
+	},
+
+	'level35':
+	{
+		'description' : 'A lot, very small and fast',
+
+		'levelID' : 35,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 140,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.9,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.4,
+		'r'               : 0.02,
+		'g'               : 0
+	},
+
+	'level36':
+	{
+		'description' : 'Even smaller and transfer',
+
+		'levelID' : 36,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 140,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.9,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.4,
+		'r'               : 0.015,
+		'g'               : 0
+	},
+
+	'level37':
+	{
+		'description' : 'Fewer, but now have fractional values',
+
+		'levelID' : 37,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 80,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.9,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : false,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.4,
+		'r'               : 0.05,
+		'g'               : 0
+	},
+
+	'level38':
+	{
+		'description' : 'More, max mass up to 3',
+
+		'levelID' : 38,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 100,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.9,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : false,
+		'massMax'         : 3,
+		'initMassMax'     : 3,
+		'signBias'        : 0.3,
+		'v0'              : 0.4,
+		'r'               : 0.05,
+		'g'               : 0
+	},
+
+	'level39':
+	{
+		'description' : 'Can transfer, max mass up to 5.  Slow and very high viscosity.',
+
+		'levelID' : 39,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 130,
+		'viscosity'       : 8,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : false,
+		'massMax'         : 5,
+		'initMassMax'     : 5,
+		'signBias'        : 0,
+		'v0'              : 0,
+		'r'               : 0.035,
+		'g'               : 0
+	},
+
+	'level40':
+	{
+		'description' : 'More, very tiny, only up to 1, lower viscosity',
+
+		'levelID' : 40,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 160,
+		'viscosity'       : 0.5,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0,
+		'r'               : 0.02,
+		'g'               : 0
+	},
+
+	'level41':
+	{
+		'description' : 'Smaller and high viscosity again',
+
+		'levelID' : 41,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 250,
+		'viscosity'       : 8,
+		'CoeffRestitution': 0,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0,
+		'r'               : 0.015,
+		'g'               : 0
+	},
+
+	'level42':
+	{
+		'description' : 'Tiny, low viscosity, slow initial',
+
+		'levelID' : 42,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 250,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : true,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.003,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level43':
+	{
+		'description' : 'No annihilate and no transfer, all negative',
+
+		'levelID' : 43,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 250,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : -1,
+		'v0'              : 0.003,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level44':
+	{
+		'description' : 'Now zero bias',
+
+		'levelID' : 44,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 250,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.003,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level45':
+	{
+		'description' : 'Combine up to 5',
+
+		'levelID' : 45,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 250,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 5,
+		'initMassMax'     : 5,
+		'signBias'        : 0,
+		'v0'              : 0.003,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level46':
+	{
+		'description' : 'Fraction, up to 1.  Even more particles',
+
+		'levelID' : 46,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 300,
+		'viscosity'       : 0.03,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : false,
+		'integerMass'     : false,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.003,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level47':
+	{
+		'description' : 'Small, fast, transfer',
+
+		'levelID' : 47,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 350,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : true,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.3,
+		'r'               : 0.012,
+		'g'               : 0
+	},
+
+	'level48':
+	{
+		'description' : 'Same as before, but negated bias',
+
+		'levelID' : 48,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 350,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : -1,
+		'v0'              : 0.2,
+		'r'               : 0.010,
+		'g'               : 0
+	},
+
+
+	'level49':
+	{
+		'description' : 'A ton of particles',
+
+		'levelID' : 49,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 500,
+		'viscosity'       : 0.08,
+		'CoeffRestitution': 0.8,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : true,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 0,
+		'v0'              : 0.3,
+		'r'               : 0.010,
+		'g'               : 0
+	},
+
+	'level50':
+	{
+		'description' : 'This is crazy, probably won\'t run well on most computers',
+
+		'levelID' : 50,
+		'rounds'  : 11,
+		'starReqs': [7, 9, 11],
+
+		'numParticles'    : 1000,
+		'viscosity'       : 0.01,
+		'CoeffRestitution': 0.9,
+		'annihilate'      : false,
+		'combine'         : false,
+		'transfer'        : false,
+		'integerMass'     : true,
+		'massMax'         : 1,
+		'initMassMax'     : 1,
+		'signBias'        : 1,
+		'v0'              : 0.3,
+		'r'               : 0.008,
 		'g'               : 0
 	}
 };

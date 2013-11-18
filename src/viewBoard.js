@@ -228,4 +228,105 @@ GTE.drawBoardGame = function(){
 	ctx.stroke();
 	
 	ctx.restore();
+
+	GTE.drawStarCount();
+};
+
+GTE.drawStarCount = function(){
+
+	var numB = 0;
+	var numS = 0;
+	var numG = 0;
+	for(var lvl in GTE.userStats){
+		if(GTE.userStats.hasOwnProperty(lvl)){
+			if(GTE.userStats[lvl].stars){
+				var stars = GTE.userStats[lvl].stars;
+				if(stars >= 1){numB++;}
+				if(stars >= 2){numS++;}
+				if(stars >= 3){numG++;}
+			}
+		}
+	}
+
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	//TODO put this in controller
+	var buttons = [
+	{
+		'name':'background',
+		'text':'',
+		'fillStyle': 'rgba(255,255,255,0.5)',
+		'box': [0.94,0.01,0.99,0.2],
+		'r':0.08
+	}];
+
+	var button = buttons[0];
+	
+	var canvasCoordTL = GTE.internalToRenderSpace(button.box[0],button.box[1]);
+	var canvasCoordBR = GTE.internalToRenderSpace(button.box[2],button.box[3]);
+
+	var x1 = canvasCoordTL[0]+0.5;
+	var y1 = canvasCoordTL[1]+0.5;
+	var x2 = canvasCoordBR[0]+0.5;
+	var y2 = canvasCoordBR[1]+0.5;
+
+	var r = button.r * Math.min(y2 - y1, x2 - x1);
+
+	ctx.beginPath();
+    ctx.moveTo(x1+r,y1);
+    ctx.lineTo(x2-r,y1);
+    ctx.arc(x2-r,y1+r,r,-Math.PI/2,0,false);
+    ctx.lineTo(x2,y2-r);
+    ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+    ctx.lineTo(x1+r,y2);
+    ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+    ctx.lineTo(x1,y1+r);
+	ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+
+	ctx.closePath();
+
+	ctx.strokeStyle = button.strokeStyle;
+
+	ctx.fillStyle = 'rgba(255,255,255,0.7)';
+
+	ctx.lineWidth = 2;
+	ctx.fill();
+	ctx.stroke();
+
+	var h = y2-y1;
+	var w = x2-x1;
+	var starR = 0.15*Math.min(w,h);
+	var height = 0.4*Math.min(w,h);
+
+	for(var j = 0; j < 3; j++){
+		var yStar = y1+(j+0.7)*2.1*Math.max(starR,h*0.14);
+		var xStar = x1 + w*0.2;
+		var xText = x1 + w*0.6;
+
+		var num = 0;
+		if(j == 0){
+			num = numB;
+		}else if(j == 1){
+			num = numS;
+		}else if(j == 2){
+			num = numG;
+		}
+
+		GTE.drawStar(ctx, xStar, yStar, starR);
+		ctx.lineWidth = 5;
+		ctx.fillStyle = GTE.colorToStr(GTE.starColors[j],0.8);
+		ctx.fill();
+
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.font = height + "px Verdana";
+		ctx.fillStyle = 'rgba(0,0,0,1)';
+		ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+		ctx.lineWidth = 1;
+		ctx.fillText("-"+num,xText,yStar);
+		ctx.strokeText("-"+num,xText,yStar);
+	}
+
+    ctx.restore();
 };

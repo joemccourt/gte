@@ -1,6 +1,6 @@
 "use strict";
 
-GTE.drawBoardGameBox = [-0.1,-2,1.1,1.1];
+GTE.drawBoardGameBox = [-0.1,-1.5,1.1,1.1];
 GTE.drawBoardGameTransform = [1,0,0,0,
 							  0,1,0,0,
 							  0,0,1,0];
@@ -41,19 +41,9 @@ GTE.mousedownBoard = function(x,y){
 		var pL = posL;
 		// var pL   = GTE.getTransformedCoords(GTE.drawBoardGameTransform,posL[0],posL[1]);
 
-		var unlocked = false;
-		if(i > 0){
-			var stars = GTE.userStats['level'+(i-1)];
-			if(stars != null){
-				if(stars.stars > 0){
-					unlocked = true;
-				}
-			}
-		}else{
-			unlocked = true;
-		}
-
-		if(unlocked&&Math.pow(pC[0]-pL[0],2)+Math.pow(pC[1]-pL[1],2) < r*r){
+		if(!GTE.canPlayLevel(i)){
+			continue;
+		}else if(Math.pow(pC[0]-pL[0],2)+Math.pow(pC[1]-pL[1],2) < r*r){
 			GTE.selectLevel(i);
 			break;
 		}
