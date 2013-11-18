@@ -14,7 +14,7 @@ GTE.userStats = {
 	'level0' : {'stars':0}
 };
 
-GTE.unlockAllLevels = true;
+GTE.unlockAllLevels = false;
 
 GTE.canvasID = "#gameCanvas";
 
