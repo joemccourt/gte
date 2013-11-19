@@ -15,7 +15,11 @@ TODO
 * Better star count layout
 * Draw fractional mass when greater than one
 * Bug: sometimes combining when shouldn't
+
+November 18th 2013
+----------
 * Make group buttons look like buttons
+
 
 November 17th 2013
 ----------

@@ -1,14 +1,13 @@
 "use strict";
 
 GTE.drawBoardGame = function(){
+	GTE.drawBoardBackground();
+	GTE.drawBoardLevels();
+	GTE.drawBoardBorder();
+	GTE.drawStarCount();
+};
 
-	var gameBox = GTE.drawBoardGameBox;
-	var ctx = GTE.ctx;
-	ctx.save();
-	ctx.clearRect(0,0,GTE.canvas.width,GTE.canvas.height);
-	ctx.restore();
-	
-	ctx.save();
+GTE.setBoardTransform = function(ctx){
 
 	//TODO: make this work for scaling
 	var w  = GTE.getRenderBoxWidth();
@@ -25,7 +24,24 @@ GTE.drawBoardGame = function(){
 	var scaleY = trans[5];
 
 	ctx.transform(1,0,0,1,offX,offY);
+};
 
+GTE.drawBoardBackground = function(){
+	var gameBox = GTE.drawBoardGameBox;
+	var ctx = GTE.ctx;
+
+	ctx.clearRect(0,0,GTE.canvas.width,GTE.canvas.height);
+
+	ctx.save();
+	GTE.setBoardTransform(ctx);
+
+	var w  = GTE.getRenderBoxWidth();
+	var h  = GTE.getRenderBoxHeight();
+	var trans = GTE.drawBoardGameTransform;
+
+	var offX = w*trans[3];
+	var offY = h*trans[7];
+		
 	var paraX = -0.25;
 	var paraY = -0.25;
 
@@ -48,6 +64,18 @@ GTE.drawBoardGame = function(){
 	}
 
 	ctx.drawImage(GTE.boardGameCanvas,boardStartX+offX*paraX-drawOffX,boardStartY+offY*paraY-drawOffY);
+	ctx.restore();
+};
+
+GTE.drawBoardLevels = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+	GTE.setBoardTransform(ctx);
+
+	var w  = GTE.getRenderBoxWidth();
+	var h  = GTE.getRenderBoxHeight();
+	var x1 = GTE.renderBox[0];
+	var y1 = GTE.renderBox[1];
 
 	// *** Draw Levels *** //
 	var r = GTE.boardLevelRadius * (w+h)/2;
@@ -208,8 +236,12 @@ GTE.drawBoardGame = function(){
 	}
 
     ctx.restore();
+};
 
+GTE.drawBoardBorder = function(){
+	var ctx = GTE.ctx;
 	ctx.save();
+
 	ctx.clearRect(0,0,GTE.canvas.width,GTE.renderBox[1]-0.5);
 	ctx.clearRect(0,0,GTE.renderBox[0]-0.5,GTE.canvas.height);
 	ctx.clearRect(0,GTE.renderBox[3]+0.5,GTE.canvas.width,GTE.canvas.height);
@@ -228,11 +260,11 @@ GTE.drawBoardGame = function(){
 	ctx.stroke();
 	
 	ctx.restore();
-
-	GTE.drawStarCount();
 };
 
 GTE.drawStarCount = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
 
 	var numB = 0;
 	var numS = 0;
@@ -247,9 +279,6 @@ GTE.drawStarCount = function(){
 			}
 		}
 	}
-
-	var ctx = GTE.ctx;
-	ctx.save();
 
 	//TODO put this in controller
 	var buttons = [
@@ -306,16 +335,16 @@ GTE.drawStarCount = function(){
 
 		var num = 0;
 		if(j == 0){
-			num = numB;
+			num = numG;
 		}else if(j == 1){
 			num = numS;
 		}else if(j == 2){
-			num = numG;
+			num = numB;
 		}
 
 		GTE.drawStar(ctx, xStar, yStar, starR);
 		ctx.lineWidth = 5;
-		ctx.fillStyle = GTE.colorToStr(GTE.starColors[j],0.8);
+		ctx.fillStyle = GTE.colorToStr(GTE.starColors[2-j],0.8);
 		ctx.fill();
 
 		ctx.textAlign = "center";

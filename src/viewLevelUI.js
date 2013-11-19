@@ -157,11 +157,9 @@ GTE.drawButtons = function(mode){
 	var ctx = GTE.ctx;
 	ctx.save();
 
-	var buttons;
+	var buttons = GTE.buttons.slice(0);
 	if(mode === "menu"){
-		buttons = GTE.buttonsMenu;
-	}else{
-		buttons = GTE.buttons;
+		buttons = buttons.concat(GTE.buttonsMenu);
 	}
 
 	for(var i = 0; i < buttons.length; i++){
@@ -201,11 +199,24 @@ GTE.drawButtons = function(mode){
 			grd.addColorStop(1, 'rgb(130,130,130)');
 
 			ctx.fillStyle = grd;
-	    }
+		}
 
 		ctx.lineWidth = 2;
-		ctx.fill();
+		if(button.name == "group1" || button.name == "group2"){
+
+			ctx.lineWidth = 5;
+			ctx.strokeStyle = 'rgb(68,93,130)';
+
+			var grd = ctx.createLinearGradient(x1,y1,x1,y2);
+			grd.addColorStop(0, 'rgb(220,235,255)');
+			grd.addColorStop(0.5, 'rgb(100,165,255)');
+			grd.addColorStop(0.9, 'rgb(100,165,255)');
+			grd.addColorStop(1, 'rgb(68,93,130)');
+			ctx.fillStyle = grd;
+	    }
+
 		ctx.stroke();
+		ctx.fill();
 
 		if(button.text.length > 0){
 			ctx.fillStyle = 'rgb(255,255,255)';
