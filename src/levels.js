@@ -1,5 +1,28 @@
 GTE.gameLevels = 
 {
+	'default':
+	{
+		'levelID': 0,
+		'rounds': 10,
+		'starReqs': [7, 9, 10],
+		'viscosity': 0.02,
+		'CoeffRestitution': 0.6,
+		'annihilate': false,
+		'combine': true,
+		'transfer': false,
+		'integerMass': false,
+		'massSigma': 0.001,
+		'massMax': 100,
+		'initMassMax': 3,
+		'initMassMin': 0.1,
+		'numParticles': 20,
+		'numParticlesSTD': 0.10,
+		'signBias': 0,
+		'v0': 0,
+		'r': 0.05,
+		'g': 0
+	},
+
 	'level0': 
 	{
 		'description' : 'Begining Level. Very simple to ease new players into game.',

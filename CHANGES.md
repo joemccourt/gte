@@ -9,12 +9,18 @@ TODO
   * IE
   * Safari
   * iOS devices
-* Exclude possibility of equal when combine
 * Animation bug when quickly starting new level
 * Figure out what to do at end
 * Better star count layout
 * Draw fractional mass when greater than one
 * Bug: sometimes combining when shouldn't
+* Put number difference percentage in level settings
+
+November 19th 2013
+----------
+* Exclude possibility of equal
+* Some more code cleanup
+
 
 November 18th 2013
 ----------
