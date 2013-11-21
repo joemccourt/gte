@@ -44,39 +44,53 @@ GTE.drawParticle = function(canvas,p,r){
 	var blue  = GTE.colors.particleBlue;
 	var red   = GTE.colors.particleRed;
 	var white = GTE.colors.particleWhite;
+	var offWhite = GTE.colors.particleOffWhite;
 	var darkBlue = GTE.colors.particleDarkBlue;
 
 	var nWhite = GTE.negateColor(white);
+	var nOffWhite = GTE.negateColor(offWhite);
 	var nBlue = GTE.negateColor(blue);
 
-	if(p.m > 0){
-		ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h);
-	}else{
-		ctx.fillStyle = GTE.getFillGrad(ctx,nWhite,offX,offY,r,w,h);
+	var massFraction = Math.abs(p.m)-Math.floor(Math.abs(p.m));
+	var alpha = 1;
+	if(massFraction > 0 && Math.abs(p.m) < 1){
+		alpha = 0.5;
 	}
 
-	if(p.m > 0 && p.m < 1 || p.m < 0 && p.m > -1){
-		var angleEnd = 2*Math.PI;
-			angleEnd *= Math.abs(p.m);
+	var color = white;
+	if(p.m < 0){
+		color = nWhite;
+	}
+	
+	ctx.fillStyle = GTE.getFillGrad(ctx,color,offX,offY,r,w,h,alpha);
 
+	ctx.beginPath();
+		ctx.arc(r+offX,r+offY,r, 0, 2*Math.PI, false);
+	ctx.closePath();
+	ctx.fill();
+
+	if(massFraction > 0){
+		if(Math.abs(p.m) < 1){
+			color = white;
+			if(p.m < 0){
+				color = nWhite;
+			}
+		}else{
+			color = offWhite;
+			if(p.m < 0){
+				color = nOffWhite;
+			}
+		}
+		ctx.fillStyle = GTE.getFillGrad(ctx,color,offX,offY,r,w,h);
+
+		var angleEnd = 2*Math.PI * massFraction;
 		ctx.beginPath();
 			ctx.moveTo(r+offX,r+offY);
 			ctx.lineTo(r+offX+r,r+offY)
 			ctx.arc(r+offX,r+offY,r, 0, angleEnd, false);
 		ctx.closePath();
 		ctx.fill();
-
-		if(p.m > 0){
-			ctx.fillStyle = GTE.getFillGrad(ctx,white,offX,offY,r,w,h,0.5);
-		}else{
-			ctx.fillStyle = GTE.getFillGrad(ctx,nWhite,offX,offY,r,w,h,0.5);
-		}
 	}
-
-	ctx.beginPath();
-		ctx.arc(r+offX,r+offY,r, 0, 2*Math.PI, false);
-	ctx.closePath();
-	ctx.fill();
 	
 	ctx.globalCompositeOperation = "source-atop";
 	if(p.m > 0){

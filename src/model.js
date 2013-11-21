@@ -808,10 +808,18 @@ GTE.updateModel = function(deltaTime){
 									pB.m += massTransfer;
 									pA.m -= massTransfer;
 
+									//Some checks because of rounding errors
 									if(Math.abs(pB.m)+GTE.levelSettings.massSigma > GTE.levelSettings.massMax && Math.abs(pB.m) < GTE.levelSettings.massMax){
 										pB.m = GTE.sign(pB.m)*GTE.levelSettings.massMax;
 									}
 									if(Math.abs(pA.m)+GTE.levelSettings.massSigma > GTE.levelSettings.massMax && Math.abs(pA.m) < GTE.levelSettings.massMax){
+										pA.m = GTE.sign(pA.m)*GTE.levelSettings.massMax;
+									}
+
+									if(Math.abs(pB.m) > GTE.levelSettings.massMax){
+										pB.m = GTE.sign(pB.m)*GTE.levelSettings.massMax;
+									}
+									if(Math.abs(pA.m) > GTE.levelSettings.massMax){
 										pA.m = GTE.sign(pA.m)*GTE.levelSettings.massMax;
 									}
 									// console.log(pB.m,pA.m);
