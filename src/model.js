@@ -100,10 +100,9 @@ GTE.initModel = function(){
 	// y: [0,1]
 
 	//Tmp generate particles
-	var maxItter = 10000;
-	var itter = 0;
+	var maxItter = 100;
 
-	var numLeft = GTE.randGaussian(N/2,0.05*N/2);
+	var numLeft = GTE.randGaussian(N/2,GTE.levelSettings['numParticlesDiffSTD']*N/2);
 	numLeft = numLeft < 0 ? 0 : numLeft > N ? N : numLeft;
 	numLeft = numLeft + 0.5 | 0;
 	var numRight = N - numLeft;
@@ -112,7 +111,8 @@ GTE.initModel = function(){
 
 	//TODO: potential problem when hits iter limit, since filling one side first
 	for(var i = 0; i < N; i++){
-		
+		var itter = 0;
+
 		do{
 			var mass = GTE.levelSettings['initMassMax'] * Math.random();
 			if(GTE.levelSettings['integerMass']){
@@ -154,11 +154,12 @@ GTE.initModel = function(){
 			};
 			itter++;
 
-		}while(!GTE.isValidNewParticle(particle, itter, maxItter));
-		
-		massDiff += (particle.x < 1 ? 1 : -1) * particle.m;
+		}while(!GTE.isValidNewParticle(particle) && itter < maxItter);
 
-		GTE.levelState.particles.push(particle);
+		if(itter < maxItter){
+			massDiff += (particle.x < 1 ? 1 : -1) * particle.m;
+			GTE.levelState.particles.push(particle);
+		}		
 	}
 
 	GTE.levelState.temperatureLeft = 0;
@@ -169,8 +170,7 @@ GTE.initModel = function(){
 	GTE.initAABBTree();
 };
 
-GTE.isValidNewParticle = function(p,itter,maxItter){
-	if(itter >= maxItter){return false;}
+GTE.isValidNewParticle = function(p){
 	if(GTE.isCollision(p)){return false;}
  	if(Math.abs(p.m) < GTE.levelSettings.massSigma){return false;}
  	return true;

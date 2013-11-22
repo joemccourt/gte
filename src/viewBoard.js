@@ -353,8 +353,8 @@ GTE.drawStarCount = function(){
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = 'rgba(255,255,255,0.5)';
 		ctx.lineWidth = 1;
-		ctx.fillText("-"+num,xText,yStar);
-		ctx.strokeText("-"+num,xText,yStar);
+		ctx.fillText(" "+num,xText,yStar);
+		ctx.strokeText(" "+num,xText,yStar);
 	}
 
     ctx.restore();

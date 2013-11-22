@@ -13,6 +13,9 @@ TODO
 * Figure out what to do at end
 * Better star count layout
 * Bug: sometimes combining when shouldn't
+
+November 21st 2013
+----------
 * Put number difference percentage in level settings
 
 November 20th 2013
