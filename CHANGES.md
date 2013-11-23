@@ -1,6 +1,5 @@
 TODO
 ----------
-* Fix multitouch
 * Particle annihilate and combine animations
 * Board Game view zooming
 * More realistic collisions
@@ -12,7 +11,13 @@ TODO
 * Animation bug when quickly starting new level
 * Figure out what to do at end
 * Better star count layout
+* Have mouse forces on the same particle add correctly or disable
 * Bug: sometimes combining when shouldn't
+
+November 22nd 2013
+----------
+* Added copyright license
+* Fix multitouch (mostly :/)
 
 November 21st 2013
 ----------
@@ -27,11 +32,9 @@ November 19th 2013
 * Exclude possibility of equal
 * Some more code cleanup in model
 
-
 November 18th 2013
 ----------
 * Make group buttons look like buttons
-
 
 November 17th 2013
 ----------

@@ -1,13 +1,16 @@
+// Copyright (c) 2013 Joseph McCourt
 "use strict";
 
 //Power overwhelming
 //There is no cow level
-//GTE namespace
+
+//Main namespace GTE
 var GTE = {};
+GTE.license = "Copyright (c) 2013 Joseph McCourt";
 
 //Increase this when I introduce
 //Change to localstorage state
-GTE.stateVersion = "0.1.1";
+GTE.stateVersion = "0.1.2";
 GTE.maxLevel = 50;
 
 GTE.userStats = {
@@ -173,6 +176,7 @@ GTE.loadGameState = function(){
 
 GTE.saveGameState = function() {
 	if (!supports_html5_storage()) { return false; }
+	localStorage["GTE.license"]       = GTE.license;
 	localStorage["GTE.userStats"]     = JSON.stringify(GTE.userStats);
 	localStorage["GTE.stateVersion"]  = JSON.stringify(GTE.stateVersion);
 	localStorage["GTE.renderBox"]     = JSON.stringify(GTE.renderBox);

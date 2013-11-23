@@ -201,6 +201,7 @@ GTE.createMouseForce = function(forceID,pIndex,x,y){
 	//console.log(Math.sqrt((p.x-x)*(p.x-x)+(p.y-y)*(p.y-y)));
 	var force = {
 		pID: p.id,
+		p: p,
 		k: 150,
 		b: 0.5,
 		pX0: p.x,
@@ -226,6 +227,12 @@ GTE.updateMouseForce = function(forceID,x,y){
 GTE.destroyMouseForce = function(forceID,x,y){
 	GTE.levelState.mouseForces[forceID] = undefined;
 };
+
+GTE.hasMouseForce = function(forceID){
+	var f = GTE.levelState.mouseForces[forceID];
+	if(typeof f !== 'object' || f == null){return false;}
+	return true;
+}
 
 //Assumes barrier in center
 GTE.isCollision = function(p){
@@ -585,13 +592,8 @@ GTE.updateModel = function(deltaTime){
 			var f = GTE.levelState.mouseForces[i];
 			if(typeof f === "undefined" || f === null){continue;}
 
-			var found = false;
-			var p;
-			for(var j = 0; j < GTE.levelState.particles.length; j++){
-				p = GTE.levelState.particles[j];
-				if(p.id == f.pID){found = true; break;}
-			}
-			if(!found){continue;}
+			var p = f.p;
+			if(!p){continue;}
 
 			var dr = Math.sqrt((p.x-f.fX)*(p.x-f.fX) + (p.y-f.fY)*(p.y-f.fY)); 
 			var cX = (f.fX-p.x) / dr;
@@ -829,6 +831,7 @@ GTE.updateModel = function(deltaTime){
 											var f = GTE.levelState.mouseForces[k];
 											if(typeof f === 'object' && f.pID == pA.id){
 												f.pID = pB.id;
+												f.p = pB;
 											}
 										}
 									}

@@ -225,14 +225,18 @@ GTE.closeMenu = function(){
 // **** Level Events **** //
 GTE.mousemoveLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
-	if(GTE.mouse === "down"){
+
+	//console.log(x,y,touchIndex);
+	//if(GTE.mouse === "down"){
 		GTE.updateMouseForce(touchIndex,x,y);
-	}
+	//}
 };
 
 GTE.mousedownLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "down";
+
+	if(GTE.hasMouseForce(touchIndex)){return;}
 
 	var buttons;
 	if(GTE.menuView){
@@ -290,6 +294,7 @@ GTE.mousedownLevel = function(x,y,touchIndex){
 
 GTE.mouseupLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
+
 	GTE.mouse = "up";
 	GTE.destroyMouseForce(touchIndex,x,y);
 };
