@@ -152,6 +152,88 @@ GTE.drawProgress = function(){
     ctx.restore();
 };
 
+GTE.drawCredits = function(){
+	var ctx = GTE.ctx;
+	ctx.save();
+
+	var buttons = GTE.buttonsMenu.slice(0);
+
+	for(var i = 0; i < buttons.length; i++){
+		var button = buttons[i];
+
+		if(button.name == "background"){
+			var canvasCoordTL = GTE.internalToRenderSpace(button.box[0],button.box[1]);
+			var canvasCoordBR = GTE.internalToRenderSpace(button.box[2],button.box[3]);
+
+			var x1 = canvasCoordTL[0]+0.5;
+			var y1 = canvasCoordTL[1]+0.5;
+			var x2 = canvasCoordBR[0]+0.5;
+			var y2 = canvasCoordBR[1]+0.5;
+
+			var r = button.r * Math.min(y2 - y1, x2 - x1);
+
+			ctx.beginPath();
+		    ctx.moveTo(x1+r,y1);
+		    ctx.lineTo(x2-r,y1);
+		    ctx.arc(x2-r,y1+r,r,-Math.PI/2,0,false);
+		    ctx.lineTo(x2,y2-r);
+		    ctx.arc(x2-r,y2-r,r,0,Math.PI/2,false);
+		    ctx.lineTo(x1+r,y2);
+		    ctx.arc(x1+r,y2-r,r,Math.PI/2,Math.PI,false);
+		    ctx.lineTo(x1,y1+r);
+			ctx.arc(x1+r,y1+r,r,Math.PI,3*Math.PI/2,false);
+
+			ctx.closePath();
+
+			ctx.strokeStyle = button.strokeStyle;
+			ctx.fillStyle = 'rgba(0,0,0,0.95)';
+
+			ctx.fill();
+
+			var w = x2-x1;
+			var h = y2-y1;
+
+			var cx = (x2+x1)/2;
+			var cy = (y2+y1)/2;
+
+			var height = 0.05*w;
+
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			
+			var text = "The End";
+			ctx.font = 1.6*height + "px Lucida Console";
+			ctx.fillStyle = 'white';
+			ctx.fillText(text, cx, y1+0.15*h);
+
+			var lineHeight = 1.2*height;
+			ctx.font = 0.85*height + "px Lucida Console";
+
+			text = 
+			[
+				"Congratulations, ",
+				"I'm impressed you made it so far!",
+				"I hope you enjoyed playing.",
+				"Thanks!",
+				" - Joe McCourt"
+			];
+
+			for(var j = 0; j < text.length; j++){
+				if(j == text.length-1){
+					ctx.textAlign = "left";
+				}
+				ctx.fillText(text[j], cx, y1+0.35*h+j*lineHeight);
+			}
+
+			ctx.textAlign = "center";
+			ctx.font = 0.65*height + "px Lucida Console";
+			ctx.fillText("Click to close.", cx, y1+0.9*h);
+		}
+	}
+
+	ctx.restore();
+
+};
 
 GTE.drawButtons = function(mode){
 	var ctx = GTE.ctx;
@@ -203,7 +285,6 @@ GTE.drawButtons = function(mode){
 
 		ctx.lineWidth = 2;
 		if(button.name == "group1" || button.name == "group2"){
-
 			ctx.lineWidth = 5;
 			ctx.strokeStyle = 'rgb(68,93,130)';
 
@@ -213,21 +294,50 @@ GTE.drawButtons = function(mode){
 			grd.addColorStop(0.9, 'rgb(100,165,255)');
 			grd.addColorStop(1, 'rgb(68,93,130)');
 			ctx.fillStyle = grd;
-	    }
+			ctx.fill();
 
-		ctx.stroke();
-		ctx.fill();
+			var w = x2-x1;
+			var h = y2-y1;
 
-		if(button.text.length > 0){
-			ctx.fillStyle = 'rgb(255,255,255)';
-			ctx.font = height + "px Verdana";
+			var alpha = 1-0.4*GTE.level;
+			if(alpha < 0){alpha = 0;}
 
-			var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
-			ctx.textAlign = 'center';
-			ctx.textBaseline = 'baseline';
+			grd = ctx.createLinearGradient(x1,y1,x1,y2);
+			grd.addColorStop(0, 'rgba(130,145,165,'+alpha+')');
+			grd.addColorStop(0.5, 'rgba(10,75,165,'+alpha+')');
+			grd.addColorStop(0.9, 'rgba(10,75,165,'+alpha+')');
+			grd.addColorStop(1, 'rgba(0,23,40,'+alpha+')');
+			ctx.fillStyle = grd;
 
-		    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
-	    }
+			var height = 0.4*h;
+
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.font = 1.4*height + "px Lucida Console";
+			var textWidth = ctx.measureText(button.text).width;
+
+			if(textWidth > 0.7*w){
+				height *= 0.7*w / textWidth;
+				ctx.font = 1.4*height + "px Lucida Console";
+			}
+
+			ctx.fillText(button.text,(x1+x2)/2,(y1+y2)/2);
+		}else{
+			ctx.stroke();
+			ctx.fill();
+
+			if(button.text.length > 0){
+				ctx.fillStyle = 'rgb(255,255,255)';
+				ctx.font = height + "px Verdana";
+
+				var height = 32*(GTE.getRenderBoxWidth()+GTE.getRenderBoxHeight())/2000;
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'baseline';
+
+			    ctx.fillText(button.text,(x1+x2)/2,y1 + height*1.5);
+		    }
+		}
+
 
 		if(button.name === "background"){
 			var stars = 0;
@@ -318,32 +428,66 @@ GTE.drawButtons = function(mode){
 
 			ctx.fill();
 		}else if(button.name === "next"){
-			if(GTE.canPlayLevel(GTE.level+1)){
+			var unlockCredits = GTE.level == GTE.maxLevel && GTE.userStats['level'+GTE.level] && GTE.userStats['level'+GTE.level].stars > 0;
+			if(unlockCredits){
 				ctx.strokeStyle = 'rgba(0,0,0,1)';
 				ctx.fillStyle   = 'rgba(0,0,0,1)';
+
+				var w = x2-x1;
+				var h = y2-y1;
+				var cx = (x2+x1)/2;
+				var cy = (y2+y1)/2;
+				var r = 0.4*Math.min(w,h);
+
+				var left   = cx-r*0.25;
+				var right  = cx+r*0.25;
+				var top    = cy-r*0.45;
+				var bottom = cy+r*0.25;
+
+				ctx.beginPath();
+				ctx.arc(cx, cy, r, 0, 2*Math.PI, true);
+				ctx.stroke();
+				
+				ctx.beginPath();
+				ctx.moveTo(cx, cy);
+				ctx.arc(cx, cy, 0.1*r, 0, 2*Math.PI, true);
+				ctx.moveTo(left, top);
+				ctx.arc(left, top, 0.1*r, 0, 2*Math.PI, true);
+				ctx.moveTo(right, top);
+				ctx.arc(right, top, 0.1*r, 0, 2*Math.PI, true);
+				ctx.fill();
+
+				ctx.beginPath();
+				ctx.arc(cx, cy, 0.5*r, 45*Math.PI/180, 135*Math.PI/180, false);
+				ctx.stroke();
 			}else{
-				ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-				ctx.fillStyle   = 'rgba(0,0,0,0.3)';
+				if(GTE.canPlayLevel(GTE.level+1)){
+					ctx.strokeStyle = 'rgba(0,0,0,1)';
+					ctx.fillStyle   = 'rgba(0,0,0,1)';
+				}else{
+					ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+					ctx.fillStyle   = 'rgba(0,0,0,0.3)';
+				}
+		
+				var w = x2-x1;
+				var h = y2-y1;
+
+				var left   = x1+w*0.33;
+				var right  = x1+w*0.75;
+				var top    = y1+h*0.35;
+				var bottom = y1+h*0.65;
+
+				ctx.moveTo(left,y1+h/2);
+				ctx.lineTo(right-w/10,y1+h/2);
+				ctx.stroke();
+
+				ctx.beginPath();
+				ctx.moveTo(right-w/10,top);
+				ctx.lineTo(right-w/10,bottom);
+				ctx.lineTo(right,y1+h/2);
+				ctx.closePath();	
+				ctx.fill();
 			}
-	
-			var w = x2-x1;
-			var h = y2-y1;
-
-			var left   = x1+w*0.33;
-			var right  = x1+w*0.75;
-			var top    = y1+h*0.35;
-			var bottom = y1+h*0.65;
-
-			ctx.moveTo(left,y1+h/2);
-			ctx.lineTo(right-w/10,y1+h/2);
-			ctx.stroke();
-
-			ctx.beginPath();
-			ctx.moveTo(right-w/10,top);
-			ctx.lineTo(right-w/10,bottom);
-			ctx.lineTo(right,y1+h/2);
-			ctx.closePath();	
-			ctx.fill();
 		}else if(button.name === "replay"){
 			ctx.strokeStyle = 'rgba(0,0,0,1)';
 			ctx.fillStyle = 'rgba(0,0,0,1)';

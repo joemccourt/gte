@@ -9,10 +9,15 @@ TODO
   * Safari
   * iOS devices
 * Animation bug when quickly starting new level
-* Figure out what to do at end
 * Better star count layout
 * Have mouse forces on the same particle add correctly or disable
 * Bug: sometimes combining when shouldn't
+
+November 23rd 2013
+----------
+* Basic end game screen
+* Group selection text for first few levels
+* Change some fonts to Lucida Console
 
 November 22nd 2013
 ----------

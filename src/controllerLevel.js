@@ -7,6 +7,7 @@ GTE.stagesLost = 0;
 
 //View space filing tree for debug
 GTE.viewAABBTree = false;
+GTE.viewCredits = false;
 
 //Timing (ms)
 GTE.startNewStageAnimationTime = 0;
@@ -36,13 +37,13 @@ GTE.dirtyBG = true;
 GTE.buttons = [
 	{
 		'name':'group1',
-		'text':'',
+		'text':'Left Greater',
 		'box': [0.05,1.015,0.45,1.1],
 		'r':0.3
 	},
 	{
 		'name':'group2',
-		'text':'',
+		'text':'Right Greater',
 		'box': [0.55,1.015,0.95,1.1],
 		'r':0.3
 	},
@@ -236,6 +237,11 @@ GTE.mousedownLevel = function(x,y,touchIndex){
 	if(touchIndex == null){touchIndex = 0;}
 	GTE.mouse = "down";
 
+	if(GTE.viewCredits){
+		GTE.viewCredits = false;
+		return;
+	}
+
 	if(GTE.hasMouseForce(touchIndex)){return;}
 
 	var buttons;
@@ -267,8 +273,12 @@ GTE.mousedownLevel = function(x,y,touchIndex){
 				}else{
 					GTE.closeMenu();
 				}
-			}else if(button.name === "next" && GTE.canPlayLevel(GTE.level+1)){
-				GTE.selectLevel(GTE.level+1);	
+			}else if(button.name === "next"){
+				if(GTE.canPlayLevel(GTE.level+1)){
+					GTE.selectLevel(GTE.level+1);	
+				}else if(GTE.level == GTE.maxLevel && GTE.userStats['level'+GTE.level] && GTE.userStats['level'+GTE.level].stars > 0){
+					GTE.viewCredits = true;
+				}
 			}
 
 			if(button.name !== "background"){

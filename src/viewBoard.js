@@ -137,7 +137,7 @@ GTE.drawBoardLevels = function(){
 			if(stars > 0){
 				color = {r:0x44,g:0xEE,b:0x88};
 			}else if(stars == 0){
-				color = {r:0x44,g:0x44,b:0xEE};
+				color = {r:0x88,g:0x88,b:0xFF};
 			}else{
 				color = {r:0xDD,g:0xDD,b:0xDD};
 			}
@@ -179,7 +179,7 @@ GTE.drawBoardLevels = function(){
 				ctx.closePath();
 				ctx.fill();
 			}else{	
-				ctx.font = "" + (r) + "px Verdana";
+				ctx.font = "" + (r) + "px Lucida Console";
 				
 				ctx.lineWidth = 1;
 				ctx.strokeStyle = 'rgba(255,255,255,0.3)';
@@ -349,7 +349,7 @@ GTE.drawStarCount = function(){
 
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.font = height + "px Verdana";
+		ctx.font = height + "px Lucida Console";
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = 'rgba(255,255,255,0.5)';
 		ctx.lineWidth = 1;

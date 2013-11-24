@@ -56,7 +56,11 @@ GTE.drawGameMenu = function(drawGameParams){
 		GTE.endLevelAnimation(0);
 	}
 
-	GTE.drawButtons("menu");		
+	GTE.drawButtons("menu");
+	if(GTE.viewCredits){
+		GTE.drawCredits();
+	}
+	
 	GTE.drawProgress();
 };
 
