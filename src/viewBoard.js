@@ -3,7 +3,11 @@
 GTE.drawBoardGame = function(){
 	GTE.drawBoardBackground();
 	GTE.drawBoardLevels();
-	GTE.drawBoardBorder();
+
+	if(!GTE.noBorder){
+		GTE.drawBoardBorder();
+	}
+
 	GTE.drawStarCount();
 };
 

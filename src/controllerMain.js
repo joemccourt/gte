@@ -42,6 +42,9 @@ GTE.mouseDownLast = {x:0,y:0};
 //Kongregate API integration
 GTE.kongregate = parent.kongregate;
 
+// Disable border for kongergate
+GTE.noBorder = GTE.kongregate;
+
 GTE.main = function(){
 	GTE.startSession();
 

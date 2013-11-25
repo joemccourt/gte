@@ -12,6 +12,10 @@ GTE.setBoardRenderBox = function(){
 	var w = GTE.canvas.width;
 	var h = GTE.canvas.height;
 	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.98+0.5|0,h*0.98+0.5|0];
+
+	if(GTE.noBorder){
+		GTE.renderBox = [0,0,w,h];
+	}
 };
 
 // *** Events ***
