@@ -118,7 +118,7 @@ GTE.setLevelRenderBox = function(){
 	var w = GTE.canvas.width;
 	var h = GTE.canvas.height;
 	GTE.renderBoxGap = 0;
-	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.9+0.5|0,h*0.9+0.5|0];
+	GTE.renderBox = [w*0.02+0.5|0,h*0.02+0.5|0,w*0.925+0.5|0,h*0.9+0.5|0];
 	GTE.leftWall  = 1 - GTE.renderBoxGap/GTE.getRenderBoxWidth();
 	GTE.rightWall = 1 + GTE.renderBoxGap/GTE.getRenderBoxWidth();
 };
