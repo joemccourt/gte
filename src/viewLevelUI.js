@@ -289,11 +289,19 @@ GTE.drawButtons = function(mode){
 			ctx.strokeStyle = 'rgb(68,93,130)';
 
 			var grd = ctx.createLinearGradient(x1,y1,x1,y2);
-			grd.addColorStop(0, 'rgb(220,235,255)');
-			grd.addColorStop(0.5, 'rgb(100,165,255)');
-			grd.addColorStop(0.9, 'rgb(100,165,255)');
-			grd.addColorStop(1, 'rgb(68,93,130)');
+			if(GTE.animatingEndStage && GTE.groupSelect == button.name){
+				grd.addColorStop(1-0, 'rgb(88,113,150)');
+				grd.addColorStop(1-0.5, 'rgb(100,165,255)');
+				grd.addColorStop(1-0.9, 'rgb(100,165,255)');
+				grd.addColorStop(1-1, 'rgb(88,113,150)');
+			}else{
+				grd.addColorStop(0, 'rgb(220,235,255)');
+				grd.addColorStop(0.5, 'rgb(100,165,255)');
+				grd.addColorStop(0.9, 'rgb(100,165,255)');
+				grd.addColorStop(1, 'rgb(68,93,130)');
+			}
 			ctx.fillStyle = grd;
+			
 			ctx.fill();
 
 			var w = x2-x1;
@@ -308,6 +316,7 @@ GTE.drawButtons = function(mode){
 			grd.addColorStop(0.9, 'rgba(10,75,165,'+alpha+')');
 			grd.addColorStop(1, 'rgba(0,23,40,'+alpha+')');
 			ctx.fillStyle = grd;
+
 
 			var height = 0.4*h;
 

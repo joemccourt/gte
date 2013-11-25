@@ -29,6 +29,7 @@ GTE.wonGame = false;
 GTE.toSaveGame = true;
 GTE.playingLevel = true;
 GTE.lastWon = true;
+GTE.groupSelect = "group1";
 
 GTE.levelCompleted = false;
 GTE.toStartNewStage = false;
@@ -125,6 +126,7 @@ GTE.setLevelRenderBox = function(){
 GTE.startNewStage = function(){
 	GTE.toStartNewStage = false;
 	GTE.playingLevel = true;
+	GTE.animatingEndStage = false;
 	GTE.initModel();
 	GTE.boardView = false;
 	GTE.menuView = false;
@@ -142,6 +144,12 @@ GTE.clickGroup = function(groupID){
 			GTE.winStage();
 		}else{
 			GTE.loseStage();
+		}
+
+		if(groupID == 1){
+			GTE.groupSelect = "group1";
+		}else if(groupID == 2){
+			GTE.groupSelect = "group2";
 		}
 	}
 };

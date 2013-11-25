@@ -8,10 +8,17 @@ TODO
   * IE
   * Safari
   * iOS devices
-* Animation bug when quickly starting new level
 * Better star count layout
 * Have mouse forces on the same particle add correctly or disable
 * Bug: sometimes combining when shouldn't
+* Better button down draw
+* Audio
+
+November 24th 2013
+----------
+* Button down draw state
+* Fixed bug when quickly starting new level
+* Kong API (to be tested)
 
 November 23rd 2013
 ----------

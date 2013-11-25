@@ -106,7 +106,6 @@ GTE.getEndGoalsFactors = function(num,side){
 };
 
 GTE.endLevelAnimation = function(time){
-	
 	var timeWidth = GTE.endStageAnimationTime;
 	time = time < 0 ? 0 : time > timeWidth ? timeWidth : time;
 

@@ -39,6 +39,7 @@ GTE.mouse = "up";
 GTE.mouseDownPos = {x:0,y:0};
 GTE.mouseDownLast = {x:0,y:0};
 
+//Kongregate API integration
 GTE.kongregate = parent.kongregate;
 
 GTE.main = function(){
@@ -175,6 +176,8 @@ GTE.loadGameState = function(){
 };
 
 GTE.saveGameState = function() {
+	GTE.updateKongStats();
+
 	if (!supports_html5_storage()) { return false; }
 	localStorage["GTE.license"]       = GTE.license;
 	localStorage["GTE.userStats"]     = JSON.stringify(GTE.userStats);
@@ -191,6 +194,33 @@ GTE.saveGameState = function() {
 	localStorage["GTE.viewLevel"]     = GTE.viewLevel == true ? 1 : 0;
 	localStorage["GTE.playingLevel"]  = GTE.playingLevel  == true ? 1 : 0;
 	localStorage["GTE.levelCompleted"]  = GTE.levelCompleted  == true ? 1 : 0;
+};
+
+GTE.updateKongStats = function(){
+	var kongregate = GTE.kongregate;
+	if(typeof kongregate !== "undefined"){
+		var maxLevel = -1; //Because we start at level 0
+		var numStars = 0;
+
+		var stats = GTE.userStats;
+		for(var level in stats){
+			if(stats.hasOwnProperty(level)){
+				var stars = stats[level].stars;
+				if(typeof stars !== "undefined"){
+					numStars += stars;
+
+					//This works as long as levels are in order
+					if(numStars >= 1){
+						maxLevel += 1;
+					}
+				}
+			}
+		}
+
+		if(maxLevel < 0){maxLevel = 0;}
+		kongregate.stats.submit("Max Level",maxLevel);
+		kongregate.stats.submit("Total Stars",numStars);
+	}
 };
 
 // *** Main Events *** //
@@ -363,7 +393,7 @@ GTE.selectLevel = function(i){
 	GTE.levelCompleted = false;
 
 	GTE.startNewStage();
-}
+};
 
 GTE.resizeToFit = function(){
 	var w = $(window).width();
@@ -388,22 +418,6 @@ GTE.resizeToFit = function(){
 
 GTE.getRenderBoxWidth  = function(){return GTE.renderBox[2] - GTE.renderBox[0];};
 GTE.getRenderBoxHeight = function(){return GTE.renderBox[3] - GTE.renderBox[1];};
-
-//TODO: fix this for kong
-GTE.winGame = function(){
-	if(GTE.level == GTE.maxLevel){
-		GTE.maxLevel++;
-		if(typeof GTE.kongregate !== "undefined"){
-			GTE.kongregate.stats.submit("Max Level",GTE.maxLevel);
-		}
-	}
-
-	GTE.level++;
-
-	console.log("you win!");
-	GTE.wonGame = true;
-	//GTE.startGame();
-};
 
 // **** SOUNDS **** //
 GTE.loadSound = function(name){
