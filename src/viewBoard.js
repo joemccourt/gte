@@ -290,7 +290,7 @@ GTE.drawStarCount = function(){
 		'name':'background',
 		'text':'',
 		'fillStyle': 'rgba(255,255,255,0.5)',
-		'box': [0.94,0.01,0.99,0.2],
+		'box': [0.915,0.015,0.985,0.205],
 		'r':0.08
 	}];
 
@@ -329,13 +329,15 @@ GTE.drawStarCount = function(){
 
 	var h = y2-y1;
 	var w = x2-x1;
-	var starR = 0.15*Math.min(w,h);
+	var starR = 0.18*Math.min(w,h);
 	var height = 0.4*Math.min(w,h);
 
+	var starDeltaY = 1.95*Math.max(starR,h*0.14);
+
 	for(var j = 0; j < 3; j++){
-		var yStar = y1+(j+0.7)*2.1*Math.max(starR,h*0.14);
-		var xStar = x1 + w*0.2;
-		var xText = x1 + w*0.6;
+		var yStar = y1+(j+0.7)*starDeltaY;
+		var xStar = x1 + w*0.785;
+		var xText = x1 + w*0.37;
 
 		var num = 0;
 		if(j == 0){
@@ -353,12 +355,10 @@ GTE.drawStarCount = function(){
 
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.font = height + "px Lucida Console";
+		ctx.font = 0.9*height + "px Lucida Console";
 		ctx.fillStyle = 'rgba(0,0,0,1)';
 		ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-		ctx.lineWidth = 1;
-		ctx.fillText(" "+num,xText,yStar);
-		ctx.strokeText(" "+num,xText,yStar);
+		ctx.fillText(""+num,xText,yStar+0.05*starDeltaY);
 	}
 
     ctx.restore();

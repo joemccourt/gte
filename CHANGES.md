@@ -8,12 +8,15 @@ TODO
   * IE
   * Safari
   * iOS devices
-* Better star count layout
 * Have mouse forces on the same particle add correctly or disable
 * Bug: sometimes combining when shouldn't
 * Better button down draw
 * Audio
 * Resize event not triggering though kongregate
+
+November 26th 2013
+----------
+* Better star count layout
 
 November 24th 2013
 ----------
