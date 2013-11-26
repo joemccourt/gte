@@ -49,7 +49,9 @@ GTE.main = function(){
 	GTE.startSession();
 
 	GTE.soundsEnabled = window.hasOwnProperty('AudioContext');
-	GTE.loadSounds();
+	if(GTE.soundsEnabled){
+		GTE.loadSounds();
+	}
 
 	requestNextAnimationFrame(GTE.gameLoop);
 };

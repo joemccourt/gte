@@ -13,6 +13,7 @@ TODO
 * Bug: sometimes combining when shouldn't
 * Better button down draw
 * Audio
+* Resize event not triggering though kongregate
 
 November 24th 2013
 ----------
